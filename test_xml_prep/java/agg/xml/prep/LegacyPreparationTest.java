@@ -269,6 +269,7 @@ public class LegacyPreparationTest {
             {"int", "-42"},
             {"int", "2147483647"},
             {"long", "123456789012345"},
+            {"long", "42"},
             {"float", "1.5"},
             {"double", "2.718"},
             {"String", "\"Hello World\""},

@@ -88,6 +88,7 @@ public class AttributeMatrixTest {
             {"int", "-42"},
             {"int", "2147483647"},
             {"long", "123456789012345"},
+            {"long", "42"},
             {"float", "1.5"},
             {"double", "2.718"},
             {"String", "\"Hello World\""},
@@ -107,19 +108,23 @@ public class AttributeMatrixTest {
 
         runDomRoundtripWithVerifier(refFile, baseName, loaded -> {
             Node loadedNode = firstNode(loaded.getGraph());
-            if ("long".equals(typeName)) {
-                // The frozen legacy serialization does NOT support the
-                // 'long' attribute type: the reference contains neither the
-                // AttrType declaration nor the value (the type handler
-                // rejects it, so ValueMember.XwriteObject writes nothing).
-                // The DOM path must behave identically: no value survives.
+            if ("long".equals(typeName) && valueText.length() > 9) {
+                // Long literals beyond the int range are NOT bound by the
+                // Java expression handler (JexHandler/JexExpr parses them as
+                // int literals): setExprAsText leaves the member unset
+                // (isSet=false), so neither the frozen legacy path nor the
+                // DOM path has anything to serialize. The reference contains
+                // the AttrType declaration but no value; the DOM load must
+                // behave identically: no value survives.
+                // (Small long values bind fine and ARE serialized by both
+                // paths - see the long/42 case.)
                 agg.attribute.AttrInstance attr = loadedNode.getAttribute();
                 boolean dropped = attr == null
                     || attr.getNumberOfEntries() == 0
                     || attr.getMemberAt("val") == null
                     || ((ValueMember) attr.getMemberAt("val")).getExpr() == null;
                 assertTrue(dropped,
-                    "long attribute values must be dropped like the frozen "
+                    "unbound long literals must stay unbound like the frozen "
                         + "legacy path: " + baseName);
             } else {
                 verifyValue(loadedNode, "val", typeName, KIND_CONSTANT,
@@ -205,6 +210,48 @@ public class AttributeMatrixTest {
             assertNotNull(vars.getVarMemberAt("x"),
                 "Variable x should survive the roundtrip: " + baseName);
         });
+    }
+
+    // ---- DOM-only long roundtrip stability ----
+
+    /**
+     * Long attribute values ARE supported by both serialization paths
+     * (the legacy XMLHelper.addAttrValue has a long branch writing
+     * &lt;long&gt;...&lt;/long&gt;, and so does the DOM AttributeSerializer).
+     * The only limitation is the Java expression handler, which cannot bind
+     * long literals beyond the int range (see the cross-system matrix).
+     *
+     * <p>This test proves the DOM roundtrip with a bindable value: create
+     * a long value with the current code, DOM save, DOM load, verify, and
+     * check DOM stability (save twice produces identical XML).</p>
+     */
+    @Test
+    public void testLongDomOnlyRoundtrip() throws Exception {
+        String baseName = "attr_domonly_long";
+        GraGra graGra = TestDataGenerator.createGraphWithTypedNodeValue("long", "42");
+        File domFile1 = new File(outputDir, baseName + "_1.ggx");
+
+        // DOM save
+        assertTrue(XMLSerialization.saveWithDom(graGra, domFile1.getAbsolutePath()),
+            "DOM save of a long value should succeed: " + baseName);
+        assertTrue(domFile1.exists() && domFile1.length() > 0,
+            "DOM file should be non-empty: " + baseName);
+
+        // DOM load + verify the value survived
+        GraGra reloaded = new GraGra();
+        XMLSerialization.loadWithDom(reloaded, domFile1.getAbsolutePath());
+        Node reloadedNode = firstNode(reloaded.getGraph());
+        verifyValue(reloadedNode, "val", "long", KIND_CONSTANT,
+            "42", baseName + "_reload");
+
+        // DOM stability: reload + save again must produce identical XML
+        File domFile2 = new File(outputDir, baseName + "_2.ggx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, domFile2.getAbsolutePath()),
+            "DOM re-save should succeed: " + baseName);
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(domFile1, domFile2);
+        assertTrue(result.isEqual(),
+            "DOM path should be stable for long values: " + result.getMessage());
     }
 
     // ---- Helpers ----

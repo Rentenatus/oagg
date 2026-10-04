@@ -105,37 +105,42 @@ public final class XmlCanonicalComparator {
         Element rootA = docA.getDocumentElement();
         Element rootB = docB.getDocumentElement();
         // Iterative refinement: sort -> walk -> re-sort with normalized refs.
-        // The walk does NOT stop at the first mismatch: a mismatch in an
-        // early iteration may be a mispairing caused by raw reference IDs
-        // (the idMap is still empty, so children whose sort key contains a
-        // reference attribute can be ordered differently in both
-        // documents). Walking to the end fills the idMap as far as
-        // possible; the next iteration then sorts with normalized
-        // references. Only a mismatch that survives all iterations is real.
+        //
+        // Strategy: the first iteration sorts children WITHOUT reference
+        // attributes (their raw values differ per document and would
+        // mispair semantically identical children); the walk pairs children
+        // in document order and fills the id map. Later iterations sort
+        // WITH the normalized references: this reorders children that differ
+        // only in references (e.g. <Mapping orig image>, whose document
+        // order is NOT deterministic in the legacy writer) into the same
+        // semantic order in both documents.
+        //
+        // An iteration is successful only when BOTH the walk reports no
+        // structural mismatch AND the canonical serializations are equal.
+        // Only a mismatch that survives all iterations is real.
         Map<String, String> idMapA = new LinkedHashMap<>();
         Map<String, String> idMapB = new LinkedHashMap<>();
         String mismatch = null;
+        String canonA = "";
+        String canonB = "";
         for (int iteration = 0; iteration < 5; iteration++) {
-            sortChildrenWithRefs(rootA, idMapA);
-            sortChildrenWithRefs(rootB, idMapB);
+            boolean withRefs = iteration > 0;
+            sortChildrenWithRefs(rootA, idMapA, withRefs);
+            sortChildrenWithRefs(rootB, idMapB, withRefs);
             idMapA.clear();
             idMapB.clear();
             int[] counter = {0};
             String[] firstError = {null};
             parallelWalk(rootA, rootB, idMapA, idMapB, counter, firstError);
             mismatch = firstError[0];
-            if (mismatch == null) {
-                break;
+            canonA = serializeCanonical(rootA, idMapA);
+            canonB = serializeCanonical(rootB, idMapB);
+            if (mismatch == null && canonA.equals(canonB)) {
+                return new ComparisonResult(true, "XML documents are canonically equal");
             }
         }
         if (mismatch != null) {
             return new ComparisonResult(false, mismatch);
-        }
-        String canonA = serializeCanonical(rootA, idMapA);
-        String canonB = serializeCanonical(rootB, idMapB);
-        boolean equal = canonA.equals(canonB);
-        if (equal) {
-            return new ComparisonResult(true, "XML documents are canonically equal");
         }
         String diff = describeDifference(canonA, canonB);
         return new ComparisonResult(false, diff);
@@ -145,14 +150,15 @@ public final class XmlCanonicalComparator {
      * Recursively sorts child elements of each element by a canonical key
      * that includes normalized reference attribute values.
      */
-    private static void sortChildrenWithRefs(Element parent, Map<String, String> idMap) {
+    private static void sortChildrenWithRefs(Element parent, Map<String, String> idMap,
+            boolean includeRefs) {
         List<Element> children = getChildElements(parent);
         for (Element child : children) {
-            sortChildrenWithRefs(child, idMap);
+            sortChildrenWithRefs(child, idMap, includeRefs);
         }
         if (children.size() > 1) {
             children.sort(Comparator.comparing(
-                e -> elementSortKeyWithRefs(e, idMap)));
+                e -> elementSortKey(e, idMap, includeRefs)));
             for (Element child : children) {
                 parent.appendChild(child);
             }
@@ -160,26 +166,36 @@ public final class XmlCanonicalComparator {
     }
 
     /**
-     * Computes a sort key from the tag name and the non-ID, non-reference
-     * attributes. Reference attributes (type, source, target, orig,
-     * image, ...) are excluded on purpose: their raw values differ
-     * between the documents (IDs are generated per document), and
-     * including them made the child ordering differ between the two
-     * documents, which mispaired structurally identical children.
-     * Children that differ only in reference attributes keep their
-     * document order; the references themselves are normalized during
-     * the walk and the canonical serialization.
+     * Computes a sort key from the tag name and the non-ID attributes.
+     * When {@code includeRefs} is false (first iteration), reference
+     * attributes (type, source, target, orig, image, ...) are excluded:
+     * their raw values differ per document and would mispair semantically
+     * identical children. When true (later iterations), reference
+     * attributes are normalized through the id map and included, which
+     * orders children that differ only in references (e.g. morphism
+     * mappings) by their semantic content - the document order of such
+     * children is not deterministic in the legacy writer.
      */
-    private static String elementSortKeyWithRefs(Element elem, Map<String, String> idMap) {
+    private static String elementSortKey(Element elem, Map<String, String> idMap,
+            boolean includeRefs) {
         StringBuilder sb = new StringBuilder(elem.getTagName());
         Map<String, String> attrs = new TreeMap<>();
         for (int i = 0; i < elem.getAttributes().getLength(); i++) {
             Node attr = elem.getAttributes().item(i);
             String name = attr.getNodeName();
-            if (ID_ATTR.equals(name) || REF_ATTRS.contains(name)) {
-                continue; // skip ID and reference attributes for sorting
+            String value = attr.getNodeValue();
+            if (ID_ATTR.equals(name)) {
+                continue; // skip ID for sorting
             }
-            attrs.put(name, attr.getNodeValue());
+            if (REF_ATTRS.contains(name)) {
+                if (!includeRefs) {
+                    continue; // skip raw references in the first iteration
+                }
+                if (idMap != null && !idMap.isEmpty()) {
+                    value = idMap.getOrDefault(value, value);
+                }
+            }
+            attrs.put(name, value);
         }
         for (Map.Entry<String, String> e : attrs.entrySet()) {
             sb.append('|').append(e.getKey()).append('=').append(e.getValue());
