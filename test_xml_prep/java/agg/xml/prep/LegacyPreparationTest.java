@@ -396,6 +396,34 @@ public class LegacyPreparationTest {
     }
 
     /**
+     * Produces a UI reference for a grammar with an atomic constraint and
+     * a formula constraint, so the UI path covers the Atomics/Constraints
+     * sections of a UI-layer save.
+     */
+    @Test
+    public void prepareUiConstraintScenario() throws Exception {
+        GraGra graGra = TestDataGenerator.createWithConstraints(true);
+        agg.editor.impl.EdGraGra edGraGra =
+            new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        pos = pinGraphPositions(edGraGra.getTypeGraph(), pos);
+        for (int i = 0; i < edGraGra.getAtomics().size(); i++) {
+            pos = pinGraphPositions(edGraGra.getAtomics().get(i).getLeft(), pos);
+            pos = pinGraphPositions(edGraGra.getAtomics().get(i).getRight(), pos);
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_constraints.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
      * Assigns distinct, increasing editor positions to the nodes of the
      * given graph so the reference pins real UI state, and returns the
      * next free position counter.

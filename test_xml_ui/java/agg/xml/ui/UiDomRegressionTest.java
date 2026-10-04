@@ -113,6 +113,37 @@ public class UiDomRegressionTest {
     }
 
     /**
+     * Constraint scenario: atomic constraint and formula constraint in a
+     * UI-layer save. DOM load of the frozen UI reference, UI state
+     * verification, DOM save and canonical comparison.
+     */
+    @Test
+    public void uiConstraintScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_constraints.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getAtomics().size(), 1, "Atomic constraint count");
+        assertEquals(loaded.getConstraints().size(), 1, "Formula count");
+        assertEquals(loaded.getName(), "ConstraintTest", "GraGra name");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+
+        File outFile = new File(outputDir, "ui_constraints_new.ggx");
+        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "DOM UI save differs from the frozen reference: "
+            + result.getMessage());
+    }
+
+    /**
      * The rule graphs must carry the pinned UI state: distinct LHS/RHS/NAC/
      * PAC positions and the bent LHS edge.
      */

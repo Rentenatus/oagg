@@ -388,22 +388,40 @@ public final class UISerialization {
             }
         }
         for (EdRule rule : edGraGra.getRules()) {
-            if (rule == null) {
-                continue;
-            }
-            addGraphIfAbsent(graphs, rule.getLeft());
-            addGraphIfAbsent(graphs, rule.getRight());
+            addRuleGraphs(graphs, rule);
+        }
+        for (EdRule atomic : edGraGra.getAtomics()) {
+            addRuleGraphs(graphs, atomic);
+        }
+        return graphs;
+    }
+
+    /**
+     * Adds the graphs of a rule (or an atomic constraint, which extends
+     * EdRule) whose objects carry UI segments.
+     */
+    private static void addRuleGraphs(List<EdGraph> graphs, EdRule rule) {
+        if (rule == null) {
+            return;
+        }
+        addGraphIfAbsent(graphs, rule.getLeft());
+        addGraphIfAbsent(graphs, rule.getRight());
+        // EdAtomic leaves the application condition lists null
+        if (rule.getNACs() != null) {
             for (int i = 0; i < rule.getNACs().size(); i++) {
                 addGraphIfAbsent(graphs, rule.getNACs().get(i));
             }
+        }
+        if (rule.getPACs() != null) {
             for (int i = 0; i < rule.getPACs().size(); i++) {
                 addGraphIfAbsent(graphs, rule.getPACs().get(i));
             }
+        }
+        if (rule.getNestedACs() != null) {
             for (int i = 0; i < rule.getNestedACs().size(); i++) {
                 addGraphIfAbsent(graphs, rule.getNestedACs().get(i));
             }
         }
-        return graphs;
     }
 
     private static void addGraphIfAbsent(List<EdGraph> graphs, EdGraph graph) {
