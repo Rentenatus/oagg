@@ -226,8 +226,10 @@ public final class UISerialization {
         } else {
             layoutElem.setAttribute("bendX", String.valueOf(arc.getX()));
             layoutElem.setAttribute("bendY", String.valueOf(arc.getY()));
-            layoutElem.setAttribute("loopW", String.valueOf(arc.getWidthOfLoop()));
-            layoutElem.setAttribute("loopH", String.valueOf(arc.getHeightOfLoop()));
+            // Raw dimension, mirroring EdArc.XwriteObject (NOT getWidthOfLoop,
+            // which substitutes Loop.DEFAULT_SIZE for a zero width)
+            layoutElem.setAttribute("loopW", String.valueOf(arc.getWidth()));
+            layoutElem.setAttribute("loopH", String.valueOf(arc.getHeight()));
         }
         if (arc.isElementOfTypeGraph()) {
             java.awt.Point srcOffset = arc.getSrcMultiplicityOffset();
@@ -396,6 +398,9 @@ public final class UISerialization {
             }
             for (int i = 0; i < rule.getPACs().size(); i++) {
                 addGraphIfAbsent(graphs, rule.getPACs().get(i));
+            }
+            for (int i = 0; i < rule.getNestedACs().size(); i++) {
+                addGraphIfAbsent(graphs, rule.getNestedACs().get(i));
             }
         }
         return graphs;

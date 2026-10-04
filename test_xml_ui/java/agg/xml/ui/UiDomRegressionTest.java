@@ -10,6 +10,7 @@ import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
+import agg.editor.impl.EdRule;
 import agg.layout.evolutionary.LayoutArc;
 import agg.layout.evolutionary.LayoutNode;
 import agg.xml.validation.XmlCanonicalComparator;
@@ -76,6 +77,105 @@ public class UiDomRegressionTest {
         assertTrue(result.isEqual(),
             "DOM UI save differs from the frozen reference: "
             + result.getMessage());
+    }
+
+    /**
+     * Rule scenario: rule graphs (LHS/RHS), NAC, PAC, nested AC, a bent
+     * edge and a loop edge. DOM load of the frozen UI reference, UI state
+     * verification, DOM save and canonical comparison.
+     */
+    @Test
+    public void uiRuleScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_rule_nac.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 1, "Rule count");
+        EdRule rule = loaded.getRules().get(0);
+        assertEquals(rule.getName(), "transformItem", "Rule name");
+
+        verifyRuleGraphUiState(rule);
+        verifyHostLoopUiState(loaded);
+
+        File outFile = new File(outputDir, "ui_rule_nac_new.ggx");
+        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "DOM UI save differs from the frozen reference: "
+            + result.getMessage());
+    }
+
+    /**
+     * The rule graphs must carry the pinned UI state: distinct LHS/RHS/NAC/
+     * PAC positions and the bent LHS edge.
+     */
+    private void verifyRuleGraphUiState(EdRule rule) {
+        assertEquals(rule.getLeft().getNodes().size(), 2, "LHS node count");
+        assertEquals(rule.getLeft().getArcs().size(), 1, "LHS arc count");
+        assertEquals(rule.getRight().getNodes().size(), 1, "RHS node count");
+
+        assertTrue(hasNodeAt(rule.getLeft(), 131, 231), "LHS node 1 position");
+        assertTrue(hasNodeAt(rule.getLeft(), 138, 238), "LHS node 2 position");
+        assertTrue(hasNodeAt(rule.getRight(), 145, 245), "RHS node position");
+
+        EdArc lhsArc = rule.getLeft().getArcs().get(0);
+        assertEquals(lhsArc.getX(), 25, "Bent LHS edge X");
+        assertEquals(lhsArc.getY(), 30, "Bent LHS edge Y");
+        assertFalse(lhsArc.hasDefaultAnchor(), "Bent LHS edge anchor");
+
+        assertEquals(rule.getNACs().size(), 1, "NAC count");
+        assertEquals(rule.getNACs().get(0).getNodes().size(), 1, "NAC node count");
+        assertEquals(rule.getNACs().get(0).getNodes().get(0).getX(), 152,
+            "NAC node X position");
+        assertEquals(rule.getNACs().get(0).getNodes().get(0).getY(), 252,
+            "NAC node Y position");
+
+        assertEquals(rule.getPACs().size(), 1, "PAC count");
+        assertEquals(rule.getPACs().get(0).getNodes().get(0).getX(), 159,
+            "PAC node X position");
+        assertEquals(rule.getPACs().get(0).getNodes().get(0).getY(), 259,
+            "PAC node Y position");
+
+        assertEquals(rule.getNestedACs().size(), 1, "Nested AC count");
+        EdGraph nestedAC = rule.getNestedACs().get(0);
+        assertTrue(hasNodeAt(nestedAC, 100, 100),
+            "Nested AC node keeps the default position");
+    }
+
+    /**
+     * The host graph contains a loop edge; its layout must survive the
+     * roundtrip with the raw (zero) loop dimensions of the reference.
+     */
+    private void verifyHostLoopUiState(EdGraGra edGraGra) {
+        EdGraph host = edGraGra.getGraph();
+        assertEquals(host.getNodes().size(), 1, "Host node count");
+        assertEquals(host.getArcs().size(), 1, "Host arc count");
+        assertTrue(hasNodeAt(host, 110, 210), "Host node position");
+
+        EdArc loop = host.getArcs().get(0);
+        assertFalse(loop.isLine(), "Host edge should be a loop");
+        assertEquals(loop.getWidth(), 0, "Loop width");
+        assertEquals(loop.getHeight(), 0, "Loop height");
+        assertTrue(loop.hasDefaultAnchor(), "Loop anchor");
+    }
+
+    /**
+     * Returns whether the graph contains a node at the given position.
+     */
+    private boolean hasNodeAt(EdGraph graph, int x, int y) {
+        for (EdNode node : graph.getNodes()) {
+            if (node.getX() == x && node.getY() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -343,6 +343,73 @@ public class LegacyPreparationTest {
             "UI reference file should be non-empty");
     }
 
+    /**
+     * Produces a UI reference for a grammar with a rule (LHS/RHS mapping),
+     * NAC, PAC, nested application condition, a bent edge and a loop edge,
+     * so the UI segments of rule graphs and the special edge layouts
+     * (bendX/bendY, loopW/loopH) are pinned in the reference.
+     */
+    @Test
+    public void prepareUiRuleScenario() throws Exception {
+        GraGra graGra = TestDataGenerator.createRuleWithNacPacNestedAC(true);
+
+        // Loop edge in the host graph (covers loopW/loopH layout)
+        java.util.Iterator<agg.xt_basis.Node> hostNodes =
+            graGra.getGraph().getNodesCollection().iterator();
+        if (hostNodes.hasNext()) {
+            agg.xt_basis.Node hostNode = hostNodes.next();
+            agg.xt_basis.Type loopType = graGra.createArcType(false);
+            loopType.setStringRepr("loopLink");
+            graGra.getGraph().createArc(loopType, hostNode, hostNode);
+        }
+
+        agg.editor.impl.EdGraGra edGraGra =
+            new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        pos = pinGraphPositions(edGraGra.getTypeGraph(), pos);
+        for (int i = 0; i < edGraGra.getRules().size(); i++) {
+            agg.editor.impl.EdRule rule = edGraGra.getRules().get(i);
+            pos = pinGraphPositions(rule.getLeft(), pos);
+            pos = pinGraphPositions(rule.getRight(), pos);
+            for (int j = 0; j < rule.getNACs().size(); j++) {
+                pos = pinGraphPositions(rule.getNACs().get(j), pos);
+            }
+            for (int j = 0; j < rule.getPACs().size(); j++) {
+                pos = pinGraphPositions(rule.getPACs().get(j), pos);
+            }
+            // Bent edge in the LHS (covers non-default anchor layout)
+            for (int j = 0; j < rule.getLeft().getArcs().size(); j++) {
+                rule.getLeft().getArcs().get(j)
+                    .setAnchor(new java.awt.Point(25, 30));
+            }
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_rule_nac.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
+     * Assigns distinct, increasing editor positions to the nodes of the
+     * given graph so the reference pins real UI state, and returns the
+     * next free position counter.
+     */
+    private int pinGraphPositions(agg.editor.impl.EdGraph graph, int pos) {
+        for (int i = 0; i < graph.getNodes().size(); i++) {
+            agg.editor.impl.EdNode node = graph.getNodes().get(i);
+            node.setX(100 + pos);
+            node.setY(200 + pos);
+            pos += 7;
+        }
+        return pos;
+    }
+
     // ---- Helpers ----
 
     private void saveLegacy(GraGra graGra, String fileName) throws Exception {
