@@ -18,6 +18,8 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Regression tests using preserved legacy XML fixtures.
@@ -348,5 +350,192 @@ public class LegacyDomRegressionTest {
             XmlCanonicalComparator.compareFiles(outputFile, stableFile);
         assertTrue(stableResult.isEqual(),
             "DOM path should be stable for .cpx: " + stableResult.getMessage());
+    }
+
+
+    // ---- .cpx computed critical pairs (generated prep fixtures) ----
+
+    /**
+     * Resolves a generated .cpx reference produced by the legacy
+     * preparation suite.
+     */
+    private File prepCpxFile(String filename) {
+        File refFile = new File("target/legacy_prep/", filename);
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Generated .cpx reference is missing (run the legacy preparation"
+                + " suite first: mvn -pl test/test_agg/legacy_agg -am test"
+                + " -Dtest=LegacyPreparationTest): " + refFile.getPath());
+        return refFile;
+    }
+
+    /** Counts the overlapping pairs stored in the exclude container. */
+    private int countOverlappingPairs(agg.parser.ExcludePairContainer pc) {
+        int count = 0;
+        for (Object o1 : pc.getExcludeContainer().values()) {
+            for (Object o2 : ((Map<?, ?>) o1).values()) {
+                agg.util.Pair<?, ?> p = (agg.util.Pair<?, ?>) o2;
+                if (Boolean.TRUE.equals(p.first) && p.second != null) {
+                    count += ((List<?>) p.second).size();
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Verifies that the generated .cpx fixture with computed conflict and
+     * dependency entries (plain overlaps) survives the DOM roundtrip. The
+     * DOM save is compared canonically against the RAW reference, not the
+     * legacy re-save: the legacy reader mutates the grammar on load
+     * (LHS/RHS renames, type name representations) and the DOM path does
+     * not replicate those mutations.
+     */
+    @Test
+    public void testLegacyConflictsDependenciesComputedPlainRoundtrip() throws Exception {
+        File refFile = prepCpxFile("gen_conflicts_computed.cpx");
+
+        // Step 1: load the raw reference with the DOM path
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getGrammar(),
+            "DOM .cpx load should populate the embedded grammar");
+        assertNotNull(cdc.getExcludePairContainer(),
+            "DOM .cpx load should create the conflict container");
+        assertEquals(countOverlappingPairs(cdc.getExcludePairContainer()), 2,
+            "DOM .cpx load should restore the 2 computed conflict overlaps");
+        assertNotNull(cdc.getDependencyPairContainer(),
+            "DOM .cpx load should create the dependency container");
+        assertEquals(countOverlappingPairs(cdc.getDependencyPairContainer()), 2,
+            "DOM .cpx load should restore the 2 computed dependency overlaps");
+
+        // Step 2: save with the DOM path
+        File outputFile = new File(outputDir, "conflicts_computed_dom.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outputFile.getAbsolutePath()),
+            "DOM .cpx save should succeed");
+
+        // Step 3: canonical comparison against the RAW reference
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outputFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_conflicts_computed.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outputFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "conflicts_computed_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .cpx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outputFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for computed .cpx: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Verifies the DOM roundtrip for computed conflict entries with a NAC
+     * overlap (second morphism reconstructed through
+     * extendLeftGraphByNAC), compared canonically against the RAW
+     * reference.
+     */
+    @Test
+    public void testLegacyConflictsDependenciesComputedNacRoundtrip() throws Exception {
+        File refFile = prepCpxFile("gen_conflicts_computed_nac.cpx");
+
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getExcludePairContainer(),
+            "DOM .cpx load should create the conflict container");
+        assertEquals(countOverlappingPairs(cdc.getExcludePairContainer()), 1,
+            "DOM .cpx load should restore the NAC conflict overlap");
+        // the NAC overlap carries the (morphL2iso, morphNACiso) pair
+        Map<?, ?> secondPart = cdc.getExcludePairContainer()
+            .getExcludeContainer().values().iterator().next();
+        agg.util.Pair<?, ?> p =
+            (agg.util.Pair<?, ?>) secondPart.values().iterator().next();
+        List<?> overlaps = (List<?>) p.second;
+        agg.util.Pair<?, ?> p2i = (agg.util.Pair<?, ?>) overlaps.get(0);
+        assertNotNull(p2i.second,
+            "the NAC overlap should restore the iso morphism pair");
+
+        File outputFile = new File(outputDir, "conflicts_computed_nac_dom.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outputFile.getAbsolutePath()),
+            "DOM .cpx save should succeed");
+
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outputFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_conflicts_computed_nac.cpx: "
+                + result.getMessage());
+
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outputFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "conflicts_computed_nac_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .cpx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outputFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the NAC computed .cpx: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Verifies the DOM roundtrip for computed conflict entries with a PAC
+     * overlap. The PAC overlap is lossy in the reader (the pacname mapping
+     * of a pure PAC arc is not reconstructed, the orig2copy map of the
+     * legacy reader only knows LHS nodes), so this test checks stability
+     * and structure instead of a canonical comparison against the RAW
+     * reference.
+     */
+    @Test
+    public void testLegacyConflictsDependenciesComputedPacRoundtrip() throws Exception {
+        File refFile = prepCpxFile("gen_conflicts_computed_pac.cpx");
+
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getExcludePairContainer(),
+            "DOM .cpx load should create the conflict container");
+        assertEquals(countOverlappingPairs(cdc.getExcludePairContainer()), 1,
+            "DOM .cpx load should restore the PAC conflict overlap");
+
+        Map<?, ?> secondPart = cdc.getExcludePairContainer()
+            .getExcludeContainer().values().iterator().next();
+        agg.util.Pair<?, ?> p =
+            (agg.util.Pair<?, ?>) secondPart.values().iterator().next();
+        List<?> overlaps = (List<?>) p.second;
+        assertEquals(overlaps.size(), 1,
+            "one PAC overlap should be restored");
+        agg.util.Pair<?, ?> p2i = (agg.util.Pair<?, ?>) overlaps.get(0);
+        assertNotNull(p2i.second,
+            "the PAC overlap should restore the (embedPac, morphL2PACiso) pair");
+        agg.util.Pair<?, ?> p1 = (agg.util.Pair<?, ?>) p2i.first;
+        agg.xt_basis.OrdinaryMorphism second =
+            (agg.xt_basis.OrdinaryMorphism) p1.second;
+        assertEquals(second.getSize(), 2,
+            "the lossy PAC read should keep the 2 LHS mappings of the"
+                + " second morphism");
+
+        // Save, reload, save: the DOM output must be stable
+        File outputFile = new File(outputDir, "conflicts_computed_pac_dom.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outputFile.getAbsolutePath()),
+            "DOM .cpx save should succeed");
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outputFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "conflicts_computed_pac_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .cpx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outputFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the PAC computed .cpx: "
+                + stableResult.getMessage());
     }
 }

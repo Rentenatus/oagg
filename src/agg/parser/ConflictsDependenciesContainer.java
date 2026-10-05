@@ -162,6 +162,16 @@ public class ConflictsDependenciesContainer implements XMLObject {
     }
 
     /**
+     * Installs the CPA basis graph restored by an external reader (the DOM
+     * load path of the agg-xml module). The graph is only set when the file
+     * actually contains a ConflictDependencyGraph section, unlike the
+     * legacy reader, which always creates an empty graph.
+     */
+    public void setCPABasisGraph(final Graph cpaBasisGraph) {
+        this.cpaBasisGraph = cpaBasisGraph;
+    }
+
+    /**
      * Installs the containers restored by an external reader (the DOM load
      * path of the agg-xml module). Mirrors the container creation of the
      * legacy XreadObject, which writes the private container fields

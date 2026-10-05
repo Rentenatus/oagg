@@ -22,6 +22,7 @@ import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
+import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
@@ -678,6 +679,437 @@ public final class TestDataGenerator {
         ExcludePairContainer excludePC = new ExcludePairContainer(gra);
         DependencyPairContainer depPC = new DependencyPairContainer(gra);
         return new ConflictsDependenciesContainer(excludePC, depPC);
+    }
+
+    // ---- Group 7b: computed critical pairs ----
+
+    /**
+     * Creates a GraGra whose rules yield delete-use conflicts and
+     * produce-deliver dependencies when the CPA engine runs.
+     */
+    public static GraGra createCpaGraGra() throws Exception {
+        return createCpaGraGra(false);
+    }
+
+    /**
+     * Creates a GraGra whose rules yield delete-use conflicts and
+     * produce-deliver dependencies when the CPA engine runs.
+     *
+     * @param withTypeGraph whether to create a type graph
+     */
+    public static GraGra createCpaGraGra(boolean withTypeGraph) throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("CpaComputedTest");
+
+        Type itemType = gra.createNodeType(false);
+        itemType.setStringRepr("Item");
+        if (withTypeGraph) {
+            Graph typeGraph = gra.createTypeGraph();
+            typeGraph.createNode(itemType);
+        }
+
+        // useItem: Item -> Item (identity mapping)
+        Rule useItem = gra.createRule();
+        useItem.setName("useItem");
+        Node useLhs = useItem.getLeft().createNode(itemType);
+        Node useRhs = useItem.getTarget().createNode(itemType);
+        useItem.addMapping(useLhs, useRhs);
+
+        // deleteItem: Item -> (empty)
+        Rule deleteItem = gra.createRule();
+        deleteItem.setName("deleteItem");
+        deleteItem.getLeft().createNode(itemType);
+
+        // createItem: Item -> Item, Item (produces a second Item)
+        Rule createItem = gra.createRule();
+        createItem.setName("createItem");
+        Node createLhs = createItem.getLeft().createNode(itemType);
+        Node createRhs1 = createItem.getTarget().createNode(itemType);
+        createItem.getTarget().createNode(itemType);
+        createItem.addMapping(createLhs, createRhs1);
+
+        gra.addRule(useItem);
+        gra.addRule(deleteItem);
+        gra.addRule(createItem);
+        return gra;
+    }
+
+    /**
+     * Creates a GraGra whose rules yield produce-forbid conflicts backed by
+     * a NAC overlap (exercises the NAC+LHS morphism branches of the .cpx
+     * format).
+     */
+    public static GraGra createCpaNacGraGra() throws Exception {
+        return createCpaNacGraGra(false);
+    }
+
+    /**
+     * Creates a GraGra whose rules yield produce-forbid conflicts backed by
+     * a NAC overlap (exercises the NAC+LHS morphism branches of the .cpx
+     * format).
+     *
+     * @param withTypeGraph whether to create a type graph
+     */
+    public static GraGra createCpaNacGraGra(boolean withTypeGraph) throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("CpaNacComputedTest");
+
+        Type nodeType = gra.createNodeType(false);
+        nodeType.setStringRepr("Item");
+        Type linkType = gra.createArcType(false);
+        linkType.setStringRepr("link");
+        if (withTypeGraph) {
+            Graph typeGraph = gra.createTypeGraph();
+            Node tgN1 = typeGraph.createNode(nodeType);
+            Node tgN2 = typeGraph.createNode(nodeType);
+            typeGraph.createArc(linkType, tgN1, tgN2);
+        }
+
+        // makeLink: {a, b} -> {a, b, a-link->b}
+        Rule makeLink = gra.createRule();
+        makeLink.setName("makeLink");
+        Node lhsA = makeLink.getLeft().createNode(nodeType);
+        Node lhsB = makeLink.getLeft().createNode(nodeType);
+        Node rhsA = makeLink.getTarget().createNode(nodeType);
+        Node rhsB = makeLink.getTarget().createNode(nodeType);
+        makeLink.addMapping(lhsA, rhsA);
+        makeLink.addMapping(lhsB, rhsB);
+        makeLink.getTarget().createArc(linkType, rhsA, rhsB);
+
+        // forbidLink: {a, b} -> {a, b} with NAC {a, b, a-link->b}
+        Rule forbidLink = gra.createRule();
+        forbidLink.setName("forbidLink");
+        Node fLhsA = forbidLink.getLeft().createNode(nodeType);
+        Node fLhsB = forbidLink.getLeft().createNode(nodeType);
+        Node fRhsA = forbidLink.getTarget().createNode(nodeType);
+        Node fRhsB = forbidLink.getTarget().createNode(nodeType);
+        forbidLink.addMapping(fLhsA, fRhsA);
+        forbidLink.addMapping(fLhsB, fRhsB);
+        OrdinaryMorphism nac = forbidLink.createNAC();
+        nac.setName("forbidLinkNac");
+        Node nacA = nac.getTarget().createNode(nodeType);
+        Node nacB = nac.getTarget().createNode(nodeType);
+        nac.addMapping(fLhsA, nacA);
+        nac.addMapping(fLhsB, nacB);
+        nac.getTarget().createArc(linkType, nacA, nacB);
+        forbidLink.addNAC(nac);
+
+        gra.addRule(makeLink);
+        gra.addRule(forbidLink);
+        return gra;
+    }
+
+    /**
+     * Creates a GraGra whose rules yield a produce-forbid conflict backed by
+     * a PAC overlap (exercises the PAC+LHS morphism branches of the .cpx
+     * format).
+     */
+    public static GraGra createCpaPacGraGra() throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("CpaPacComputedTest");
+
+        Type nodeType = gra.createNodeType(false);
+        nodeType.setStringRepr("Item");
+        Type linkType = gra.createArcType(false);
+        linkType.setStringRepr("link");
+
+        // makeLinkPac: {a, b} -> {a, b, a-link->b}
+        Rule makeLinkPac = gra.createRule();
+        makeLinkPac.setName("makeLinkPac");
+        Node lhsA = makeLinkPac.getLeft().createNode(nodeType);
+        Node lhsB = makeLinkPac.getLeft().createNode(nodeType);
+        Node rhsA = makeLinkPac.getTarget().createNode(nodeType);
+        Node rhsB = makeLinkPac.getTarget().createNode(nodeType);
+        makeLinkPac.addMapping(lhsA, rhsA);
+        makeLinkPac.addMapping(lhsB, rhsB);
+        makeLinkPac.getTarget().createArc(linkType, rhsA, rhsB);
+
+        // needLinkPac: {a, b} -> {a, b} with PAC {a, b, a-link->b}
+        Rule needLinkPac = gra.createRule();
+        needLinkPac.setName("needLinkPac");
+        Node nLhsA = needLinkPac.getLeft().createNode(nodeType);
+        Node nLhsB = needLinkPac.getLeft().createNode(nodeType);
+        Node nRhsA = needLinkPac.getTarget().createNode(nodeType);
+        Node nRhsB = needLinkPac.getTarget().createNode(nodeType);
+        needLinkPac.addMapping(nLhsA, nRhsA);
+        needLinkPac.addMapping(nLhsB, nRhsB);
+        OrdinaryMorphism pac = needLinkPac.createPAC();
+        pac.setName("needLinkPacPac");
+        Node pacA = pac.getTarget().createNode(nodeType);
+        Node pacB = pac.getTarget().createNode(nodeType);
+        pac.addMapping(nLhsA, pacA);
+        pac.addMapping(nLhsB, pacB);
+        pac.getTarget().createArc(linkType, pacA, pacB);
+        needLinkPac.addPAC(pac);
+
+        gra.addRule(makeLinkPac);
+        gra.addRule(needLinkPac);
+        return gra;
+    }
+
+    /**
+     * Creates a ConflictsDependenciesContainer with synthetic computed
+     * conflict and dependency entries (Overlapping_Pair content).
+     *
+     * <p>The CPA engine of this code base cannot produce pair entries (its
+     * inclusion helper never adds the generated inclusions to the result),
+     * so the entries are constructed synthetically. The structures mirror
+     * exactly what the .cpx reader reconstructs, so the legacy writer and
+     * the DOM writer serialize them identically.</p>
+     */
+    public static ConflictsDependenciesContainer createComputedConflictsDependenciesContainer(GraGra gra) throws Exception {
+        ExcludePairContainer excludePC = new ExcludePairContainer(gra);
+        DependencyPairContainer depPC = new DependencyPairContainer(gra);
+        java.util.List<Rule> rules = gra.getListOfRules();
+        excludePC.setRules(rules, rules);
+        depPC.setRules(rules, rules);
+        if ("CpaNacComputedTest".equals(gra.getName())) {
+            addNacConflictEntry(excludePC, gra);
+        } else if ("CpaPacComputedTest".equals(gra.getName())) {
+            addPacConflictEntry(excludePC, gra);
+        } else {
+            addPlainConflictEntries(excludePC, gra);
+            addPlainDependencyEntries(depPC, gra);
+        }
+        return new ConflictsDependenciesContainer(excludePC, depPC);
+    }
+
+    private static Rule findRule(GraGra gra, String name) {
+        for (Rule rule : gra.getListOfRules()) {
+            if (name.equals(rule.getName())) {
+                return rule;
+            }
+        }
+        return null;
+    }
+
+    private static void addPlainConflictEntries(ExcludePairContainer pc, GraGra gra) throws Exception {
+        Rule deleteItem = findRule(gra, "deleteItem");
+        Rule useItem = findRule(gra, "useItem");
+        Rule createItem = findRule(gra, "createItem");
+
+        // deleteItem x useItem: delete-use overlap with one critical node
+        Graph duOverlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        duOverlap.setName("delete-use-conflict");
+        Node duNode = duOverlap.createNode(
+            deleteItem.getLeft().getNodesSet().iterator().next().getType());
+        duNode.setCritical(true);
+        OrdinaryMorphism duFirst = BaseFactory.theFactory().createMorphism(
+            deleteItem.getLeft(), duOverlap);
+        duFirst.addMapping(deleteItem.getLeft().getNodesSet().iterator().next(), duNode);
+        duFirst.setName("first");
+        OrdinaryMorphism duSecond = BaseFactory.theFactory().createMorphism(
+            useItem.getLeft(), duOverlap);
+        duSecond.addMapping(useItem.getLeft().getNodesSet().iterator().next(), duNode);
+        duSecond.setName("second");
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> duOverlaps
+            = new ArrayList<>();
+        duOverlaps.add(new Pair<>(new Pair<>(duFirst, duSecond), null));
+        pc.addQuadruple(pc.getExcludeContainer(), deleteItem, useItem, true, duOverlaps);
+        pc.getEntry(deleteItem, useItem);
+        pc.addQuadruple(pc.getConflictFreeContainer(), useItem, deleteItem, true, null);
+        pc.getEntry(useItem, deleteItem);
+
+        // createItem x useItem: produce-forbid overlap (plain, no NAC pair)
+        Graph pfOverlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        pfOverlap.setName("produce-forbid-conflict");
+        Node pfNode = pfOverlap.createNode(
+            useItem.getLeft().getNodesSet().iterator().next().getType());
+        OrdinaryMorphism pfFirst = BaseFactory.theFactory().createMorphism(
+            createItem.getRight(), pfOverlap);
+        for (Node rhsNode : createItem.getRight().getNodesSet()) {
+            pfFirst.addMapping(rhsNode, pfNode);
+        }
+        pfFirst.setName("first");
+        OrdinaryMorphism pfSecond = BaseFactory.theFactory().createMorphism(
+            useItem.getLeft(), pfOverlap);
+        pfSecond.addMapping(useItem.getLeft().getNodesSet().iterator().next(), pfNode);
+        pfSecond.setName("second");
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> pfOverlaps
+            = new ArrayList<>();
+        pfOverlaps.add(new Pair<>(new Pair<>(pfFirst, pfSecond), null));
+        pc.addQuadruple(pc.getExcludeContainer(), createItem, useItem, true, pfOverlaps);
+        pc.getEntry(createItem, useItem);
+    }
+
+    private static void addPlainDependencyEntries(DependencyPairContainer pc, GraGra gra) throws Exception {
+        Rule deleteItem = findRule(gra, "deleteItem");
+        Rule useItem = findRule(gra, "useItem");
+        Rule createItem = findRule(gra, "createItem");
+
+        // createItem x deleteItem: deliver-delete overlap
+        Graph ddOverlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        ddOverlap.setName("deliver-delete-dependency");
+        Node ddNode = ddOverlap.createNode(
+            deleteItem.getLeft().getNodesSet().iterator().next().getType());
+        OrdinaryMorphism ddFirst = BaseFactory.theFactory().createMorphism(
+            createItem.getRight(), ddOverlap);
+        for (Node rhsNode : createItem.getRight().getNodesSet()) {
+            ddFirst.addMapping(rhsNode, ddNode);
+        }
+        ddFirst.setName("first");
+        OrdinaryMorphism ddSecond = BaseFactory.theFactory().createMorphism(
+            deleteItem.getLeft(), ddOverlap);
+        ddSecond.addMapping(deleteItem.getLeft().getNodesSet().iterator().next(), ddNode);
+        ddSecond.setName("second");
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> ddOverlaps
+            = new ArrayList<>();
+        ddOverlaps.add(new Pair<>(new Pair<>(ddFirst, ddSecond), null));
+        pc.addQuadruple(pc.getExcludeContainer(), createItem, deleteItem, true, ddOverlaps);
+        pc.getEntry(createItem, deleteItem);
+
+        // createItem x useItem: deliver-delete overlap (second pair)
+        Graph duOverlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        duOverlap.setName("deliver-delete-dependency");
+        Node duNode = duOverlap.createNode(
+            useItem.getLeft().getNodesSet().iterator().next().getType());
+        OrdinaryMorphism duFirst = BaseFactory.theFactory().createMorphism(
+            createItem.getRight(), duOverlap);
+        for (Node rhsNode : createItem.getRight().getNodesSet()) {
+            duFirst.addMapping(rhsNode, duNode);
+        }
+        duFirst.setName("first");
+        OrdinaryMorphism duSecond = BaseFactory.theFactory().createMorphism(
+            useItem.getLeft(), duOverlap);
+        duSecond.addMapping(useItem.getLeft().getNodesSet().iterator().next(), duNode);
+        duSecond.setName("second");
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> duOverlaps
+            = new ArrayList<>();
+        duOverlaps.add(new Pair<>(new Pair<>(duFirst, duSecond), null));
+        pc.addQuadruple(pc.getExcludeContainer(), createItem, useItem, true, duOverlaps);
+        pc.getEntry(createItem, useItem);
+
+        // useItem x deleteItem: non-critical pair (bool=false)
+        pc.addQuadruple(pc.getExcludeContainer(), useItem, deleteItem, false, null);
+        pc.getEntry(useItem, deleteItem);
+
+        // dependency-free entry marked as not computable
+        pc.addQuadruple(pc.getConflictFreeContainer(), deleteItem, createItem, true, null);
+        ExcludePairContainer.Entry ddEntry = pc.getEntry(deleteItem, createItem);
+        ddEntry.setStatus(ExcludePairContainer.Entry.NOT_COMPUTABLE);
+    }
+
+    private static void addNacConflictEntry(ExcludePairContainer pc, GraGra gra) throws Exception {
+        Rule makeLink = findRule(gra, "makeLink");
+        Rule forbidLink = findRule(gra, "forbidLink");
+        OrdinaryMorphism nac = forbidLink.getNACsList().get(0);
+
+        // extend the LHS of r2 by the NAC (mirrors the .cpx reader)
+        Pair<OrdinaryMorphism, OrdinaryMorphism> nacLhs =
+            BaseFactory.theFactory().extendLeftGraphByNAC(forbidLink, nac);
+        OrdinaryMorphism morphL2iso = nacLhs.first;
+        OrdinaryMorphism morphNACiso = nacLhs.second;
+        Graph extLeft = morphL2iso.getTarget();
+
+        // the extended LHS contains exactly one arc (from the NAC)
+        Arc extArc = extLeft.getArcsSet().iterator().next();
+        Node extSrc = (Node) extArc.getSource();
+        Node extTar = (Node) extArc.getTarget();
+
+        // overlap graph: one critical arc plus its endpoints
+        Graph overlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        overlap.setName("produce-forbid-conflict");
+        overlap.setHelpInfo("NAC:" + nac.getName());
+        Node ovSrc = overlap.createNode(extSrc.getType());
+        Node ovTar = overlap.createNode(extTar.getType());
+        Arc ovArc = overlap.createArc(extArc.getType(), ovSrc, ovTar);
+        ovArc.setCritical(true);
+        ovSrc.setCritical(true);
+
+        // second morphism: extended LHS -> overlap
+        OrdinaryMorphism second = BaseFactory.theFactory().createMorphism(extLeft, overlap);
+        second.addMapping(extSrc, ovSrc);
+        second.addMapping(extTar, ovTar);
+        second.addMapping(extArc, ovArc);
+        second.setName("second");
+
+        // first morphism: RHS of r1 -> overlap
+        Arc rhsArc = makeLink.getRight().getArcsSet().iterator().next();
+        OrdinaryMorphism first = BaseFactory.theFactory().createMorphism(
+            makeLink.getRight(), overlap);
+        first.addMapping((Node) rhsArc.getSource(), ovSrc);
+        first.addMapping((Node) rhsArc.getTarget(), ovTar);
+        first.addMapping(rhsArc, ovArc);
+        first.setName("first");
+
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps
+            = new ArrayList<>();
+        overlaps.add(new Pair<>(new Pair<>(first, second),
+            new Pair<>(morphL2iso, morphNACiso)));
+        pc.addQuadruple(pc.getExcludeContainer(), makeLink, forbidLink, true, overlaps);
+        pc.getEntry(makeLink, forbidLink);
+    }
+
+    private static void addPacConflictEntry(ExcludePairContainer pc, GraGra gra) throws Exception {
+        Rule makeLinkPac = findRule(gra, "makeLinkPac");
+        Rule needLinkPac = findRule(gra, "needLinkPac");
+        OrdinaryMorphism pac = needLinkPac.getPACsList().get(0);
+
+        // extend the LHS of r2 by the PAC (mirrors the .cpx reader)
+        OrdinaryMorphism morphL2iso = needLinkPac.getLeft().isoCopy();
+        Graph extLeft = morphL2iso.getTarget();
+        Arc pacArc = pac.getTarget().getArcsSet().iterator().next();
+        Node pacSrc = (Node) pacArc.getSource();
+        Node pacTar = (Node) pacArc.getTarget();
+        Node extSrc = null;
+        Node extTar = null;
+        for (java.util.Iterator<GraphObject> dom = pac.getDomain(); dom.hasNext();) {
+            GraphObject lhsObj = dom.next();
+            GraphObject pacImg = pac.getImage(lhsObj);
+            if (pacImg == pacSrc) {
+                extSrc = (Node) morphL2iso.getImage(lhsObj);
+            } else if (pacImg == pacTar) {
+                extTar = (Node) morphL2iso.getImage(lhsObj);
+            }
+        }
+        Arc extArc = extLeft.createArc(pacArc.getType(), extSrc, extTar);
+
+        // embedPac: PAC graph -> extended LHS
+        OrdinaryMorphism embedPac = BaseFactory.theFactory().createMorphism(
+            pac.getTarget(), extLeft);
+        embedPac.addMapping(pacSrc, extSrc);
+        embedPac.addMapping(pacTar, extTar);
+        embedPac.addMapping(pacArc, extArc);
+
+        // overlap graph: one critical arc plus its endpoints
+        Graph overlap = BaseFactory.theFactory().createGraph(gra.getTypeSet());
+        overlap.setName("delete-need(PAC:" + pac.getName() + ")");
+        overlap.setHelpInfo("PAC:" + pac.getName());
+        Node ovSrc = overlap.createNode(extSrc.getType());
+        Node ovTar = overlap.createNode(extTar.getType());
+        Arc ovArc = overlap.createArc(pacArc.getType(), ovSrc, ovTar);
+        ovArc.setCritical(true);
+
+        // morphL2PACiso: extended LHS -> overlap
+        OrdinaryMorphism morphL2PACiso = BaseFactory.theFactory().createMorphism(extLeft, overlap);
+        morphL2PACiso.addMapping(extSrc, ovSrc);
+        morphL2PACiso.addMapping(extTar, ovTar);
+        morphL2PACiso.addMapping(extArc, ovArc);
+
+        // second morphism: LHS of r2 -> overlap
+        OrdinaryMorphism second = BaseFactory.theFactory().createMorphism(
+            needLinkPac.getLeft(), overlap);
+        for (java.util.Iterator<GraphObject> dom = pac.getDomain(); dom.hasNext();) {
+            GraphObject lhsObj = dom.next();
+            second.addMapping(lhsObj, morphL2PACiso.getImage(morphL2iso.getImage(lhsObj)));
+        }
+        second.setName("second");
+
+        // first morphism: RHS of r1 -> overlap
+        Arc rhsArc = makeLinkPac.getRight().getArcsSet().iterator().next();
+        OrdinaryMorphism first = BaseFactory.theFactory().createMorphism(
+            makeLinkPac.getRight(), overlap);
+        first.addMapping((Node) rhsArc.getSource(), ovSrc);
+        first.addMapping((Node) rhsArc.getTarget(), ovTar);
+        first.addMapping(rhsArc, ovArc);
+        first.setName("first");
+
+        java.util.List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps
+            = new ArrayList<>();
+        overlaps.add(new Pair<>(new Pair<>(first, second),
+            new Pair<>(embedPac, morphL2PACiso)));
+        pc.addQuadruple(pc.getExcludeContainer(), makeLinkPac, needLinkPac, true, overlaps);
+        pc.getEntry(makeLinkPac, needLinkPac);
     }
 
     // ---- Helpers ----

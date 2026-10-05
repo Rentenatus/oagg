@@ -3,6 +3,8 @@
 **Date:** 2026-10-04
 **Scope:** Roadmap steps 2 and 3 from [CURRENT_STATUS.md](CURRENT_STATUS.md) - remove the RuleScheme legacy delegation and bring `.rsx`/`.cpx` onto the DOM path with canonical verification. These are the preconditions for roadmap step 4 (removing the legacy XML code from `src`).
 
+**Status (2026-10-05): all three parts are done.** Part A (native RuleScheme) and Part B (`.rsx`) landed with the commits up to `Serialize ApplRuleSequence natively in the DOM path`; Part C (`.cpx`, structural + computed pair entries including NAC/PAC overlaps) is complete, including canonical verification against the raw legacy references and the in-memory save. The remaining `.cpx` scope limits (old-style `source=""` morphisms, layered/priority container fixtures, the lossy PAC reconstruction inherited from the legacy reader) are documented in [CURRENT_STATUS.md](CURRENT_STATUS.md). Roadmap step 3 is closed; step 1 (GUI wiring) is next before the step 4 removal slices.
+
 ---
 
 ## Part A - Native RuleScheme (remove the legacy delegation)

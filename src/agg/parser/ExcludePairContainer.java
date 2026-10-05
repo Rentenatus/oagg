@@ -96,6 +96,39 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             return this.status;
         }
 
+        /**
+         * Gets the delete-use progress index string of this entry as it is
+         * serialized by the .cpx writer. Used by the DOM-based serialization.
+         */
+        public String getIndexOfDelUseProgress() {
+            return this.duIndxStr;
+        }
+
+        /**
+         * Gets the produce-forbid progress index string of this entry as it
+         * is serialized by the .cpx writer.
+         */
+        public String getIndexOfProdForbidProgress() {
+            return this.pfIndxStr;
+        }
+
+        /**
+         * Gets the change-attribute progress index string of this entry as
+         * it is serialized by the .cpx writer.
+         */
+        public String getIndexOfChangeAttrProgress() {
+            return this.caIndxStr;
+        }
+
+        /**
+         * Sets the state directly, without the live-computation guard of
+         * {@link #setState}. Used by the serialization to restore the
+         * DISABLED and NOT_RELATED states of loaded entries.
+         */
+        public void setLoadedState(int s) {
+            this.state = s;
+        }
+
         public List<?> getOverlapping() {
             return this.overlapping;
         }
@@ -1525,6 +1558,37 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         this.maxBoundOfCriticKind = op.getMaxBoundOfCriticKind();
     }
 
+    /**
+     * Returns the current CPA option values of this container as name/value
+     * pairs, mirroring the option attributes of the .cpx writer. Used by
+     * the DOM-based serialization to write containers whose options were
+     * not restored from a file.
+     */
+    public List<Pair<String, String>> getCPAOptions() {
+        List<Pair<String, String>> options = new Vector<>(10);
+        options.add(new Pair<>(CriticalPairOption.COMPLETE,
+                String.valueOf(this.complete)));
+        options.add(new Pair<>(CriticalPairOption.CONSISTENT,
+                String.valueOf(this.consistent)));
+        options.add(new Pair<>(CriticalPairOption.STRONG_ATTR_CHECK,
+                String.valueOf(this.strongAttrCheck)));
+        options.add(new Pair<>(CriticalPairOption.IGNORE_SAME_MATCH,
+                String.valueOf(this.reduceSameMatch)));
+        options.add(new Pair<>(CriticalPairOption.IGNORE_SAME_RULE,
+                String.valueOf(this.ignoreIdenticalRules)));
+        options.add(new Pair<>(CriticalPairOption.ESSENTIAL,
+                String.valueOf(this.reduce)));
+        options.add(new Pair<>(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT,
+                String.valueOf(this.directStrctCnfl)));
+        options.add(new Pair<>(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT_UPTOISO,
+                String.valueOf(this.directStrctCnflUpToIso)));
+        options.add(new Pair<>(CriticalPairOption.NAMED_OBJECT,
+                String.valueOf(this.namedObjectOnly)));
+        options.add(new Pair<>(CriticalPairOption.MAX_BOUND_CRITIC_CAUSE,
+                String.valueOf(this.maxBoundOfCriticKind)));
+        return options;
+    }
+
     protected synchronized boolean computeCritical(Rule r1, Rule r2, Graph g) {
         int state = this.getEntry(r1, r2).state;
         if (state == Entry.COMPUTED
@@ -1561,7 +1625,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param overlapping The set of overlapping graphs of the first and second
      * rule.
      */
-    protected synchronized void addQuadruple(
+    public synchronized void addQuadruple(
             final Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
             final Rule r1,
             final Rule r2,
@@ -2621,7 +2685,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return isoNAC;
     }
 
-    protected void resetRules(final List<Rule> list, final List<Rule> list2) {
+    public void resetRules(final List<Rule> list, final List<Rule> list2) {
         if (list != null && !list.isEmpty()) {
             if (this.rules == null) {
                 this.rules = new Vector<Rule>();

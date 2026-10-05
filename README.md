@@ -70,13 +70,16 @@ model during load:
 | Atomic constraint graphs renamed to `Premise/Conclusion of <name>` | names preserved from the file |
 | `LayoutNode.frozen` re-derived from `age` (ignores the `frozen` attribute) | value preserved from the file |
 
-Exception: the RuleScheme section is loaded through the legacy reader by the
-core path (temp GraGra load in `GraGraAdapter`), so its roundtrip shows those
-renames. Like the core suite, the UI tests verify RuleScheme scenarios
-structurally plus DOM stability over two roundtrips instead of a canonical
-comparison against the fresh reference.
+Since the native RuleScheme serialization, the RuleScheme scenarios are also
+compared canonically. The `.cpx` format adds two legacy reader effects the DOM
+path does not replicate: the legacy reader always creates an empty CPA basis
+graph (so the legacy re-save writes an extra empty `ConflictDependencyGraph`
+section), and the PAC overlap reconstruction is lossy (the `pacname` mapping
+of a pure PAC arc is dropped, same as in the legacy reader). Computed-pair
+`.cpx` fixtures are therefore compared against the raw reference (plain and
+NAC) or verified for stability and structure (PAC).
 
-**Test coverage:** 497 tests green (preparation 16, core DOM 474, UI 7). The
+**Test coverage:** 507 tests green (preparation 17, core DOM 483, UI 7). The
 generated scenario matrix is complete: 7 features (basic graph with attributes,
 rule with NAC/PAC/nested AC, constraints, match, rule scheme, rule sequence,
 composite of all) crossed with directed/undirected and with/without type

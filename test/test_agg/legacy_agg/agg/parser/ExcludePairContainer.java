@@ -1561,7 +1561,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param overlapping The set of overlapping graphs of the first and second
      * rule.
      */
-    protected synchronized void addQuadruple(
+    public synchronized void addQuadruple(
             final Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
             final Rule r1,
             final Rule r2,
@@ -2621,7 +2621,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return isoNAC;
     }
 
-    protected void resetRules(final List<Rule> list, final List<Rule> list2) {
+    public void resetRules(final List<Rule> list, final List<Rule> list2) {
         if (list != null && !list.isEmpty()) {
             if (this.rules == null) {
                 this.rules = new Vector<Rule>();

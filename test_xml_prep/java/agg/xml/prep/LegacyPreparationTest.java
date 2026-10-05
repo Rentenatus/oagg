@@ -247,6 +247,79 @@ public class LegacyPreparationTest {
         helper2.getTopObject(reloaded);
     }
 
+    /**
+     * Produces reference .cpx files with computed critical pairs
+     * (Overlapping_Pair content) written by the frozen legacy saver,
+     * plus a re-saved reference (legacy load + legacy save) that the DOM
+     * side compares against after loading the raw reference.
+     */
+    @Test
+    public void prepareConflictsDependenciesComputed() throws Exception {
+        GraGra plainGra = TestDataGenerator.createCpaGraGra();
+        writeComputedCpxReferences(plainGra, "gen_conflicts_computed.cpx", true);
+
+        GraGra nacGra = TestDataGenerator.createCpaNacGraGra();
+        writeComputedCpxReferences(nacGra, "gen_conflicts_computed_nac.cpx", false);
+
+        GraGra pacGra = TestDataGenerator.createCpaPacGraGra();
+        writeComputedCpxReferences(pacGra, "gen_conflicts_computed_pac.cpx", false);
+    }
+
+    private void writeComputedCpxReferences(GraGra gra, String filename,
+            boolean requireDependencies) throws Exception {
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createComputedConflictsDependenciesContainer(gra);
+        assertTrue(countComputedPairs(cdc.getExcludePairContainer()) > 0,
+            "Conflict computation should produce critical pairs for "
+                + gra.getName());
+        if (requireDependencies) {
+            assertTrue(countComputedPairs(cdc.getDependencyPairContainer()) > 0,
+                "Dependency computation should produce critical pairs for "
+                    + gra.getName());
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(cdc);
+        File cpxFile = new File(prepDir, filename);
+        assertTrue(helper.save_to_xml(cpxFile.getAbsolutePath()),
+            "Frozen legacy .cpx save should succeed for " + filename);
+        assertTrue(cpxFile.exists() && cpxFile.length() > 0,
+            "Reference .cpx should be non-empty: " + filename);
+
+        // Re-saved reference: frozen legacy load + legacy save of the same
+        // state. The DOM test loads the raw reference and compares its save
+        // canonically against this file.
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLHelper loadHelper = new XMLHelper();
+        assertTrue(loadHelper.read_from_xml(cpxFile.getAbsolutePath()),
+            "Frozen legacy .cpx load should succeed for " + filename);
+        loadHelper.getTopObject(reloaded);
+        XMLHelper resaveHelper = new XMLHelper();
+        resaveHelper.addTopObject(reloaded);
+        File resavedFile = new File(prepDir,
+            filename.replace(".cpx", "_resaved.cpx"));
+        assertTrue(resaveHelper.save_to_xml(resavedFile.getAbsolutePath()),
+            "Frozen legacy .cpx re-save should succeed for " + filename);
+        assertTrue(resavedFile.exists() && resavedFile.length() > 0,
+            "Re-saved .cpx reference should be non-empty: " + filename);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static int countComputedPairs(agg.parser.ExcludePairContainer pc) {
+        int count = 0;
+        for (Object outer : pc.getExcludeContainer().values()) {
+            for (Object inner : ((java.util.Map) outer).values()) {
+                agg.util.Pair p = (agg.util.Pair) inner;
+                if (Boolean.TRUE.equals(p.first)
+                        && p.second != null && !((java.util.List) p.second).isEmpty()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     // ---- Morphism matrix scenarios ----
 
     /**

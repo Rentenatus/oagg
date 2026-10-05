@@ -52,8 +52,20 @@ public final class XmlCanonicalComparator {
 
     /** Attributes that reference object IDs (point to generated IDs). */
     private static final java.util.Set<String> REF_ATTRS = java.util.Set.of(
-        "type", "source", "target", "orig", "image", "id", "Rule"
+        "type", "source", "target", "orig", "image", "id", "Rule",
+        "R1", "R2", "object"
     );
+
+    /**
+     * Whether the attribute with the given name holds an object ID
+     * reference. Covers the fixed reference attributes and the indexed
+     * rule references of the .cpx rule sets (i0, i1, ...).
+     */
+    private static boolean isRefAttr(String name) {
+        return REF_ATTRS.contains(name)
+            || (name.length() == 2 && name.charAt(0) == 'i'
+                && Character.isDigit(name.charAt(1)));
+    }
 
     private XmlCanonicalComparator() {
     }
@@ -187,7 +199,7 @@ public final class XmlCanonicalComparator {
             if (ID_ATTR.equals(name)) {
                 continue; // skip ID for sorting
             }
-            if (REF_ATTRS.contains(name)) {
+            if (isRefAttr(name)) {
                 if (!includeRefs) {
                     continue; // skip raw references in the first iteration
                 }
@@ -298,7 +310,7 @@ public final class XmlCanonicalComparator {
         for (int i = 0; i < elem.getAttributes().getLength(); i++) {
             Node attr = elem.getAttributes().item(i);
             String name = attr.getNodeName();
-            if (!ID_ATTR.equals(name) && !REF_ATTRS.contains(name)) {
+            if (!ID_ATTR.equals(name) && !isRefAttr(name)) {
                 String value = attr.getNodeValue();
                 if ("name".equals(name)) {
                     // Normalize :: to : (legacy XreadObject does this replacement
@@ -359,7 +371,7 @@ public final class XmlCanonicalComparator {
         for (int i = 0; i < elem.getAttributes().getLength(); i++) {
             Node attr = elem.getAttributes().item(i);
             String name = attr.getNodeName();
-            if (!ID_ATTR.equals(name) && !REF_ATTRS.contains(name)) {
+            if (!ID_ATTR.equals(name) && !isRefAttr(name)) {
                 String value = attr.getNodeValue();
                 if ("name".equals(name)) {
                     value = value.replace("::", ":");
@@ -404,7 +416,7 @@ public final class XmlCanonicalComparator {
             String value = attr.getNodeValue();
             if (ID_ATTR.equals(name)) {
                 value = idMap.getOrDefault(value, value);
-            } else if (REF_ATTRS.contains(name)) {
+            } else if (isRefAttr(name)) {
                 value = idMap.getOrDefault(value, value);
             } else if ("name".equals(name)) {
                 // Normalize :: to : (legacy XreadObject does this replacement)

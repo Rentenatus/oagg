@@ -318,4 +318,66 @@ public class XmlGeneratedRegressionTest {
                 + refFile.getPath());
         return refFile;
     }
+
+
+    // ---- Group 8: .cpx computed critical pairs (in-memory save) ----
+
+    /**
+     * Saves a freshly generated computed-pairs container with the DOM path
+     * and compares canonically against the RAW legacy reference of the
+     * same generated structure, then reloads and re-saves for stability.
+     * Only the plain and NAC variants are compared against the RAW
+     * reference: the PAC variant is lossy in the reader, so it has no
+     * stable canonical form.
+     */
+    private void runCpaComputedRoundtrip(String baseName, GraGra gra,
+            String refName) throws Exception {
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createComputedConflictsDependenciesContainer(gra);
+
+        // Step 1: save the in-memory container with the DOM path
+        File outFile = new File(outputDir, baseName + "_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outFile.getAbsolutePath()),
+            "DOM .cpx save should succeed: " + baseName);
+        assertTrue(outFile.exists() && outFile.length() > 0,
+            "DOM .cpx output should be non-empty: " + baseName);
+
+        // Step 2: canonical comparison against the RAW legacy reference
+        File refFile = new File(PREP_DIR, refName);
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen reference .cpx is missing (run the legacy preparation"
+                + " suite first): " + refFile.getPath());
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for " + refName + ": "
+                + result.getMessage());
+
+        // Step 3: DOM reload and re-save stability
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        File stableFile = new File(outputDir, baseName + "_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .cpx stability save should succeed: " + baseName);
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for " + baseName + ": "
+                + stableResult.getMessage());
+    }
+
+    @Test
+    public void testCpaComputedPlain() throws Exception {
+        runCpaComputedRoundtrip("cpa_computed_plain",
+            TestDataGenerator.createCpaGraGra(),
+            "gen_conflicts_computed.cpx");
+    }
+
+    @Test
+    public void testCpaComputedNac() throws Exception {
+        runCpaComputedRoundtrip("cpa_computed_nac",
+            TestDataGenerator.createCpaNacGraGra(),
+            "gen_conflicts_computed_nac.cpx");
+    }
 }

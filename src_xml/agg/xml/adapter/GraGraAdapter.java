@@ -524,7 +524,7 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
      * @param typeElem The type DOM element
      * @param registry The ID registry
      */
-    private void loadTypeDetails(Type type, Element typeElem,
+    static void loadTypeDetails(Type type, Element typeElem,
             DOMSerializationRegistry registry) {
         if (type == null || typeElem == null) {
             return;
@@ -852,6 +852,10 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
      * as child elements of the GraphTransformationSystem element.
      */
     private void serializeTaggedValues(GraGra graGra, Document doc, Element gtsElem) {
+        // Mirrors GraGra.saveXML, which always refreshes the used class
+        // packages from the attribute handlers before writing them, so even
+        // fresh in-memory grammars serialize their AttrHandler section.
+        graGra.storeUsedClassPackages();
         // AttrHandler + Packages
         java.util.List<agg.util.Pair<String, java.util.List<String>>> packages = graGra.getPackages();
         if (packages != null) {
