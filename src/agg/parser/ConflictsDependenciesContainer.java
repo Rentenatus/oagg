@@ -154,6 +154,40 @@ public class ConflictsDependenciesContainer implements XMLObject {
     }
 
     /**
+     * Adds a CPA option loaded by an external reader (the DOM load path of
+     * the agg-xml module mirrors the legacy readCPAoptions behaviour).
+     */
+    public void addLoadedCPAOption(final String name, final String value) {
+        this.cpaOptions.add(new Pair<String, String>(name, value));
+    }
+
+    /**
+     * Installs the containers restored by an external reader (the DOM load
+     * path of the agg-xml module). Mirrors the container creation of the
+     * legacy XreadObject, which writes the private container fields
+     * directly.
+     */
+    public void setLoadedContainers(final ExcludePairContainer epc,
+            final DependencyPairContainer dpc, final boolean layered,
+            final boolean priority) {
+        this.epc = epc;
+        this.dpc = dpc;
+        this.layered = layered;
+        this.priority = priority;
+        this.count = 0;
+        if (epc != null) {
+            this.count++;
+            this.pairsGrammar = epc.getGrammar();
+        }
+        if (dpc != null) {
+            this.count++;
+            if (this.pairsGrammar == null) {
+                this.pairsGrammar = dpc.getGrammar();
+            }
+        }
+    }
+
+    /**
      * Writes the contents of this object to a file in a xml format.
      *
      * @param h A helper object for storing.

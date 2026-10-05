@@ -25,13 +25,6 @@ public final class ParserAdapters {
     private ParserAdapters() {
     }
 
-    public static final class ConflictsDependenciesContainerAdapter
-            extends DomainObjectAdapter<ConflictsDependenciesContainer>
- {
-        public ConflictsDependenciesContainerAdapter(ConflictsDependenciesContainer container) { super(container); }
-        public ConflictsDependenciesContainer getContainer() { return getDomainObject(); }
-    }
-
     public static final class DependencyPairContainerAdapter
             extends DomainObjectAdapter<DependencyPairContainer>
  {

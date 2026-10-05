@@ -72,6 +72,13 @@ public class DependencyPairContainer extends ExcludePairContainer {
         return getCriticalPair(r1, r2, getContainer(kind));
     }
 
+    /**
+     * Returns whether the switch dependency variant is enabled.
+     */
+    public boolean isSwitchDependencyEnabled() {
+        return this.switchDependency;
+    }
+
     public void enableSwitchDependency(boolean b) {
         this.switchDependency = b;
         if (this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY && this.switchDependency) {

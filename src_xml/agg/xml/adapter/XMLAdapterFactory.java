@@ -106,7 +106,7 @@ public class XMLAdapterFactory {
         } else if (xmlObject instanceof ApplRuleSequence) {
             return new ApplRuleSequenceAdapter((ApplRuleSequence) xmlObject);
         } else if (xmlObject instanceof ConflictsDependenciesContainer) {
-            return new ParserAdapters.ConflictsDependenciesContainerAdapter((ConflictsDependenciesContainer) xmlObject);
+            return new ConflictsDependenciesContainerAdapter((ConflictsDependenciesContainer) xmlObject);
         } else if (xmlObject instanceof LayeredDependencyPairContainer) {
             return new ParserAdapters.LayeredDependencyPairContainerAdapter((LayeredDependencyPairContainer) xmlObject);
         } else if (xmlObject instanceof LayeredExcludePairContainer) {

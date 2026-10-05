@@ -190,7 +190,7 @@ public class AdapterFactoryTest {
         ConflictsDependenciesContainer container = new ConflictsDependenciesContainer();
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.ConflictsDependenciesContainerAdapter,
+        assertTrue(adapter instanceof ConflictsDependenciesContainerAdapter,
             "ConflictsDependenciesContainer should get ConflictsDependenciesContainerAdapter");
     }
 }

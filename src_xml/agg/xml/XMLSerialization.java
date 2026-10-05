@@ -9,6 +9,7 @@ package agg.xml;
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xml.adapter.ApplRuleSequenceAdapter;
+import agg.xml.adapter.ConflictsDependenciesContainerAdapter;
 import agg.xml.adapter.GraGraAdapter;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializer;
@@ -365,6 +366,65 @@ public final class XMLSerialization {
         ApplRuleSequenceAdapter adapter = new ApplRuleSequenceAdapter(applRuleSeq);
         adapter.deserialize(context);
         return applRuleSeq.getGraGra();
+    }
+
+    // ---- ConflictsDependenciesContainer DOM save/load (.cpx files) ----
+
+    /**
+     * Saves a ConflictsDependenciesContainer directly using the new DOM-based
+     * serialization, bypassing the feature flag.
+     *
+     * <p>Computed critical pair entries are not yet supported by the DOM
+     * path; containers with computed pairs throw
+     * {@link XMLSerializationException}.</p>
+     *
+     * @param container The ConflictsDependenciesContainer to save
+     * @param filename  The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean saveWithDom(agg.parser.ConflictsDependenciesContainer container,
+            String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        try {
+            String outfileName = filename;
+            if (!outfileName.toLowerCase().endsWith(".cpx")) {
+                outfileName = outfileName + ".cpx";
+            }
+            ConflictsDependenciesContainerAdapter adapter =
+                new ConflictsDependenciesContainerAdapter(container);
+            DOMXMLSerializer serializer = new DOMXMLSerializer();
+            serializer.serializeToFile(adapter, new File(outfileName));
+            return true;
+        } catch (XMLSerializationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads a ConflictsDependenciesContainer directly using the new DOM-based
+     * deserialization, bypassing the feature flag.
+     *
+     * @param container The ConflictsDependenciesContainer instance to populate
+     * @param filename  The input filename (.cpx)
+     * @return true if loading succeeded
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public static boolean loadWithDom(agg.parser.ConflictsDependenciesContainer container,
+            String filename) throws XMLSerializationException {
+        if (container == null || filename == null) {
+            return false;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            throw new XMLSerializationException("File not found: " + filename);
+        }
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(f);
+        ConflictsDependenciesContainerAdapter adapter =
+            new ConflictsDependenciesContainerAdapter(container);
+        adapter.deserialize(context);
+        return true;
     }
 
     // ---- ConflictsDependenciesContainer save/load (.cpx files) ----

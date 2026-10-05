@@ -310,29 +310,43 @@ public class LegacyDomRegressionTest {
         File legacyFile = TestDataHelper.resolveLegacy("conflicts_deps.cpx");
         TestDataHelper.requireFile(legacyFile);
 
-        // Load via legacy XMLHelper
+        // Step 1: load the frozen reference with the DOM path
         agg.parser.ConflictsDependenciesContainer cdc =
             new agg.parser.ConflictsDependenciesContainer();
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        assertTrue(helper.read_from_xml(legacyFile.getAbsolutePath()),
-            "Legacy .cpx load should succeed");
-        helper.getTopObject(cdc);
+        XMLSerialization.loadWithDom(cdc, legacyFile.getAbsolutePath());
+        assertNotNull(cdc.getGrammar(),
+            "DOM .cpx load should populate the embedded grammar");
+        assertEquals("BasicGraphTest", cdc.getGrammar().getName(),
+            "DOM .cpx load should restore the grammar name");
+        assertTrue(cdc.getContainerCount() > 0,
+            "DOM .cpx load should create the pair containers");
+        assertFalse(cdc.getLoadedCPAOptions().isEmpty(),
+            "DOM .cpx load should restore the CPA options");
 
-        // Save to output
+        // Step 2: save with the DOM path
         File outputFile = new File(outputDir, "conflicts_deps_dom.cpx");
-        agg.util.XMLHelper helper2 = new agg.util.XMLHelper();
-        helper2.addTopObject(cdc);
-        assertTrue(helper2.save_to_xml(outputFile.getAbsolutePath()),
-            "Legacy .cpx save should succeed");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outputFile.getAbsolutePath()),
+            "DOM .cpx save should succeed");
         assertTrue(outputFile.exists() && outputFile.length() > 0,
             "Output .cpx should be non-empty");
 
-        // Reload and verify structure
+        // Step 3: canonical comparison against the frozen reference
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(legacyFile, outputFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for conflicts_deps.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
         agg.parser.ConflictsDependenciesContainer reloaded =
             new agg.parser.ConflictsDependenciesContainer();
-        agg.util.XMLHelper helper3 = new agg.util.XMLHelper();
-        assertTrue(helper3.read_from_xml(outputFile.getAbsolutePath()),
-            "Legacy .cpx reload should succeed");
-        helper3.getTopObject(reloaded);
+        XMLSerialization.loadWithDom(reloaded, outputFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "conflicts_deps_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .cpx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outputFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for .cpx: " + stableResult.getMessage());
     }
 }
