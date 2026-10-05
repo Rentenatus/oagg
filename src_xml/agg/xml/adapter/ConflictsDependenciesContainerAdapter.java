@@ -625,14 +625,17 @@ public class ConflictsDependenciesContainerAdapter
             registry.registerWithId(container, id);
         }
 
-        // Embedded grammar (mirrors readGrammar)
+        // Embedded grammar (mirrors readGrammar, except that
+        // prepareRuleInfo is deliberately NOT called: it regenerates the
+        // formula attribute of rules with nested ACs (true -> 1, 1&2, ...),
+        // and the DOM path preserves the file values instead, like the
+        // .ggx load path does)
         GraGra grammar = agg.xt_basis.BaseFactory.theFactory().createGraGra();
         Element gtsElem = findChildElement(cpElem, "GraphTransformationSystem");
         if (gtsElem != null) {
             GraGraAdapter graAdapter = new GraGraAdapter(grammar);
             graAdapter.deserializeFromElement(gtsElem, registry);
         }
-        grammar.prepareRuleInfo();
         boolean layered = grammar.isLayered();
         boolean priority = grammar.trafoByPriority();
 
@@ -775,7 +778,11 @@ public class ConflictsDependenciesContainerAdapter
             if (r1 == null) {
                 continue;
             }
-            for (Element r2Elem : childElements(r1Elem, "Rule")) {
+            List<Element> r2Elems = childElements(r1Elem, "Rule");
+            if (r2Elems.isEmpty()) {
+                r2Elems = childElements(r1Elem, "Regel");
+            }
+            for (Element r2Elem : r2Elems) {
                 Rule r2 = (Rule) registry.getObject(r2Elem.getAttribute("R2"));
                 if (r2 == null) {
                     continue;
@@ -848,7 +855,11 @@ public class ConflictsDependenciesContainerAdapter
             if (r1 == null) {
                 continue;
             }
-            for (Element r2Elem : childElements(r1Elem, "Rule")) {
+            List<Element> r2Elems = childElements(r1Elem, "Rule");
+            if (r2Elems.isEmpty()) {
+                r2Elems = childElements(r1Elem, "Regel");
+            }
+            for (Element r2Elem : r2Elems) {
                 Rule r2 = (Rule) registry.getObject(r2Elem.getAttribute("R2"));
                 if (r2 == null) {
                     continue;
@@ -890,10 +901,9 @@ public class ConflictsDependenciesContainerAdapter
                     Graph overlapGraph, DOMSerializationRegistry registry)
             throws XMLSerializationException {
         List<Element> morphismElems = childElements(overlapElem, "Morphism");
-        if (morphismElems.size() < 2) {
+        if (morphismElems.isEmpty()) {
             throw new XMLSerializationException(
-                "Overlapping_Pair needs two Morphism elements (found: "
-                    + morphismElems.size() + ")");
+                "Overlapping_Pair needs at least one Morphism element");
         }
 
         // read first overlap morphism
@@ -927,6 +937,12 @@ public class ConflictsDependenciesContainerAdapter
             if (o != null && i != null) {
                 addOverlapMapping(first, o, i, "first");
             }
+        }
+
+        if (morphismElems.size() < 2) {
+            throw new XMLSerializationException(
+                "Overlapping_Pair needs a second Morphism element (found: "
+                    + morphismElems.size() + ")");
         }
 
         // read second overlap morphism

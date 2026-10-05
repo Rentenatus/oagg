@@ -72,9 +72,9 @@ public class XMLAdapterFactory {
         } else if (xmlObject instanceof Arc) {
             return new ArcAdapter((Arc) xmlObject);
         } else if (xmlObject instanceof RuleScheme) {
-            return new AgtAdapters.RuleSchemeAdapter((RuleScheme) xmlObject);
+            return new RuleSchemeAdapter((RuleScheme) xmlObject);
         } else if (xmlObject instanceof MultiRule) {
-            return new AgtAdapters.MultiRuleAdapter((MultiRule) xmlObject);
+            return new RuleAdapter((MultiRule) xmlObject);
         } else if (xmlObject instanceof Rule) {
             return new RuleAdapter((Rule) xmlObject);
         } else if (xmlObject instanceof Match) {

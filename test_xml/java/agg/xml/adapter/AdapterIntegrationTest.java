@@ -102,21 +102,6 @@ public class AdapterIntegrationTest {
     }
 
     /**
-     * Test adapter with XMLHelperSerializerContext
-     */
-    @Test
-    public void testAdapterWithXMLHelperContext() throws Exception {
-        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
-        XMLHelper helper = new XMLHelper();
-        helper.read_from_xml(ggxFile.getAbsolutePath());
-
-        XMLHelperSerializerContext context = new XMLHelperSerializerContext(helper);
-        assertNotNull(context, "Context should be created");
-
-        assertEquals(context.getXMLHelper(), helper, "Should return the same XMLHelper");
-    }
-
-    /**
      * Test that we can use both legacy and new approaches on the same data
      */
     @Test

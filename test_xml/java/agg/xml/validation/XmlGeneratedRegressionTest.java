@@ -7,6 +7,8 @@
 package agg.xml.validation;
 
 import agg.xt_basis.GraGra;
+import agg.xt_basis.Node;
+import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xml.XMLSerialization;
 import org.testng.annotations.AfterClass;
@@ -380,4 +382,455 @@ public class XmlGeneratedRegressionTest {
             TestDataGenerator.createCpaNacGraGra(),
             "gen_conflicts_computed_nac.cpx");
     }
-}
+
+
+    // ---- Group 9: stress scenarios ----
+
+    /**
+     * Stress scenario with 101 small rules that vary layer, priority,
+     * LHS/RHS structure, attribute forms (constant, unset, variable,
+     * expression, condition), attribute types, object names, graph
+     * comments and NAC/PAC/nested AC conditions. Verifies the fresh
+     * in-memory DOM save against the frozen legacy reference, the DOM
+     * load/save roundtrip canonically against the same reference,
+     * the DOM stability over a second roundtrip, and the structural
+     * survival of the rule variations.
+     */
+    @Test
+    public void testStressRules101() throws Exception {
+        File refFile = prepFile("stress_rules_101");
+
+        // Step 1: fresh in-memory grammar, DOM save, canonical vs RAW
+        GraGra fresh = TestDataGenerator.createStressRulesGraGra();
+        assertEquals(fresh.getListOfRules().size(), 101,
+            "The generator should create 101 rules");
+        File memFile = new File(outputDir, "stress_rules_101_mem.ggx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the stress grammar");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_stress_rules_101.ggx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference with structural checks
+        GraGra loaded = new GraGra();
+        XMLSerialization.loadWithDom(loaded, refFile.getAbsolutePath());
+        assertStressRules(loaded);
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "stress_rules_101_new.ggx");
+        assertTrue(XMLSerialization.saveWithDom(loaded, outFile.getAbsolutePath()),
+            "DOM save should succeed for the stress grammar");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_stress_rules_101.ggx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        GraGra reloaded = new GraGra();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        assertStressRules(reloaded);
+        File stableFile = new File(outputDir, "stress_rules_101_stable.ggx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the stress grammar");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the stress grammar: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Asserts the structural survival of the stress grammar: 101
+     * rules, the layer/priority scheme, and the counts of rules with
+     * NAC (i % 7 == 3), PAC (i % 11 == 5) and nested AC
+     * (i % 13 == 7) for i in [0, 100].
+     */
+    private void assertStressRules(GraGra gra) {
+        assertEquals(gra.getListOfRules().size(), 101,
+            "All 101 stress rules should survive the DOM roundtrip");
+
+        int nacCount = 0;
+        int pacCount = 0;
+        int acCount = 0;
+        for (Rule r : gra.getListOfRules()) {
+            if (!r.getNACsList().isEmpty()) {
+                nacCount++;
+            }
+            if (!r.getPACsList().isEmpty()) {
+                pacCount++;
+            }
+            if (!r.getNestedACsList().isEmpty()) {
+                acCount++;
+            }
+        }
+        assertEquals(nacCount, 14, "rules with a NAC (i % 7 == 3)");
+        assertEquals(pacCount, 9, "rules with a PAC (i % 11 == 5)");
+        assertEquals(acCount, 8, "rules with a nested AC (i % 13 == 7)");
+
+        // spot checks derived from the generator scheme
+        Rule r007 = findStressRule(gra, "stressRule007");
+        assertEquals(r007.getLayer(), 3, "layer of stressRule007 (7 % 4)");
+        assertEquals(r007.getPriority(), 7, "priority of stressRule007 (7 % 10)");
+        assertEquals(r007.getLeft().getNodesCount(), 2, "LHS node count of stressRule007 (1 % 3 + 1)");
+
+        Rule r100 = findStressRule(gra, "stressRule100");
+        assertEquals(r100.getLayer(), 0, "layer of stressRule100 (100 % 4)");
+        assertEquals(r100.getPriority(), 0, "priority of stressRule100 (100 % 10)");
+        assertEquals(r100.getLeft().getNodesCount(), 2, "LHS node count of stressRule100 (1 % 3 + 1)");
+        assertTrue(r100.getLeft().getArcsCount() > 0,
+            "stressRule100 should keep its LHS edge (even index)");
+        assertEquals(r100.getTarget().getNodesCount(), 2,
+            "stressRule100 is the identity variant (100 % 5 == 0)");
+    }
+
+    private Rule findStressRule(GraGra gra, String name) {
+        for (Rule r : gra.getListOfRules()) {
+            if (name.equals(r.getName())) {
+                return r;
+            }
+        }
+        fail("Stress rule not found: " + name);
+        return null;
+    }
+
+    /**
+     * Stress scenario with a single rule that carries 101 NACs and
+     * 101 PACs with small parameter variations of the contained
+     * objects. Verifies the fresh in-memory DOM save against the
+     * frozen legacy reference, the DOM load/save roundtrip
+     * canonically against the same reference, the DOM stability over
+     * a second roundtrip, and the structural survival of the
+     * conditions.
+     */
+    @Test
+    public void testStressConditions101() throws Exception {
+        File refFile = prepFile("stress_conditions_101");
+
+        // Step 1: fresh in-memory grammar, DOM save, canonical vs RAW
+        GraGra fresh = TestDataGenerator.createStressConditionsGraGra();
+        assertEquals(fresh.getListOfRules().size(), 1,
+            "The generator should create a single stress rule");
+        assertEquals(fresh.getListOfRules().get(0).getNACsList().size(), 101,
+            "The generator should create 101 NACs");
+        assertEquals(fresh.getListOfRules().get(0).getPACsList().size(), 101,
+            "The generator should create 101 PACs");
+        File memFile = new File(outputDir, "stress_conditions_101_mem.ggx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the conditions stress grammar");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_stress_conditions_101.ggx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference with structural checks
+        GraGra loaded = new GraGra();
+        XMLSerialization.loadWithDom(loaded, refFile.getAbsolutePath());
+        assertStressConditions(loaded);
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "stress_conditions_101_new.ggx");
+        assertTrue(XMLSerialization.saveWithDom(loaded, outFile.getAbsolutePath()),
+            "DOM save should succeed for the conditions stress grammar");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_stress_conditions_101.ggx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        GraGra reloaded = new GraGra();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        assertStressConditions(reloaded);
+        File stableFile = new File(outputDir, "stress_conditions_101_stable.ggx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the conditions stress grammar");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the conditions stress grammar: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Asserts the structural survival of the conditions stress grammar:
+     * one rule with 101 NACs and 101 PACs, plus spot checks derived
+     * from the generator scheme (mapped LHS nodes, own node count,
+     * edges, attribute values).
+     */
+    private void assertStressConditions(GraGra gra) {
+        assertEquals(gra.getListOfRules().size(), 1,
+            "The single stress rule should survive the DOM roundtrip");
+        Rule rule = gra.getListOfRules().get(0);
+        assertEquals(rule.getName(), "stressConditionsRule",
+            "The stress rule should keep its name");
+        assertEquals(rule.getNACsList().size(), 101,
+            "All 101 NACs should survive the DOM roundtrip");
+        assertEquals(rule.getPACsList().size(), 101,
+            "All 101 PACs should survive the DOM roundtrip");
+        assertTrue(rule.getNestedACsList().isEmpty(),
+            "The stress rule should not carry nested ACs");
+
+        // spot checks derived from the generator scheme:
+        // i = 7: two own nodes (7 % 2 == 1), only lhs1 mapped
+        //        (7 % 4 == 3), no edge (7 % 3 != 0)
+        OrdinaryMorphism nac7 = findStressCondition(
+            rule.getNACsList(), "stressNac007");
+        assertEquals(nac7.getTarget().getNodesCount(), 3,
+            "stressNac007 should carry 2 own nodes plus the lhs1 image");
+        assertEquals(nac7.getTarget().getArcsCount(), 0,
+            "stressNac007 should not carry an edge (7 % 3 != 0)");
+
+        // i = 100: one own node (100 % 2 == 0), only lhs1 mapped
+        //          (100 % 4 == 0), values set (100 % 5 != 3)
+        OrdinaryMorphism pac100 = findStressCondition(
+            rule.getPACsList(), "stressPac100");
+        assertEquals(pac100.getTarget().getNodesCount(), 2,
+            "stressPac100 should carry 1 own node plus the lhs1 image");
+        Node own100 = null;
+        for (Node n : pac100.getTarget().getNodesSet()) {
+            if (!pac100.hasInverseImage(n)) {
+                own100 = n;
+            }
+        }
+        assertNotNull(own100,
+            "stressPac100 should carry one own node");
+        agg.attribute.impl.ValueMember val100 =
+            (agg.attribute.impl.ValueMember) own100.getAttribute().getMemberAt("val");
+        assertEquals(val100.getExprAsText(), "100"
+            , "the own node of stressPac100 should keep its int value");
+        agg.attribute.impl.ValueMember tag100 =
+            (agg.attribute.impl.ValueMember) own100.getAttribute().getMemberAt("tag");
+        assertEquals(tag100.getExprAsText(), "\"c100\""
+            , "the own node of stressPac100 should keep its String value");
+    }
+
+    private OrdinaryMorphism findStressCondition(
+            java.util.List<OrdinaryMorphism> conditions, String name) {
+        for (OrdinaryMorphism cond : conditions) {
+            if (name.equals(cond.getName())) {
+                return cond;
+            }
+        }
+        fail("Stress condition not found: " + name);
+        return null;
+    }
+
+    /**
+     * Resolves a generated .cpx reference produced by the legacy
+     * preparation suite.
+     */
+    private File prepCpxFile(String filename) {
+        File refFile = new File(PREP_DIR, filename);
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Generated .cpx reference is missing (run the legacy preparation"
+                + " suite first): " + refFile.getPath());
+        return refFile;
+    }
+
+    /**
+     * Structural stress scenario for the .cpx rule sets: both
+     * containers list all 101 rules (indexed references i0 .. i100)
+     * without computed entries. Verifies the DOM roundtrip
+     * canonically against the raw legacy reference and the DOM
+     * stability, exercising the canonical normalization of the
+     * multi-digit indexed references.
+     */
+    @Test
+    public void testStressRulesCpx101() throws Exception {
+        File refFile = prepCpxFile("gen_stress_rules_101.cpx");
+
+        // Step 1: fresh in-memory container, DOM save, canonical vs RAW
+        GraGra freshGra = TestDataGenerator.createStressRulesGraGra();
+        agg.parser.ConflictsDependenciesContainer fresh =
+            TestDataGenerator.createStressRulesCpxContainer(freshGra);
+        File memFile = new File(outputDir, "stress_rules_101_cpx_mem.cpx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the stress .cpx");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_stress_rules_101.cpx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getExcludePairContainer(),
+            "DOM load should create the conflict container");
+        assertEquals(cdc.getExcludePairContainer().getRules().size(), 101,
+            "The conflict container should list all 101 rules");
+        assertEquals(cdc.getDependencyPairContainer().getRules().size(), 101,
+            "The dependency container should list all 101 rules");
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "stress_rules_101_cpx_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outFile.getAbsolutePath()),
+            "DOM save should succeed for the stress .cpx");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_stress_rules_101.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "stress_rules_101_cpx_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the stress .cpx");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the stress .cpx: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Computed plain pairs with an attached CPA basis graph: the
+     * ConflictDependencyGraph section (types + graph) is written by
+     * the DOM path and reconstructed on load; verified canonically
+     * against the raw legacy reference and for DOM stability.
+     */
+    @Test
+    public void testCpaComputedCpaGraph() throws Exception {
+        File refFile = prepCpxFile("gen_conflicts_computed_cpagraph.cpx");
+
+        // Step 1: fresh in-memory container, DOM save, canonical vs RAW
+        GraGra freshGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.ConflictsDependenciesContainer fresh =
+            TestDataGenerator.createCpaGraphConflictsDependenciesContainer(freshGra);
+        File memFile = new File(outputDir, "conflicts_computed_cpagraph_mem.cpx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the CPA graph .cpx");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_conflicts_computed_cpagraph.cpx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference with structural checks
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getCPABasisGraph(),
+            "DOM load should reconstruct the CPA basis graph");
+        assertEquals(cdc.getCPABasisGraph().getNodesCount(), 2,
+            "The CPA basis graph should carry its two nodes");
+        assertEquals(cdc.getCPABasisGraph().getArcsCount(), 1,
+            "The CPA basis graph should carry its arc");
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "conflicts_computed_cpagraph_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outFile.getAbsolutePath()),
+            "DOM save should succeed for the CPA graph .cpx");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_conflicts_computed_cpagraph.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        assertNotNull(reloaded.getCPABasisGraph(),
+            "The CPA basis graph should survive the stability reload");
+        File stableFile = new File(outputDir, "conflicts_computed_cpagraph_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the CPA graph .cpx");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the CPA graph .cpx: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Free container entry states over the layered/disabled
+     * grammar: the DISABLED state of the entry over the disabled
+     * rule and the NOT_RELATED state of the entry over rules on
+     * different layers are restored by the DOM load and match the
+     * legacy load of the same file; the DOM save is compared
+     * canonically against the raw legacy reference.
+     */
+    @Test
+    public void testCpaComputedFreeStates() throws Exception {
+        File refFile = prepCpxFile("gen_conflicts_computed_freestates.cpx");
+
+        // Step 1: DOM load of the RAW reference
+        agg.parser.ConflictsDependenciesContainer cdc =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(cdc, refFile.getAbsolutePath());
+        assertNotNull(cdc.getExcludePairContainer(),
+            "DOM load should create the conflict container");
+        Rule deleteItem = findStressRule(cdc.getGrammar(), "deleteItem");
+        Rule useItem = findStressRule(cdc.getGrammar(), "useItem");
+        Rule createItem = findStressRule(cdc.getGrammar(), "createItem");
+        agg.parser.ExcludePairContainer.Entry disabledEntry =
+            cdc.getExcludePairContainer().getEntry(deleteItem, useItem);
+        assertNotNull(disabledEntry,
+            "the free entry over the disabled rule should be restored");
+        assertEquals(disabledEntry.getState(),
+            agg.parser.ExcludePairContainer.Entry.DISABLED,
+            "the entry over the disabled rule should be DISABLED after the DOM load");
+        agg.parser.ExcludePairContainer.Entry unrelatedEntry =
+            cdc.getExcludePairContainer().getEntry(useItem, createItem);
+        assertNotNull(unrelatedEntry,
+            "the free entry over the layer mismatch should be restored");
+        assertEquals(unrelatedEntry.getState(),
+            agg.parser.ExcludePairContainer.Entry.NOT_RELATED,
+            "the entry over rules on different layers should be"
+                + " NOT_RELATED after the DOM load");
+
+        // Step 2: legacy load of the same file as the cross-system oracle
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        assertTrue(helper.read_from_xml(refFile.getAbsolutePath()),
+            "Legacy load of the free states reference should succeed");
+        agg.parser.ConflictsDependenciesContainer legacy =
+            new agg.parser.ConflictsDependenciesContainer();
+        helper.getTopObject(legacy);
+        agg.parser.ExcludePairContainer legacyEpc =
+            legacy.getLayeredExcludePairContainer() != null
+                ? legacy.getLayeredExcludePairContainer()
+                : legacy.getExcludePairContainer();
+        assertNotNull(legacyEpc,
+            "Legacy load should create a conflict container");
+        Rule legacyDelete = findStressRule(legacy.getGrammar(), "deleteItem");
+        Rule legacyUse = findStressRule(legacy.getGrammar(), "useItem");
+        Rule legacyCreate = findStressRule(legacy.getGrammar(), "createItem");
+        assertEquals(legacyEpc.getEntry(legacyDelete, legacyUse).getState(),
+            agg.parser.ExcludePairContainer.Entry.DISABLED,
+            "the legacy reader should restore the same DISABLED state");
+        assertEquals(legacyEpc.getEntry(legacyUse, legacyCreate).getState(),
+            agg.parser.ExcludePairContainer.Entry.NOT_RELATED,
+            "the legacy reader should restore the same NOT_RELATED state");
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "conflicts_computed_freestates_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(cdc, outFile.getAbsolutePath()),
+            "DOM save should succeed for the free states .cpx");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_conflicts_computed_freestates.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.ConflictsDependenciesContainer reloaded =
+            new agg.parser.ConflictsDependenciesContainer();
+        XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "conflicts_computed_freestates_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the free states .cpx");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the free states .cpx: "
+                + stableResult.getMessage());
+    }}

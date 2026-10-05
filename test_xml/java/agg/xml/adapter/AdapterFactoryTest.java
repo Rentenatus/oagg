@@ -21,6 +21,7 @@ import agg.parser.LayeredDependencyPairContainer;
 import agg.parser.PriorityExcludePairContainer;
 import agg.parser.PriorityDependencyPairContainer;
 import agg.parser.ConflictsDependenciesContainer;
+import agg.xml.adapter.RuleSchemeAdapter;
 import agg.xml.core.XMLSerializable;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -104,23 +105,21 @@ public class AdapterFactoryTest {
         RuleScheme ruleScheme = new RuleScheme("testScheme", typeSet);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(ruleScheme);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof AgtAdapters.RuleSchemeAdapter,
-            "RuleScheme should get RuleSchemeAdapter, not RuleAdapter");
+        assertTrue(adapter instanceof RuleSchemeAdapter,
+            "RuleScheme should get the native RuleSchemeAdapter");
         assertFalse(adapter instanceof RuleAdapter,
             "RuleScheme should NOT get the generic RuleAdapter");
     }
 
     @Test
-    public void testMultiRuleGetsMultiRuleAdapter() {
+    public void testMultiRuleGetsRuleAdapter() {
         GraGra graGra = new GraGra();
         TypeSet typeSet = graGra.getTypeSet();
         MultiRule multiRule = new MultiRule(typeSet);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(multiRule);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof AgtAdapters.MultiRuleAdapter,
-            "MultiRule should get MultiRuleAdapter, not RuleAdapter");
-        assertFalse(adapter instanceof RuleAdapter,
-            "MultiRule should NOT get the generic RuleAdapter");
+        assertTrue(adapter instanceof RuleAdapter,
+            "MultiRule should get the native generic RuleAdapter");
     }
 
     @Test

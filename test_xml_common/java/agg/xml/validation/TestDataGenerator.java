@@ -1112,6 +1112,381 @@ public final class TestDataGenerator {
         pc.getEntry(makeLinkPac, needLinkPac);
     }
 
+    // ---- Group 8: stress scenario (many small rules) ----
+
+    /**
+     * Creates a GraGra with 101 small rules that differ in a wide range
+     * of attributes: rule name, layer, priority, LHS/RHS structure
+     * (identity, delete, create, partial mapping, extra RHS edge),
+     * attribute value forms (constant, unset, variable, expression,
+     * condition), attribute types (int, double, boolean, String, float),
+     * object names, graph comments and NAC/PAC/nested AC conditions.
+     *
+     * <p>Every variation is derived from the rule index by modular
+     * arithmetic, so the grammar is fully deterministic.</p>
+     */
+    public static GraGra createStressRulesGraGra() throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("StressRules101Test");
+
+        Type nodeA = gra.createNodeType(false);
+        nodeA.setStringRepr("NodeA");
+        addAttribute(nodeA, "val", "int");
+        addAttribute(nodeA, "tag", "String");
+
+        Type nodeB = gra.createNodeType(false);
+        nodeB.setStringRepr("NodeB");
+        addAttribute(nodeB, "weight", "double");
+
+        Type nodeC = gra.createNodeType(false);
+        nodeC.setStringRepr("NodeC");
+        addAttribute(nodeC, "flag", "boolean");
+
+        Type edgeType = gra.createArcType(false);
+        edgeType.setStringRepr("EdgeE");
+        addAttribute(edgeType, "len", "float");
+
+        Graph host = gra.getGraph();
+        host.setName("StressHost");
+        Node h1 = host.createNode(nodeA);
+        setValue(h1, "val", "7");
+        setValue(h1, "tag", "\"host\"");
+        Node h2 = host.createNode(nodeB);
+        setValue(h2, "weight", "1.25");
+        Arc hostArc = host.createArc(edgeType, h1, h2);
+        setValue(hostArc, "len", "0.5");
+
+        for (int i = 0; i < 101; i++) {
+            gra.addRule(createStressRule(gra, i, nodeA, nodeB, nodeC, edgeType));
+        }
+        return gra;
+    }
+
+    /**
+     * Creates the rule with the given index of the stress grammar.
+     * The index drives every structural and attribute variation.
+     */
+    private static Rule createStressRule(GraGra gra, int i,
+            Type nodeA, Type nodeB, Type nodeC, Type edgeType) throws Exception {
+        Rule rule = gra.createRule();
+        rule.setName(String.format("stressRule%03d", i));
+        rule.setLayer(i % 4);
+        rule.setPriority(i % 10);
+
+        int typeKind = i % 3;
+        Type nodeType = (typeKind == 0) ? nodeA : ((typeKind == 1) ? nodeB : nodeC);
+
+        // LHS: 1 to 3 nodes with varying attribute forms
+        int lhsCount = (i % 3) + 1;
+        java.util.List<Node> lhsNodes = new java.util.ArrayList<Node>(lhsCount);
+        for (int k = 0; k < lhsCount; k++) {
+            Node n = rule.getLeft().createNode(nodeType);
+            applyStressAttributes(typeKind, n, i, k);
+            if (k == 0 && i % 9 == 0) {
+                n.setObjectName("obj" + i);
+            }
+            lhsNodes.add(n);
+        }
+        if (lhsCount >= 2 && i % 2 == 0) {
+            Arc lhsEdge = rule.getLeft().createArc(edgeType,
+                lhsNodes.get(0), lhsNodes.get(1));
+            setValue(lhsEdge, "len", (i % 7) + ".5");
+        }
+        if (i % 17 == 0) {
+            rule.getLeft().setTextualComment("lhs comment " + i);
+        }
+
+        // variable / expression / condition forms need a declared variable
+        if (i % 4 == 1) {
+            AttrHandler handler = DefaultInformationFacade.self().getJavaHandler();
+            ((VarTuple) rule.getAttrContext().getVariables()).declare(handler, "int", "x");
+            if (i % 8 == 5) {
+                rule.getAttrContext().getConditions().addCondition("x > 3");
+            }
+        }
+
+        // RHS structure variants
+        int variant = i % 5;
+        if (variant == 1) {
+            // delete: RHS stays empty, nothing is mapped
+        } else if (variant == 3) {
+            // partial: one RHS node, only the first LHS node is mapped
+            Node rhsNode = rule.getTarget().createNode(nodeType);
+            applyStressAttributes(typeKind, rhsNode, i + 1, 0);
+            rule.addMapping(lhsNodes.get(0), rhsNode);
+        } else {
+            // identity (0), create (2), identity + extra RHS edge (4)
+            int rhsCount = lhsCount + (variant == 2 ? 1 : 0);
+            java.util.List<Node> rhsNodes = new java.util.ArrayList<Node>(rhsCount);
+            for (int k = 0; k < rhsCount; k++) {
+                Node n = rule.getTarget().createNode(nodeType);
+                applyStressAttributes(typeKind, n, i, k);
+                rhsNodes.add(n);
+            }
+            for (int k = 0; k < lhsCount; k++) {
+                rule.addMapping(lhsNodes.get(k), rhsNodes.get(k));
+            }
+            if (variant == 4) {
+                rule.getTarget().createArc(edgeType,
+                    rhsNodes.get(0), rhsNodes.get(rhsCount - 1));
+            }
+        }
+
+        // application conditions
+        if (i % 7 == 3) {
+            OrdinaryMorphism nac = rule.createNAC();
+            Node nacN = nac.getTarget().createNode(nodeType);
+            nac.addMapping(lhsNodes.get(0), nacN);
+            rule.addNAC(nac);
+        }
+        if (i % 11 == 5) {
+            OrdinaryMorphism pac = rule.createPAC();
+            Node pacN = pac.getTarget().createNode(nodeType);
+            pac.addMapping(lhsNodes.get(0), pacN);
+            rule.addPAC(pac);
+        }
+        if (i % 13 == 7) {
+            OrdinaryMorphism nestedAC = rule.createNestedAC();
+            Node acN = nestedAC.getTarget().createNode(nodeType);
+            nestedAC.addMapping(lhsNodes.get(0), acN);
+            rule.addNestedAC(nestedAC);
+        }
+        return rule;
+    }
+
+    /**
+     * Applies the attribute values of one stress node. The form derived
+     * from i % 4 selects between two constant schemes, the variable /
+     * expression form (only the int type references the declared
+     * variable x) and the unset form.
+     */
+    private static void applyStressAttributes(int typeKind, Node n, int i, int k) {
+        int form = i % 4;
+        if (form == 3) {
+            return; // unset
+        }
+        int constant = (form == 0) ? i : (i + 1000 + k);
+        if (typeKind == 0) {
+            if (form == 1) {
+                setValue(n, "val", (k == 0) ? "x" : ("x + " + i));
+            } else {
+                setValue(n, "val", String.valueOf(constant));
+            }
+            setValue(n, "tag", "\"t" + constant + "\"");
+        } else if (typeKind == 1) {
+            setValue(n, "weight", constant + ".25");
+        } else {
+            setValue(n, "flag", ((i + k) % 2 == 0) ? "true" : "false");
+        }
+    }
+
+    // ---- Group 8b: stress scenario (one rule with many conditions) ----
+
+    /**
+     * Creates a GraGra with a single rule that carries 101 NACs and 101
+     * PACs. Each condition is small (at most two own nodes and one edge,
+     * one or two mapped LHS nodes) and differs in the parameters of its
+     * contained objects: morphism name, own node count, mapped LHS nodes,
+     * attribute values (constant or unset), object names and graph
+     * comments. Mapped condition nodes copy the attribute values of their
+     * LHS preimages; the variations live on the own (unmapped) nodes.
+     *
+     * <p>Every variation derives from the condition index by modular
+     * arithmetic, so the grammar is fully deterministic.</p>
+     */
+    public static GraGra createStressConditionsGraGra() throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("StressConditions101Test");
+
+        Type nodeType = gra.createNodeType(false);
+        nodeType.setStringRepr("CondNode");
+        addAttribute(nodeType, "val", "int");
+        addAttribute(nodeType, "tag", "String");
+
+        Type edgeType = gra.createArcType(false);
+        edgeType.setStringRepr("CondEdge");
+
+        Graph host = gra.getGraph();
+        host.setName("StressHost");
+        Node h = host.createNode(nodeType);
+        setValue(h, "val", "3");
+        setValue(h, "tag", "\"host\"");
+
+        Rule rule = gra.createRule();
+        rule.setName("stressConditionsRule");
+        rule.setLayer(1);
+        rule.setPriority(4);
+
+        Node lhs1 = rule.getLeft().createNode(nodeType);
+        setValue(lhs1, "val", "1");
+        setValue(lhs1, "tag", "\"lhs1\"");
+        Node lhs2 = rule.getLeft().createNode(nodeType);
+        setValue(lhs2, "val", "2");
+        rule.getLeft().createArc(edgeType, lhs1, lhs2);
+
+        Node rhs1 = rule.getTarget().createNode(nodeType);
+        setValue(rhs1, "val", "1");
+        setValue(rhs1, "tag", "\"lhs1\"");
+        Node rhs2 = rule.getTarget().createNode(nodeType);
+        setValue(rhs2, "val", "2");
+        rule.addMapping(lhs1, rhs1);
+        rule.addMapping(lhs2, rhs2);
+
+        for (int i = 0; i < 101; i++) {
+            addStressCondition(rule, true, i, nodeType, edgeType, lhs1, lhs2);
+        }
+        for (int i = 0; i < 101; i++) {
+            addStressCondition(rule, false, i, nodeType, edgeType, lhs1, lhs2);
+        }
+        gra.addRule(rule);
+        return gra;
+    }
+
+    /**
+     * Adds the NAC or PAC with the given index to the stress rule. The
+     * index drives the structural and attribute variations of the
+     * condition.
+     */
+    private static void addStressCondition(Rule rule, boolean nac, int i,
+            Type nodeType, Type edgeType, Node lhs1, Node lhs2) throws Exception {
+        OrdinaryMorphism cond = nac ? rule.createNAC() : rule.createPAC();
+        cond.setName(String.format(nac ? "stressNac%03d" : "stressPac%03d", i));
+
+        // mapped image of the first LHS node (values copied from lhs1)
+        Node image1 = cond.getTarget().createNode(nodeType);
+        setValue(image1, "val", "1");
+        setValue(image1, "tag", "\"lhs1\"");
+        cond.addMapping(lhs1, image1);
+
+        // mapped image of the second LHS node for i % 4 == 1
+        if (i % 4 == 1) {
+            Node image2 = cond.getTarget().createNode(nodeType);
+            setValue(image2, "val", "2");
+            cond.addMapping(lhs2, image2);
+        }
+
+        // one or two own (unmapped) nodes with varying values
+        int ownCount = (i % 2 == 0) ? 1 : 2;
+        java.util.List<Node> ownNodes = new java.util.ArrayList<Node>(ownCount);
+        for (int k = 0; k < ownCount; k++) {
+            Node n = cond.getTarget().createNode(nodeType);
+            if (i % 5 != 3) {
+                setValue(n, "val", String.valueOf(i + k));
+                setValue(n, "tag", "\"c" + (i + k) + "\"");
+            }
+            if (k == 0 && i % 7 == 2) {
+                n.setObjectName("obj" + i);
+            }
+            ownNodes.add(n);
+        }
+        if (ownCount == 2 && i % 3 == 0) {
+            cond.getTarget().createArc(edgeType, ownNodes.get(0), ownNodes.get(1));
+        }
+        if (i % 11 == 0) {
+            cond.getTarget().setTextualComment((nac ? "nac" : "pac") + " comment " + i);
+        }
+
+        if (nac) {
+            rule.addNAC(cond);
+        } else {
+            rule.addPAC(cond);
+        }
+    }
+
+    // ---- Group 8c: stress scenario (.cpx rule sets at scale, CPA basis graph) ----
+
+    /**
+     * Creates a structural ConflictsDependenciesContainer for the stress
+     * grammar: both containers list all 101 rules in their rule sets and
+     * carry no computed entries, which exercises the indexed rule
+     * references (i0 ... i100) of the .cpx rule sets.
+     */
+    public static ConflictsDependenciesContainer createStressRulesCpxContainer(GraGra gra) {
+        java.util.List<Rule> rules = gra.getListOfRules();
+        ExcludePairContainer excludePC = new ExcludePairContainer(gra);
+        DependencyPairContainer depPC = new DependencyPairContainer(gra);
+        excludePC.setRules(rules, rules);
+        depPC.setRules(rules, rules);
+        return new ConflictsDependenciesContainer(excludePC, depPC);
+    }
+
+    /**
+     * Creates a computed ConflictsDependenciesContainer like the plain
+     * variant, but with a CPA basis graph attached: the container carries
+     * a ConflictDependencyGraph section with its own types and graph.
+     */
+    public static ConflictsDependenciesContainer createCpaGraphConflictsDependenciesContainer(GraGra gra)
+            throws Exception {
+        ExcludePairContainer excludePC = new ExcludePairContainer(gra);
+        DependencyPairContainer depPC = new DependencyPairContainer(gra);
+        java.util.List<Rule> rules = gra.getListOfRules();
+        excludePC.setRules(rules, rules);
+        depPC.setRules(rules, rules);
+        addPlainConflictEntries(excludePC, gra);
+        addPlainDependencyEntries(depPC, gra);
+        return new ConflictsDependenciesContainer(excludePC, depPC,
+            createCpaBasisGraph());
+    }
+
+    /**
+     * Creates the small CPA basis graph of the ConflictDependencyGraph
+     * section: one node type, one edge type, two nodes and one arc,
+     * mirroring what the legacy readCPAGraph reconstructs.
+     */
+    private static Graph createCpaBasisGraph() throws Exception {
+        Graph cpaBasisGraph = new Graph();
+        Type nodeType = cpaBasisGraph.getTypeSet().createNodeType(false);
+        nodeType.setStringRepr("CpaNode");
+        Type edgeType = cpaBasisGraph.getTypeSet().createArcType(false);
+        edgeType.setStringRepr("CpaEdge");
+        Node n1 = cpaBasisGraph.createNode(nodeType);
+        Node n2 = cpaBasisGraph.createNode(nodeType);
+        cpaBasisGraph.createArc(edgeType, n1, n2);
+        cpaBasisGraph.setName("CPA_RuleGraph:Conflicts_(red)-Dependencies_(blue)");
+        return cpaBasisGraph;
+    }
+
+    // ---- Group 8d: free container entry states (DISABLED / NOT_RELATED) ----
+
+    /**
+     * Creates a layered variant of the plain CPA grammar whose rules sit
+     * on different layers, one of them disabled: loading a .cpx with free
+     * container entries over this grammar restores the DISABLED state
+     * (disabled rule) and the NOT_RELATED state (layer mismatch) of the
+     * entries.
+     */
+    public static GraGra createCpaLayeredDisabledGraGra() throws Exception {
+        GraGra gra = createCpaGraGra();
+        gra.setGraTraOptions(java.util.Arrays.asList("layered"));
+        Rule deleteItem = findRule(gra, "deleteItem");
+        deleteItem.setLayer(1);
+        deleteItem.setEnabled(false);
+        Rule createItem = findRule(gra, "createItem");
+        createItem.setLayer(2);
+        return gra;
+    }
+
+    /**
+     * Creates the computed plain container over the layered/disabled
+     * grammar, extended by two conflict free entries: one over the
+     * disabled rule (restores DISABLED on load), one over rules on
+     * different layers (restores NOT_RELATED on load in a layered
+     * grammar).
+     */
+    public static ConflictsDependenciesContainer createLayeredDisabledConflictsDependenciesContainer(GraGra gra)
+            throws Exception {
+        ConflictsDependenciesContainer cdc = createComputedConflictsDependenciesContainer(gra);
+        ExcludePairContainer epc = cdc.getExcludePairContainer();
+        Rule deleteItem = findRule(gra, "deleteItem");
+        Rule useItem = findRule(gra, "useItem");
+        Rule createItem = findRule(gra, "createItem");
+        epc.addQuadruple(epc.getConflictFreeContainer(), deleteItem, useItem, true, null);
+        epc.getEntry(deleteItem, useItem);
+        epc.addQuadruple(epc.getConflictFreeContainer(), useItem, createItem, true, null);
+        epc.getEntry(useItem, createItem);
+        return cdc;
+    }
+
     // ---- Helpers ----
 
     /**

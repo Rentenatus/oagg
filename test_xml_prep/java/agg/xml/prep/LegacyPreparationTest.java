@@ -265,6 +265,98 @@ public class LegacyPreparationTest {
         writeComputedCpxReferences(pacGra, "gen_conflicts_computed_pac.cpx", false);
     }
 
+    /**
+     * Produces the reference XML for the stress grammar with 101 small
+     * rules that vary their structural and attribute forms (see
+     * TestDataGenerator.createStressRulesGraGra).
+     */
+    @Test
+    public void prepareStressRules101() throws Exception {
+        GraGra graGra = TestDataGenerator.createStressRulesGraGra();
+        assertEquals(graGra.getListOfRules().size(), 101,
+            "The stress grammar should carry 101 rules");
+        saveLegacy(graGra, "gen_stress_rules_101.ggx");
+    }
+
+    /**
+     * Produces the reference XML for the stress grammar whose single rule
+     * carries 101 NACs and 101 PACs (see
+     * TestDataGenerator.createStressConditionsGraGra).
+     */
+    @Test
+    public void prepareStressConditions101() throws Exception {
+        GraGra graGra = TestDataGenerator.createStressConditionsGraGra();
+        assertEquals(graGra.getListOfRules().size(), 1,
+            "The conditions stress grammar should carry a single rule");
+        assertEquals(graGra.getListOfRules().get(0).getNACsList().size(), 101,
+            "The stress rule should carry 101 NACs");
+        assertEquals(graGra.getListOfRules().get(0).getPACsList().size(), 101,
+            "The stress rule should carry 101 PACs");
+        saveLegacy(graGra, "gen_stress_conditions_101.ggx");
+    }
+
+    /**
+     * Produces the structural reference .cpx of the stress grammar: the
+     * container lists all 101 rules in its rule sets (indexed references
+     * i0 ... i100) without computed entries.
+     */
+    @Test
+    public void prepareStressRulesCpx101() throws Exception {
+        GraGra graGra = TestDataGenerator.createStressRulesGraGra();
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createStressRulesCpxContainer(graGra);
+        assertEquals(cdc.getExcludePairContainer().getRules().size(), 101,
+            "The stress container should list 101 conflict rules");
+        assertEquals(cdc.getDependencyPairContainer().getRules().size(), 101,
+            "The stress container should list 101 dependency rules");
+        saveLegacyCpx(cdc, "gen_stress_rules_101.cpx");
+    }
+
+    /**
+     * Produces the reference .cpx of the computed plain container with an
+     * attached CPA basis graph, so the ConflictDependencyGraph section is
+     * covered by the canonical comparison on the DOM side.
+     */
+    @Test
+    public void prepareConflictsDependenciesCpaGraph() throws Exception {
+        GraGra gra = TestDataGenerator.createCpaGraGra();
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createCpaGraphConflictsDependenciesContainer(gra);
+        assertNotNull(cdc.getCPABasisGraph(),
+            "The container should carry a CPA basis graph");
+        assertTrue(cdc.getCPABasisGraph().getNodesCount() > 0,
+            "The CPA basis graph should carry nodes");
+        assertTrue(countComputedPairs(cdc.getExcludePairContainer()) > 0,
+            "The conflict container should carry computed pairs");
+        saveLegacyCpx(cdc, "gen_conflicts_computed_cpagraph.cpx");
+    }
+
+    /**
+     * Produces the reference .cpx of the computed plain container over the
+     * layered/disabled grammar, so the DISABLED and NOT_RELATED entry
+     * states of the free container entries are covered by the DOM side.
+     */
+    @Test
+    public void prepareConflictsDependenciesFreeStates() throws Exception {
+        GraGra gra = TestDataGenerator.createCpaLayeredDisabledGraGra();
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createLayeredDisabledConflictsDependenciesContainer(gra);
+        assertTrue(!cdc.getExcludePairContainer().getConflictFreeContainer().isEmpty(),
+            "The container should carry free entries");
+        saveLegacyCpx(cdc, "gen_conflicts_computed_freestates.cpx");
+    }
+
+    private void saveLegacyCpx(agg.parser.ConflictsDependenciesContainer cdc,
+            String fileName) throws Exception {
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(cdc);
+        File cpxFile = new File(prepDir, fileName);
+        assertTrue(helper.save_to_xml(cpxFile.getAbsolutePath()),
+            "Frozen legacy .cpx save should succeed: " + fileName);
+        assertTrue(cpxFile.exists() && cpxFile.length() > 0,
+            "Reference .cpx should be non-empty: " + fileName);
+    }
+
     private void writeComputedCpxReferences(GraGra gra, String filename,
             boolean requireDependencies) throws Exception {
         agg.parser.ConflictsDependenciesContainer cdc =

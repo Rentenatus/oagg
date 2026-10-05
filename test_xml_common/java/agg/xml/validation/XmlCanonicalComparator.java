@@ -62,9 +62,19 @@ public final class XmlCanonicalComparator {
      * rule references of the .cpx rule sets (i0, i1, ...).
      */
     private static boolean isRefAttr(String name) {
-        return REF_ATTRS.contains(name)
-            || (name.length() == 2 && name.charAt(0) == 'i'
-                && Character.isDigit(name.charAt(1)));
+        if (REF_ATTRS.contains(name)) {
+            return true;
+        }
+        // indexed rule references of the .cpx rule sets (i0, i1, ..., i100)
+        if (name.length() < 2 || name.charAt(0) != 'i') {
+            return false;
+        }
+        for (int i = 1; i < name.length(); i++) {
+            if (!Character.isDigit(name.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private XmlCanonicalComparator() {
