@@ -6,8 +6,11 @@
  */
 package agg.xml.ui;
 
+import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdGraGra;
+import agg.gui.cpa.ConflictsDependenciesContainerSaveLoad;
 import agg.parser.ConflictsDependenciesContainer;
+import agg.parser.PairContainer;
 import agg.ruleappl.ApplRuleSequence;
 import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
@@ -177,6 +180,119 @@ public final class UIMigration {
      * @return true if loading succeeded
      */
     public static boolean load(ConflictsDependenciesContainer container, String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        if (isUseNewXml()) {
+            try {
+                return XMLSerialization.loadWithDom(container, filename);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        XMLHelper helper = new XMLHelper();
+        if (helper.read_from_xml(filename)) {
+            helper.getTopObject(container);
+            return true;
+        }
+        return false;
+    }
+
+    // ---- UI .cpx (ConflictsDependenciesContainerSaveLoad like PairIOGUI) ----
+
+    /**
+     * Saves a critical pairs container with the editor layer like
+     * {@code PairIOGUI.save} does with the SaveLoad wrapper: DOM path
+     * with the flag on, legacy XMLHelper path otherwise.
+     *
+     * @param saveLoad The SaveLoad wrapper to save
+     * @param filename The output filename (.cpx)
+     * @return true if saving succeeded
+     */
+    public static boolean saveCdContainerSaveLoad(
+            ConflictsDependenciesContainerSaveLoad saveLoad, String filename) {
+        if (saveLoad == null || filename == null) {
+            return false;
+        }
+        if (isUseNewXml()) {
+            return UISerialization.saveConflictsDependenciesWithDom(
+                saveLoad, saveLoad.getPairsGraGra(), saveLoad.getCPAGraph(),
+                filename);
+        }
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(saveLoad);
+        return helper.save_to_xml(filename);
+    }
+
+    /**
+     * Loads a critical pairs container with the editor layer like
+     * {@code PairIOGUI.load} does with the SaveLoad wrapper: DOM path
+     * with the flag on, legacy XMLHelper path otherwise.
+     *
+     * @param saveLoad The SaveLoad wrapper instance to populate
+     * @param filename The input filename (.cpx)
+     * @return true if loading succeeded
+     */
+    public static boolean loadCdContainerSaveLoad(
+            ConflictsDependenciesContainerSaveLoad saveLoad, String filename) {
+        if (saveLoad == null || filename == null) {
+            return false;
+        }
+        if (isUseNewXml()) {
+            try {
+                UISerialization.ConflictsDependenciesUiResult result =
+                    UISerialization.loadConflictsDependenciesWithDom(
+                        saveLoad, filename);
+                saveLoad.setPairsGraGra(result.edGraGra);
+                saveLoad.setCpaGraph(result.cpaGraph);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        XMLHelper helper = new XMLHelper();
+        if (helper.read_from_xml(filename)) {
+            helper.getTopObject(saveLoad);
+            return true;
+        }
+        return false;
+    }
+
+    // ---- standalone PairContainer (.cpx/.dpx like PairIOGUI) ----
+
+    /**
+     * Saves a standalone pair container like {@code PairIOGUI.save} does
+     * with a PairContainer: DOM path with the flag on, legacy XMLHelper
+     * path otherwise.
+     *
+     * @param container The pair container to save
+     * @param filename The output filename (.cpx/.dpx)
+     * @return true if saving succeeded
+     */
+    public static boolean saveStandalonePairContainer(PairContainer container,
+            String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        if (isUseNewXml()) {
+            return XMLSerialization.saveWithDom(container, filename);
+        }
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(container);
+        return helper.save_to_xml(filename);
+    }
+
+    /**
+     * Loads a standalone pair container like {@code PairIOGUI.load} does
+     * with a PairContainer: DOM path with the flag on, legacy XMLHelper
+     * path otherwise.
+     *
+     * @param container The pair container instance to populate
+     * @param filename The input filename (.cpx/.dpx)
+     * @return true if loading succeeded
+     */
+    public static boolean loadStandalonePairContainer(PairContainer container,
+            String filename) {
         if (container == null || filename == null) {
             return false;
         }

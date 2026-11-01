@@ -20,6 +20,7 @@ import agg.gui.saveload.ExtensionFileFilter;
 import agg.parser.PairContainer;
 import agg.parser.CriticalPair;
 import agg.parser.ConflictsDependenciesContainer;
+import agg.gui.saveload.XmlMigrationDispatch;
 import agg.util.XMLHelper;
 
 /**
@@ -235,6 +236,28 @@ public class PairIOGUI {
 	 *            The destination file name.
 	 */
 	public void save(String dir, String file) {
+        // DOM dispatch first; on failure fall through to the legacy path
+        if (this.combined) {
+            if (this.cdContainerSaveLoad != null) {
+                if (XmlMigrationDispatch.dispatchSaveCdContainerSaveLoad(
+                        this.cdContainerSaveLoad, dir + file)) {
+                    this.isSaved = true;
+                    return;
+                }
+            } else if (this.cdContainer != null) {
+                if (XmlMigrationDispatch.dispatchSaveCdContainer(
+                        this.cdContainer, dir + file)) {
+                    this.isSaved = true;
+                    return;
+                }
+            }
+        } else if (this.pc != null) {
+            if (XmlMigrationDispatch.dispatchSaveStandalonePairContainer(
+                    this.pc, dir + file)) {
+                this.isSaved = true;
+                return;
+            }
+        }
         XMLHelper xmlh = new XMLHelper();
         // file = XMLHelper.replaceGermanSpecialCh(file);
         if (this.combined) {
@@ -336,6 +359,27 @@ public class PairIOGUI {
         Object result = null;
         this.directory = dir;
         this.fileName = file;
+        // DOM dispatch first; on failure fall through to the legacy path
+        if (this.cdContainerSaveLoad != null) {
+            this.combined = true;
+            if (XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
+                    this.cdContainerSaveLoad,
+                    this.directory + this.fileName)) {
+                return this.cdContainerSaveLoad;
+            }
+        } else if (this.cdContainer != null) {
+            this.combined = true;
+            if (XmlMigrationDispatch.dispatchLoadCdContainer(
+                    this.cdContainer, this.directory + this.fileName)) {
+                return this.cdContainer;
+            }
+        } else if (this.pc != null) {
+            this.combined = false;
+            if (XmlMigrationDispatch.dispatchLoadStandalonePairContainer(
+                    this.pc, this.directory + this.fileName)) {
+                return this.pc;
+            }
+        }
         XMLHelper h = new XMLHelper();
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fileName)){ System.out.println(" Read
@@ -365,6 +409,26 @@ public class PairIOGUI {
             return null;
         }
         Object result = null;
+        // DOM dispatch first; on failure fall through to the legacy path
+        if (this.cdContainerSaveLoad != null) {
+            this.combined = true;
+            if (XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
+                    this.cdContainerSaveLoad, fullFileName)) {
+                return this.cdContainerSaveLoad;
+            }
+        } else if (this.cdContainer != null) {
+            this.combined = true;
+            if (XmlMigrationDispatch.dispatchLoadCdContainer(
+                    this.cdContainer, fullFileName)) {
+                return this.cdContainer;
+            }
+        } else if (this.pc != null) {
+            this.combined = false;
+            if (XmlMigrationDispatch.dispatchLoadStandalonePairContainer(
+                    this.pc, fullFileName)) {
+                return this.pc;
+            }
+        }
         XMLHelper h = new XMLHelper();
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fullFileName)){

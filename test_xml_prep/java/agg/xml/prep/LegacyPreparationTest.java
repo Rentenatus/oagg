@@ -595,6 +595,69 @@ public class LegacyPreparationTest {
             "Re-saved UI .rsx reference should be non-empty");
     }
 
+    // ---- UI .cpx (ConflictsDependenciesContainerSaveLoad like PairIOGUI) ----
+
+    /**
+     * Produces the reference .cpx of the UI critical pairs format: a
+     * ConflictsDependenciesContainerSaveLoad is the top object (exactly
+     * what PairIOGUI.save does), so the frozen legacy path writes the
+     * kernel .cpx content and enhances the embedded grammar and the CPA
+     * rule graph with the UI layout segments.
+     */
+    @Test
+    public void prepareUiConflictsDependencies() throws Exception {
+        GraGra graGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.ConflictsDependenciesContainer cdc =
+            TestDataGenerator.createCpaGraphConflictsDependenciesContainer(graGra);
+        assertTrue(countComputedPairs(cdc.getExcludePairContainer()) > 0,
+            "Conflict computation should produce critical pairs");
+        assertTrue(countComputedPairs(cdc.getDependencyPairContainer()) > 0,
+            "Dependency computation should produce critical pairs");
+
+        agg.editor.impl.EdGraGra edGraGra = new agg.editor.impl.EdGraGra(graGra);
+        agg.editor.impl.EdGraph cpaGraph =
+            new agg.editor.impl.EdGraph(cdc.getCPABasisGraph());
+        cpaGraph.setCPAgraph(true);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        for (agg.editor.impl.EdRule rule : edGraGra.getRules()) {
+            pos = pinGraphPositions(rule.getLeft(), pos);
+            pos = pinGraphPositions(rule.getRight(), pos);
+        }
+        pinGraphPositions(cpaGraph, pos);
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad(
+                cdc.getExcludePairContainer(), cdc.getDependencyPairContainer(),
+                cpaGraph, edGraGra);
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(saveLoad);
+        File cpxFile = new File(prepDir, "ui_conflicts_deps.cpx");
+        assertTrue(helper.save_to_xml(cpxFile.getAbsolutePath()),
+            "Frozen legacy UI .cpx save should succeed");
+        assertTrue(cpxFile.exists() && cpxFile.length() > 0,
+            "UI .cpx reference file should be non-empty");
+
+        // Reference re-save of the loaded state, like PairIOGUI.load(combi)
+        // does: a fresh SaveLoad wrapper is the top object of the read.
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad reloaded =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        XMLHelper loadHelper = new XMLHelper();
+        assertTrue(loadHelper.read_from_xml(cpxFile.getAbsolutePath()),
+            "Frozen legacy UI .cpx load should succeed");
+        Object reloadedTop = loadHelper.getTopObject(reloaded);
+        assertNotNull(reloadedTop,
+            "Frozen legacy UI .cpx reload should return the top object");
+        XMLHelper resaveHelper = new XMLHelper();
+        resaveHelper.addTopObject(reloaded);
+        File resavedFile = new File(prepDir, "ui_conflicts_deps_resaved.cpx");
+        assertTrue(resaveHelper.save_to_xml(resavedFile.getAbsolutePath()),
+            "Frozen legacy UI .cpx re-save should succeed");
+        assertTrue(resavedFile.exists() && resavedFile.length() > 0,
+            "Re-saved UI .cpx reference should be non-empty");
+    }
+
     // ---- UI layer scenarios (EdGraGra roundtrip like GraGraSave) ----
 
     /**

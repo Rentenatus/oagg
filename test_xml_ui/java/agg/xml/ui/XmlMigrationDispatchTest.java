@@ -176,4 +176,73 @@ public class XmlMigrationDispatchTest {
         assertTrue(result.isEqual(),
             "The dispatched rule sequence path should be stable: "
                 + result.getMessage());
-    }}
+    }
+
+    /**
+     * The UI .cpx dispatch loads the frozen GUI reference through the
+     * real reflection wiring (like PairIOGUI does with the SaveLoad
+     * wrapper) and saves it canonically identically to the raw reference.
+     */
+    @Test
+    public void testUiCpxDispatchRoundtrip() throws Exception {
+        UIMigration.setUseNewXml(true);
+        File refFile = new File(PREP_DIR, "ui_conflicts_deps.cpx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "UI .cpx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        assertTrue(XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
+                saveLoad, refFile.getPath()),
+            "The UI .cpx dispatch load should succeed");
+        assertEquals(saveLoad.getGrammar().getName(), "CpaComputedTest",
+            "The dispatched load should keep the grammar name");
+        assertNotNull(saveLoad.getPairsGraGra(),
+            "The dispatched load should restore the editor grammar");
+        assertNotNull(saveLoad.getCPAGraph(),
+            "The dispatched load should restore the CPA graph");
+
+        File outFile = new File(outputDir, "ui_dispatch_cpx_new.cpx");
+        assertTrue(XmlMigrationDispatch.dispatchSaveCdContainerSaveLoad(
+                saveLoad, outFile.getPath()),
+            "The UI .cpx dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched UI .cpx save differs from the reference: "
+                + result.getMessage());
+    }
+
+    /**
+     * The standalone pair container dispatch loads the frozen reference
+     * through the real reflection wiring (like PairIOGUI does with the
+     * pc) and saves it canonically identically to the reference.
+     */
+    @Test
+    public void testStandalonePairContainerDispatchRoundtrip() throws Exception {
+        UIMigration.setUseNewXml(true);
+        File refFile = new File(PREP_DIR, "gen_standalone_conflicts.cpx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Standalone .cpx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        agg.parser.ExcludePairContainer pc =
+            new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(XmlMigrationDispatch.dispatchLoadStandalonePairContainer(
+                pc, refFile.getPath()),
+            "The standalone .cpx dispatch load should succeed");
+        assertEquals(pc.getGrammar().getName(), "CpaComputedTest",
+            "The dispatched load should keep the grammar name");
+
+        File outFile = new File(outputDir, "ui_dispatch_standalone_new.cpx");
+        assertTrue(XmlMigrationDispatch.dispatchSaveStandalonePairContainer(
+                pc, outFile.getPath()),
+            "The standalone .cpx dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched standalone .cpx save differs from the reference: "
+                + result.getMessage());
+    }
+}

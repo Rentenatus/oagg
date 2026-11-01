@@ -54,6 +54,22 @@ public class ConflictsDependenciesContainerSaveLoad extends
         return this.grammar;
     }
 
+    /**
+     * Installs the editor grammar restored by an external reader (the DOM
+     * load path of the agg-xml UI module mirrors readLayoutGrammar).
+     */
+    public void setPairsGraGra(EdGraGra gragra) {
+        this.grammar = gragra;
+    }
+
+    /**
+     * Installs the CPA editor graph restored by an external reader (the DOM
+     * load path of the agg-xml UI module mirrors readCPAGraph).
+     */
+    public void setCpaGraph(EdGraph graph) {
+        this.cpaGraph = graph;
+    }
+
     @Override
     public EdGraph getCPAGraph() {
         return cpaGraph;

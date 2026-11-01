@@ -12,10 +12,13 @@ import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
+import agg.editor.impl.EdType;
 import agg.layout.evolutionary.LayoutArc;
 import agg.layout.evolutionary.LayoutNode;
+import agg.parser.ConflictsDependenciesContainer;
 import agg.xml.adapter.DOMSerializationRegistry;
 import agg.xml.adapter.ApplRuleSequenceAdapter;
+import agg.xml.adapter.ConflictsDependenciesContainerAdapter;
 import agg.xml.adapter.GraGraAdapter;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializerContext;
@@ -23,6 +26,7 @@ import agg.xml.core.XMLSerializationException;
 import agg.xml.util.XMLUtils;
 import agg.ruleappl.ApplRuleSequence;
 import agg.xt_basis.GraGra;
+import agg.xt_basis.Graph;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -169,6 +173,188 @@ public final class UISerialization {
         EdGraGra edGraGra = new EdGraGra(core);
         applyUiSegments(edGraGra, registry, context.getDocument());
         return edGraGra;
+    }
+
+    /**
+     * Saves a ConflictsDependenciesContainer with the editor layer of its
+     * grammar and the CPA rule graph: the kernel .cpx content plus the UI
+     * segments attached to the Node/Edge elements of the embedded grammar
+     * and of the CPA graph - exactly what ConflictsDependenciesContainer-
+     * SaveLoad writes into a .cpx file (like PairIOGUI does).
+     *
+     * @param container The critical pairs container to save
+     * @param edGraGra The editor grammar carrying the UI state
+     * @param cpaGraph The CPA editor graph (may be null)
+     * @param filename The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean saveConflictsDependenciesWithDom(
+            ConflictsDependenciesContainer container, EdGraGra edGraGra,
+            EdGraph cpaGraph, String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        try {
+            String outfileName = filename;
+            if (!outfileName.toLowerCase().endsWith(".cpx")) {
+                outfileName = outfileName + ".cpx";
+            }
+            Document doc = serializeConflictsDependenciesToDocument(
+                container, edGraGra, cpaGraph);
+            writeDocumentToFile(doc, new File(outfileName));
+            return true;
+        } catch (XMLSerializationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Serializes a ConflictsDependenciesContainer with the editor layer
+     * of its grammar and the CPA rule graph, attaching the UI segments to
+     * the core Node/Edge elements (mirroring writeLayoutGrammar and the
+     * EdGraph part of writeCPAGraph).
+     *
+     * @param container The critical pairs container to serialize
+     * @param edGraGra The editor grammar carrying the UI state
+     * @param cpaGraph The CPA editor graph (may be null)
+     * @return The DOM document
+     * @throws XMLSerializationException if serialization fails
+     */
+    public static Document serializeConflictsDependenciesToDocument(
+            ConflictsDependenciesContainer container, EdGraGra edGraGra,
+            EdGraph cpaGraph) throws XMLSerializationException {
+        if (container == null) {
+            throw new XMLSerializationException(
+                "ConflictsDependenciesContainer is null");
+        }
+        DOMXMLSerializerContext context = new DOMXMLSerializerContext();
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        ConflictsDependenciesContainerAdapter adapter =
+            new ConflictsDependenciesContainerAdapter(container);
+        adapter.serialize(context, registry);
+        if (edGraGra != null) {
+            attachUiSegments(edGraGra, context.getDocument(), registry);
+        }
+        if (cpaGraph != null) {
+            attachCpaGraphSegments(cpaGraph, context.getDocument(), registry);
+        }
+        return context.getDocument();
+    }
+
+    /**
+     * The editor objects restored by the UI .cpx load: the editor grammar
+     * of the embedded grammar and the CPA editor graph (null when the file
+     * has no ConflictDependencyGraph section).
+     */
+    public static final class ConflictsDependenciesUiResult {
+
+        /** The editor grammar with the applied UI segments. */
+        public final EdGraGra edGraGra;
+
+        /** The CPA editor graph, or null when the file has none. */
+        public final EdGraph cpaGraph;
+
+        ConflictsDependenciesUiResult(EdGraGra edGraGra, EdGraph cpaGraph) {
+            this.edGraGra = edGraGra;
+            this.cpaGraph = cpaGraph;
+        }
+    }
+
+    /**
+     * Loads a ConflictsDependenciesContainer with the editor layer of its
+     * grammar and the CPA rule graph: the kernel content first, then the
+     * UI segments applied onto the editor objects (mirroring readLayout-
+     * Grammar and the EdGraph part of readCPAGraph, including the red/blue
+     * colouring of the c/d arc types).
+     *
+     * @param container The container instance to populate
+     * @param filename The input filename (.cpx)
+     * @return The restored editor objects
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public static ConflictsDependenciesUiResult loadConflictsDependenciesWithDom(
+            ConflictsDependenciesContainer container, String filename)
+            throws XMLSerializationException {
+        if (container == null || filename == null) {
+            throw new XMLSerializationException(
+                "ConflictsDependenciesContainer or filename is null");
+        }
+        File file = new File(filename);
+        if (!file.exists()) {
+            throw new XMLSerializationException("File not found: " + filename);
+        }
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        ConflictsDependenciesContainerAdapter adapter =
+            new ConflictsDependenciesContainerAdapter(container);
+        adapter.deserialize(context, registry);
+
+        GraGra core = container.getGrammar();
+        if (core == null) {
+            throw new XMLSerializationException(
+                "The container carries no grammar after the load");
+        }
+        EdGraGra edGraGra = new EdGraGra(core);
+        applyUiSegments(edGraGra, registry, context.getDocument());
+
+        EdGraph cpaGraph = null;
+        Graph cpaBasisGraph = container.getCPABasisGraph();
+        if (cpaBasisGraph != null) {
+            cpaGraph = new EdGraph(cpaBasisGraph);
+            cpaGraph.setCPAgraph(true);
+            applyCpaGraphSegments(cpaGraph, registry);
+        }
+        return new ConflictsDependenciesUiResult(edGraGra, cpaGraph);
+    }
+
+    /**
+     * Attaches the UI segments of the CPA editor graph to the Node/Edge
+     * elements of the ConflictDependencyGraph section, mirroring the
+     * EdGraph.XwriteObject call of writeCPAGraph.
+     */
+    private static void attachCpaGraphSegments(EdGraph cpaGraph, Document doc,
+            DOMSerializationRegistry registry) {
+        for (EdNode node : cpaGraph.getNodes()) {
+            Element nodeElem = registry.getElement(node.getBasisNode());
+            if (nodeElem != null) {
+                attachNodeSegments(node, nodeElem, doc);
+            }
+        }
+        for (EdArc arc : cpaGraph.getArcs()) {
+            Element arcElem = registry.getElement(arc.getBasisArc());
+            if (arcElem != null) {
+                attachArcSegments(arc, arcElem, doc);
+            }
+        }
+    }
+
+    /**
+     * Applies the UI segments of the ConflictDependencyGraph section onto
+     * the CPA editor graph, mirroring the EdGraph enrichment of the legacy
+     * readCPAGraph (including the red/blue colouring of the c/d arc types).
+     */
+    private static void applyCpaGraphSegments(EdGraph cpaGraph,
+            DOMSerializationRegistry registry) {
+        for (EdNode node : cpaGraph.getNodes()) {
+            Element nodeElem = registry.getElement(node.getBasisNode());
+            if (nodeElem != null) {
+                applyNodeSegments(node, nodeElem);
+            }
+        }
+        for (EdArc arc : cpaGraph.getArcs()) {
+            Element arcElem = registry.getElement(arc.getBasisArc());
+            if (arcElem != null) {
+                applyArcSegments(arc, arcElem);
+            }
+        }
+        for (EdType t : cpaGraph.getTypeSet().getArcTypes()) {
+            if (t.getBasisType().getName().equals("c")) {
+                t.setColor(java.awt.Color.RED);
+            } else if (t.getBasisType().getName().equals("d")) {
+                t.setColor(java.awt.Color.BLUE);
+            }
+            t.setAdditionalReprOfBasisType();
+        }
     }
 
     /**

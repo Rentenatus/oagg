@@ -167,4 +167,138 @@ public final class XmlMigrationDispatch {
             return null;
         }
     }
+
+    /**
+     * Saves a critical pairs container with the editor layer through the
+     * new XML layer (like PairIOGUI.save does with the SaveLoad wrapper
+     * and the legacy XMLHelper).
+     *
+     * @param saveLoad The SaveLoad wrapper to save
+     * @param filename The output filename
+     * @return true if the new layer saved the file
+     */
+    public static boolean dispatchSaveCdContainerSaveLoad(
+            agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad,
+            String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("saveCdContainerSaveLoad",
+                agg.gui.cpa.ConflictsDependenciesContainerSaveLoad.class,
+                String.class);
+            Object result = m.invoke(null, saveLoad, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads a critical pairs container with the editor layer through the
+     * new XML layer (like PairIOGUI.load does with the SaveLoad wrapper
+     * and the legacy XMLHelper).
+     *
+     * @param saveLoad The SaveLoad wrapper instance to populate
+     * @param filename The input filename
+     * @return true if the new layer loaded the file into the wrapper
+     */
+    public static boolean dispatchLoadCdContainerSaveLoad(
+            agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad,
+            String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("loadCdContainerSaveLoad",
+                agg.gui.cpa.ConflictsDependenciesContainerSaveLoad.class,
+                String.class);
+            Object result = m.invoke(null, saveLoad, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Saves a ConflictsDependenciesContainer through the new XML layer
+     * (like PairIOGUI.save does with the cdContainer and the legacy
+     * XMLHelper).
+     *
+     * @param container The container to save
+     * @param filename The output filename
+     * @return true if the new layer saved the file
+     */
+    public static boolean dispatchSaveCdContainer(
+            agg.parser.ConflictsDependenciesContainer container, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("save",
+                agg.parser.ConflictsDependenciesContainer.class, String.class);
+            Object result = m.invoke(null, container, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads a ConflictsDependenciesContainer through the new XML layer
+     * (like PairIOGUI.load does with the cdContainer and the legacy
+     * XMLHelper).
+     *
+     * @param container The container instance to populate
+     * @param filename The input filename
+     * @return true if the new layer loaded the file into the container
+     */
+    public static boolean dispatchLoadCdContainer(
+            agg.parser.ConflictsDependenciesContainer container, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("load",
+                agg.parser.ConflictsDependenciesContainer.class, String.class);
+            Object result = m.invoke(null, container, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Saves a standalone pair container through the new XML layer (like
+     * PairIOGUI.save does with the pc and the legacy XMLHelper).
+     *
+     * @param container The pair container to save
+     * @param filename The output filename
+     * @return true if the new layer saved the file
+     */
+    public static boolean dispatchSaveStandalonePairContainer(
+            agg.parser.PairContainer container, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("saveStandalonePairContainer",
+                agg.parser.PairContainer.class, String.class);
+            Object result = m.invoke(null, container, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads a standalone pair container through the new XML layer (like
+     * PairIOGUI.load does with the pc and the legacy XMLHelper).
+     *
+     * @param container The pair container instance to populate
+     * @param filename The input filename
+     * @return true if the new layer loaded the file into the container
+     */
+    public static boolean dispatchLoadStandalonePairContainer(
+            agg.parser.PairContainer container, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("loadStandalonePairContainer",
+                agg.parser.PairContainer.class, String.class);
+            Object result = m.invoke(null, container, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

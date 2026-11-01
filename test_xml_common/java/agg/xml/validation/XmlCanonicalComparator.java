@@ -53,7 +53,7 @@ public final class XmlCanonicalComparator {
     /** Attributes that reference object IDs (point to generated IDs). */
     private static final java.util.Set<String> REF_ATTRS = java.util.Set.of(
         "type", "source", "target", "orig", "image", "id", "Rule",
-        "R1", "R2", "object", "GraphTransformationSystem"
+        "R1", "R2", "object", "GraphTransformationSystem", "Graph"
     );
 
     /**

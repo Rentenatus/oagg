@@ -7,7 +7,9 @@
 package agg.xml.ui;
 
 import agg.editor.impl.EdGraGra;
+import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
+import agg.editor.impl.EdRule;
 import agg.parser.ConflictsDependenciesContainer;
 import agg.ruleappl.ApplRuleSequence;
 import agg.parser.CriticalPairOption;
@@ -286,5 +288,163 @@ public class UIMigrationTest {
         assertTrue(result.isEqual(),
             "The legacy UI .rsx save differs from the frozen re-saved"
                 + " reference: " + result.getMessage());
+    }
+
+    // ---- UI .cpx (ConflictsDependenciesContainerSaveLoad like PairIOGUI) ----
+
+    /**
+     * Flag on: the UI .cpx dispatch loads the GUI reference - the editor
+     * layer of the embedded grammar and the CPA graph applied onto the
+     * editor objects - and saves it canonically identically to the raw
+     * reference. The DOM path preserves the file values (no LeftOf_
+     * renames, no LayoutNode.frozen derivation, no formula regeneration),
+     * so its save matches the raw reference canonically, unlike the
+     * frozen re-saved reference, which went through the legacy reader.
+     */
+    @Test
+    public void testUiCpxDispatch() throws Exception {
+        UIMigration.setUseNewXml(true);
+        File refFile = prepFile("ui_conflicts_deps.cpx");
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        assertTrue(UIMigration.loadCdContainerSaveLoad(saveLoad, refFile.getPath()),
+            "DOM UI .cpx load through the facade should succeed");
+        assertEquals(saveLoad.getGrammar().getName(), "CpaComputedTest",
+            "The embedded grammar should keep its name");
+        assertNotNull(saveLoad.getExcludePairContainer(),
+            "The conflict container should be restored");
+        assertNotNull(saveLoad.getDependencyPairContainer(),
+            "The dependency container should be restored");
+        assertNotNull(saveLoad.getCPABasisGraph(),
+            "The CPA basis graph should be restored");
+
+        EdGraGra ed = saveLoad.getPairsGraGra();
+        assertNotNull(ed, "The editor grammar should be restored");
+        EdNode lhsNode = findRule(ed, "useItem").getLeft().getNodes().get(0);
+        assertEquals(lhsNode.getX(), 110,
+            "The pinned LHS node position should be applied");
+        assertEquals(lhsNode.getY(), 210,
+            "The pinned LHS node position should be applied");
+
+        EdGraph cpaGraph = saveLoad.getCPAGraph();
+        assertNotNull(cpaGraph, "The CPA editor graph should be restored");
+        assertTrue(cpaGraph.isCPAgraph(), "The CPA graph flag should be set");
+        assertEquals(cpaGraph.getNodes().size(), 2, "CPA graph node count");
+        assertEquals(cpaGraph.getNodes().get(0).getX(), 152,
+            "The pinned CPA node position should be applied");
+        assertEquals(cpaGraph.getNodes().get(0).getY(), 252,
+            "The pinned CPA node position should be applied");
+
+        File outFile = new File(outputDir, "ui_migration_cpx_ui_new.cpx");
+        assertTrue(UIMigration.saveCdContainerSaveLoad(saveLoad, outFile.getPath()),
+            "The UI .cpx save through the facade should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The UI .cpx DOM save differs from the raw reference: "
+                + result.getMessage());
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad reloaded =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        assertTrue(UIMigration.loadCdContainerSaveLoad(reloaded, outFile.getPath()),
+            "The UI .cpx DOM output should be reloadable");
+        assertEquals(reloaded.getCPAGraph().getNodes().get(0).getX(), 152,
+            "The pinned CPA node position should survive the reload");
+        File stableFile = new File(outputDir, "ui_migration_cpx_ui_stable.cpx");
+        assertTrue(UIMigration.saveCdContainerSaveLoad(reloaded, stableFile.getPath()),
+            "The UI .cpx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "The UI .cpx DOM path should be stable: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Flag off: the legacy branch of the UI .cpx facade loads the GUI
+     * reference (editor layer via enrichObject, exactly like the frozen
+     * clone) and its save is canonically identical to the frozen re-saved
+     * reference - both sides come from the legacy-loaded state.
+     */
+    @Test
+    public void testUiCpxLegacyBranch() throws Exception {
+        UIMigration.setUseNewXml(false);
+        File refFile = prepFile("ui_conflicts_deps.cpx");
+        File resavedFile = prepFile("ui_conflicts_deps_resaved.cpx");
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        assertTrue(UIMigration.loadCdContainerSaveLoad(saveLoad, refFile.getPath()),
+            "Legacy UI .cpx load through the facade should succeed");
+        assertEquals(saveLoad.getGrammar().getName(), "CpaComputedTest",
+            "The legacy loaded embedded grammar should keep its name");
+        EdNode lhsNode = findRule(saveLoad.getPairsGraGra(), "useItem")
+            .getLeft().getNodes().get(0);
+        assertEquals(lhsNode.getX(), 110,
+            "The pinned LHS node position should be applied by enrichObject");
+        assertEquals(lhsNode.getY(), 210,
+            "The pinned LHS node position should be applied by enrichObject");
+
+        File outFile = new File(outputDir, "ui_migration_cpx_ui_legacy.cpx");
+        assertTrue(UIMigration.saveCdContainerSaveLoad(saveLoad, outFile.getPath()),
+            "The legacy UI .cpx save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(resavedFile, outFile);
+        assertTrue(result.isEqual(),
+            "The legacy UI .cpx save differs from the frozen re-saved"
+                + " reference: " + result.getMessage());
+    }
+
+    // ---- standalone PairContainer (like PairIOGUI) ----
+
+    /**
+     * The standalone pair container dispatch loads and saves the frozen
+     * reference with both branches: the DOM path canonically identically
+     * to the raw reference, the legacy path as the frozen clone writes
+     * it.
+     */
+    @Test
+    public void testStandalonePairContainerDispatch() throws Exception {
+        File refFile = prepFile("gen_standalone_conflicts.cpx");
+
+        UIMigration.setUseNewXml(true);
+        agg.parser.ExcludePairContainer pc =
+            new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(UIMigration.loadStandalonePairContainer(pc, refFile.getPath()),
+            "DOM standalone .cpx load through the facade should succeed");
+        assertEquals(pc.getGrammar().getName(), "CpaComputedTest",
+            "The embedded grammar should keep its name");
+        assertTrue(!pc.getExcludeContainer().isEmpty(),
+            "The computed conflict entries should be restored");
+        File outFile = new File(outputDir, "ui_migration_standalone_new.cpx");
+        assertTrue(UIMigration.saveStandalonePairContainer(pc, outFile.getPath()),
+            "DOM standalone .cpx save through the facade should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The standalone .cpx DOM save differs from the reference: "
+                + result.getMessage());
+
+        UIMigration.setUseNewXml(false);
+        agg.parser.ExcludePairContainer legacyPc =
+            new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(UIMigration.loadStandalonePairContainer(legacyPc, refFile.getPath()),
+            "Legacy standalone .cpx load through the facade should succeed");
+        assertEquals(legacyPc.getGrammar().getName(), "CpaComputedTest",
+            "The legacy loaded embedded grammar should keep its name");
+    }
+
+    /**
+     * Returns the editor rule with the given name, or fails the test.
+     */
+    private EdRule findRule(EdGraGra edGraGra, String name) {
+        for (EdRule rule : edGraGra.getRules()) {
+            if (name.equals(rule.getName())) {
+                return rule;
+            }
+        }
+        fail("Rule not found: " + name);
+        return null;
     }
 }
