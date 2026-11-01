@@ -6,7 +6,6 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraGra;
@@ -33,12 +32,10 @@ import org.w3c.dom.Element;
  */
 public class AdapterIntegrationTest {
 
-    private XMLHelper xmlHelper;
 
     @BeforeClass
     public void setUp() {
         TestDataHelper.requireAllSamples();
-        xmlHelper = new XMLHelper();
     }
 
     /**
@@ -47,12 +44,12 @@ public class AdapterIntegrationTest {
     @Test
     public void testGraphAdapterCreation() throws Exception {
         File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
-        boolean loaded = xmlHelper.read_from_xml(ggxFile.getAbsolutePath());
-        assertTrue(loaded, "Should load test file");
+        GraGra graGra = new GraGra();
+        graGra.load(ggxFile.getAbsolutePath());
 
-        // Get the top object (should be a Graph)
-        Graph graph = (Graph) xmlHelper.getTopObject(new Graph(null));
-        assertNotNull(graph, "Should be able to get Graph from file");
+        // take a host graph of the loaded grammar
+        Graph graph = graGra.getGraphsVec().get(0);
+        assertNotNull(graph, "Should be able to get a Graph from the file");
 
         // Create adapter
         GraphAdapter adapter = new GraphAdapter(graph);
@@ -68,10 +65,6 @@ public class AdapterIntegrationTest {
      */
     @Test
     public void testAdapterFactory() throws Exception {
-        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
-        XMLHelper helper = new XMLHelper();
-        helper.read_from_xml(ggxFile.getAbsolutePath());
-
         // Create a Graph and wrap it
         Graph graph = new Graph();
         XMLSerializable graphAdapter = XMLAdapterFactory.createAdapter(graph);
@@ -79,8 +72,8 @@ public class AdapterIntegrationTest {
         assertTrue(graphAdapter instanceof GraphAdapter, "Should create GraphAdapter");
 
         // Create a Node and wrap it (using null for required parameters)
-        Node node = (Node) helper.getTopObject(new Node(null, null, graph));
-        if (node != null) {
+        Node node = new Node(null, null, graph);
+        {
             XMLSerializable nodeAdapter = XMLAdapterFactory.createAdapter(node);
             assertNotNull(nodeAdapter, "Should create adapter for Node");
             assertTrue(nodeAdapter instanceof NodeAdapter, "Should create NodeAdapter");
@@ -95,32 +88,13 @@ public class AdapterIntegrationTest {
         Graph graph = new Graph();
         GraphAdapter adapter = new GraphAdapter(graph);
 
-        assertTrue(adapter.getWrappedObject() instanceof XMLObject,
-            "Wrapped object should be XMLObject");
+        assertEquals(adapter.getWrappedObject(), graph,
+            "Wrapped object should be the domain object");
         assertTrue(adapter instanceof XMLSerializable,
             "Adapter should implement XMLSerializable");
     }
 
-    /**
-     * Test that we can use both legacy and new approaches on the same data
-     */
-    @Test
-    public void testDualApproachCompatibility() throws Exception {
-        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
-
-        // Approach 1: Legacy XMLHelper
-        XMLHelper legacyHelper = new XMLHelper();
-        boolean legacyLoaded = legacyHelper.read_from_xml(ggxFile.getAbsolutePath());
-        assertTrue(legacyLoaded, "Legacy approach should work");
-
-        // Approach 2: New DOM-based approach
-        DOMXMLDeserializerContext newContext = new DOMXMLDeserializerContext(ggxFile);
-        assertNotNull(newContext, "New approach should work");
-
-        assertNotNull(legacyHelper.getDoc(), "Legacy should have document");
-        assertNotNull(newContext.getDocument(), "New should have document");
-    }
-
+    
     /**
      * Test that RuleAdapter.serializeToElement produces a Rule DOM element
      * with correct attributes and child structure.

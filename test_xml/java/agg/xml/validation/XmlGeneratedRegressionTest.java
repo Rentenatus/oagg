@@ -786,29 +786,6 @@ public class XmlGeneratedRegressionTest {
             "the entry over rules on different layers should be"
                 + " NOT_RELATED after the DOM load");
 
-        // Step 2: legacy load of the same file as the cross-system oracle
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        assertTrue(helper.read_from_xml(refFile.getAbsolutePath()),
-            "Legacy load of the free states reference should succeed");
-        agg.parser.ConflictsDependenciesContainer legacy =
-            new agg.parser.ConflictsDependenciesContainer();
-        helper.getTopObject(legacy);
-        agg.parser.ExcludePairContainer legacyEpc =
-            legacy.getLayeredExcludePairContainer() != null
-                ? legacy.getLayeredExcludePairContainer()
-                : legacy.getExcludePairContainer();
-        assertNotNull(legacyEpc,
-            "Legacy load should create a conflict container");
-        Rule legacyDelete = findStressRule(legacy.getGrammar(), "deleteItem");
-        Rule legacyUse = findStressRule(legacy.getGrammar(), "useItem");
-        Rule legacyCreate = findStressRule(legacy.getGrammar(), "createItem");
-        assertEquals(legacyEpc.getEntry(legacyDelete, legacyUse).getState(),
-            agg.parser.ExcludePairContainer.Entry.DISABLED,
-            "the legacy reader should restore the same DISABLED state");
-        assertEquals(legacyEpc.getEntry(legacyUse, legacyCreate).getState(),
-            agg.parser.ExcludePairContainer.Entry.NOT_RELATED,
-            "the legacy reader should restore the same NOT_RELATED state");
-
         // Step 3: DOM save, canonical comparison against the RAW reference
         File outFile = new File(outputDir, "conflicts_computed_freestates_new.cpx");
         assertTrue(XMLSerialization.saveWithDom(cdc, outFile.getAbsolutePath()),

@@ -6,7 +6,6 @@
  */
 package agg.xml.validation;
 
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
@@ -19,7 +18,7 @@ import java.io.File;
 
 /**
  * Compatibility tests verifying that all existing .ggx files can be loaded
- * by both the legacy XMLHelper and the new DOM-based system.
+ * by the DOM-based system and the schema.
  */
 public class CompatibilityTest {
 
@@ -28,19 +27,7 @@ public class CompatibilityTest {
         TestDataHelper.requireAllSamples();
     }
 
-    @Test
-    public void testAllFilesLoadWithLegacyHelper() {
-        for (String filename : TestDataHelper.SAMPLE_FILES) {
-            File file = TestDataHelper.resolveSample(filename);
 
-            XMLHelper helper = new XMLHelper();
-            boolean loaded = helper.read_from_xml(file.getAbsolutePath());
-            assertTrue(loaded, "Legacy should load: " + filename);
-            assertNotNull(helper.getDoc(), "Document should exist: " + filename);
-            assertEquals(helper.getDoc().getDocumentElement().getNodeName(), "Document",
-                "Root should be Document: " + filename);
-        }
-    }
 
     @Test
     public void testAllFilesLoadWithDomContext() throws Exception {
@@ -76,8 +63,6 @@ public class CompatibilityTest {
         }
     }
 
-    
-    
     @Test
     public void testGraGraMigrationValidation() {
         for (String filename : TestDataHelper.SAMPLE_FILES) {
@@ -93,16 +78,9 @@ public class CompatibilityTest {
         for (String filename : TestDataHelper.SAMPLE_FILES) {
             File file = TestDataHelper.resolveSample(filename);
 
-            XMLHelper helper = new XMLHelper();
-            helper.read_from_xml(file.getAbsolutePath());
-            String legacyVersion = helper.getDoc().getDocumentElement().getAttribute("version");
-
             DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
-            String newVersion = context.getCurrentElement().getAttribute("version");
-
-            assertEquals(newVersion, legacyVersion,
-                "Version should match between systems: " + filename);
-            assertFalse(legacyVersion.isEmpty(), "Version should not be empty: " + filename);
+            String version = context.getCurrentElement().getAttribute("version");
+            assertFalse(version.isEmpty(), "Version should not be empty: " + filename);
         }
     }
 }

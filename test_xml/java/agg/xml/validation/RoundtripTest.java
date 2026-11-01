@@ -135,20 +135,14 @@ public class RoundtripTest {
      */
     @Test(dataProvider = "sampleFiles")
     public void testCrossSystemCompatibility(File ggxFile) throws Exception {
-        // Load via legacy
-        XMLHelper legacyHelper = new XMLHelper();
-        assertTrue(legacyHelper.read_from_xml(ggxFile.getAbsolutePath()),
-            "Legacy should load: " + ggxFile.getName());
-        assertNotNull(legacyHelper.getDoc(), "Legacy document should exist");
-
-        // Load via new DOM
+        // Load via the DOM deserializer
         DOMXMLDeserializerContext newContext = new DOMXMLDeserializerContext(ggxFile);
         assertNotNull(newContext.getDocument(), "New document should exist");
 
-        // Both should have same root element name
+        // The root element is the AGG document root
         assertEquals(
-            legacyHelper.getDoc().getDocumentElement().getNodeName(),
             newContext.getDocument().getDocumentElement().getNodeName(),
+            "Document",
             "Root element names should match");
     }
 

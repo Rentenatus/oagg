@@ -6,7 +6,6 @@
  */
 package agg.xml.validation;
 
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
@@ -29,18 +28,6 @@ public class StressTest {
     @BeforeClass
     public void setUp() {
         TestDataHelper.requireAllSamples();
-    }
-
-    @Test
-    public void testRepeatedLegacyLoad() throws Exception {
-        File file = TestDataHelper.resolveSample("large_graph.ggx");
-
-        for (int i = 0; i < REPEAT_COUNT; i++) {
-            XMLHelper helper = new XMLHelper();
-            boolean loaded = helper.read_from_xml(file.getAbsolutePath());
-            assertTrue(loaded, "Load should succeed on iteration " + i);
-            assertNotNull(helper.getDoc(), "Document should exist on iteration " + i);
-        }
     }
 
     @Test
@@ -115,16 +102,11 @@ public class StressTest {
     }
 
     @Test
-    public void testAllFilesLoadUnderBothSystems() throws Exception {
+    public void testAllFilesLoadUnderDomPaths() throws Exception {
         for (String filename : TestDataHelper.SAMPLE_FILES) {
             File file = TestDataHelper.resolveSample(filename);
 
-            // Legacy
-            XMLHelper legacy = new XMLHelper();
-            assertTrue(legacy.read_from_xml(file.getAbsolutePath()),
-                "Legacy should load: " + filename);
-
-            // New DOM
+            // DOM
             DOMXMLDeserializerContext dom = new DOMXMLDeserializerContext(file);
             assertNotNull(dom.getDocument(), "DOM should load: " + filename);
 

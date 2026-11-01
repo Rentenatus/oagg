@@ -6,7 +6,6 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLObject;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.TypeGraph;
@@ -51,19 +50,14 @@ public class AdapterFactoryTest {
 
     @Test
     public void testCreateNullAdapter() {
-        XMLSerializable adapter = XMLAdapterFactory.createAdapter((XMLObject) null);
+        XMLSerializable adapter = XMLAdapterFactory.createAdapter((Object) null);
         assertNull(adapter, "Should return null for null input");
     }
 
     @Test
     public void testCreateGenericAdapter() {
-        XMLObject anonymousXmlObject = new XMLObject() {
-            @Override
-            public void XwriteObject(agg.util.XMLHelper h) {}
-            @Override
-            public void XreadObject(agg.util.XMLHelper h) {}
-        };
-        XMLSerializable adapter = XMLAdapterFactory.createAdapter(anonymousXmlObject);
+        Object anonymousObject = new Object();
+        XMLSerializable adapter = XMLAdapterFactory.createAdapter(anonymousObject);
         assertNotNull(adapter, "Should create generic adapter");
         assertTrue(adapter instanceof XMLObjectAdapter, "Should create generic XMLObjectAdapter");
     }
