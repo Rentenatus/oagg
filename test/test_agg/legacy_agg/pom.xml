@@ -8,7 +8,7 @@
         <groupId>agg</groupId>
         <artifactId>agg-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>agg-core-legacy</artifactId>
@@ -58,7 +58,7 @@
 
     <build>
         <sourceDirectory>.</sourceDirectory>
-        <testSourceDirectory>../../../test_xml_prep/java</testSourceDirectory>
+        <testSourceDirectory>../../../test_xml_prep</testSourceDirectory>
 
         <plugins>
             <plugin>
@@ -74,7 +74,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../../../test_xml_common/java</source>
+                                <source>../../../test_xml_common</source>
                             </sources>
                         </configuration>
                     </execution>

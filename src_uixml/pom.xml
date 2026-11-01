@@ -70,12 +70,12 @@
             Non-standard source layout: Java sources live directly under src_uixml/
             (not under src/main/java), mirroring src_xml and the existing AGG
             project structure. Test sources live under the repository-wide UI test
-            root test_xml_ui/java (plus the shared helpers in test_xml_common).
+            root test_xml_ui (plus the shared helpers in test_xml_common).
             Tests run with the repository-wide test working directory
             assets_test_xml, exactly like the DOM suite in agg-xml.
         -->
         <sourceDirectory>.</sourceDirectory>
-        <testSourceDirectory>../test_xml_ui/java</testSourceDirectory>
+        <testSourceDirectory>../test_xml_ui</testSourceDirectory>
 
         <plugins>
             <plugin>
@@ -91,7 +91,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../test_xml_common/java</source>
+                                <source>../test_xml_common</source>
                             </sources>
                         </configuration>
                     </execution>
