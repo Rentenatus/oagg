@@ -17,8 +17,6 @@ package agg.layout.evolutionary;
 import java.awt.Point;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdNode;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 
 /**
  * This class contains information about an edge (connection), such as actual

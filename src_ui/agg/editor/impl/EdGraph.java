@@ -31,8 +31,6 @@ import agg.attribute.AttrMapping;
 import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.ContextView;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.util.Change;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;

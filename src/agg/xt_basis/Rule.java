@@ -32,8 +32,6 @@ import agg.cons.EvalSet;
 import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Vector;
 import agg.cons.Evaluable;
 import agg.cons.Formula;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 
 public class EdConstraint {
 

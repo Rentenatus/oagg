@@ -13,8 +13,6 @@ package agg.parser;
 
 import agg.parser.ExcludePairContainer.Entry;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;

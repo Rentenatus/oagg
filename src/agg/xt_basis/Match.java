@@ -20,8 +20,6 @@ import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.HashMap;

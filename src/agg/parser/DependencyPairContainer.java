@@ -14,7 +14,6 @@
 package agg.parser;
 
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.ConcurrentRule;
@@ -273,43 +272,6 @@ public class DependencyPairContainer extends ExcludePairContainer {
         firePairEvent(new CriticalPairEvent(this, r1, r2, "rule pair  [ "
                 + r1.getName() + " , " + r2.getName() + " ]  done"));
         return getCriticalPair(r1, r2, container);
-    }
-
-    protected Pair<OrdinaryMorphism, OrdinaryMorphism>
-            readOldOverlappingMorphisms(
-                    XMLHelper h,
-                    Rule r1,
-                    Rule r2,
-                    String firstName,
-                    Graph overlapGraph) {
-        OrdinaryMorphism first = BaseFactory.theFactory().createMorphism(
-                r1.getRight(), overlapGraph);
-        OrdinaryMorphism second = BaseFactory.theFactory().createMorphism(
-                r2.getLeft(), overlapGraph);
-        first.setName(firstName.replaceAll(" ", ""));
-        while (h.readSubTag("Mapping")) {
-            GraphObject o = (GraphObject) h.getObject("orig", null, false);
-            GraphObject i = (GraphObject) h.getObject("image", null, false);
-            if (o != null && i != null) {
-                first.addMapping(o, i);
-            }
-            h.close();
-        }
-        h.close();
-        if (h.readSubTag("Morphism")) {
-            String name = h.readAttr("name");
-            second.setName(name.replaceAll(" ", ""));
-            while (h.readSubTag("Mapping")) {
-                GraphObject o = (GraphObject) h.getObject("orig", null, false);
-                GraphObject i = (GraphObject) h.getObject("image", null, false);
-                if (o != null && i != null) {
-                    second.addMapping(o, i);
-                }
-                h.close();
-            }
-            h.close();
-        }
-        return new Pair<OrdinaryMorphism, OrdinaryMorphism>(first, second);
     }
     /**
      * Provides a human readable text of the critical pairs.

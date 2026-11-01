@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.swing.undo.*;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;

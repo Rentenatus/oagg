@@ -22,7 +22,6 @@ import agg.attribute.AttrTypeMember;
 import agg.attribute.AttrEvent;
 //import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
-import agg.util.XMLHelper;
 import java.util.Iterator;
 import org.w3c.dom.Element;
 

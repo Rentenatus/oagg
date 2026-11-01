@@ -17,7 +17,6 @@ import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.cons.Evaluable;
 import agg.cons.Formula;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

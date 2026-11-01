@@ -32,8 +32,6 @@ import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.ConcurrentRule;
 import agg.xt_basis.GraGra;

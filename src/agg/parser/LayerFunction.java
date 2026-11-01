@@ -13,7 +13,6 @@
  */
 package agg.parser;
 
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;

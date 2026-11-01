@@ -23,8 +23,6 @@ import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import java.util.ArrayList;
 import java.util.List;
 

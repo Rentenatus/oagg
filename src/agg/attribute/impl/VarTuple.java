@@ -20,7 +20,6 @@ import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.handler.AttrHandler;
-import agg.util.XMLHelper;
 import java.util.Iterator;
 import org.w3c.dom.Element;
 

@@ -16,7 +16,6 @@ package agg.xt_basis;
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

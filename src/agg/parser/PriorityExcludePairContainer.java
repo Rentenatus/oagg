@@ -14,7 +14,6 @@
 package agg.parser;
 
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;

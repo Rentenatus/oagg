@@ -17,7 +17,6 @@ import agg.attribute.AttrTypeMember;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerType;
-import agg.util.XMLHelper;
 
 /**
  * Keeps the declaration name, type and the type's handler.

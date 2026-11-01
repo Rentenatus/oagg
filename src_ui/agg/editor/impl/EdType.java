@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Vector;
 import agg.gui.animation.AnimationParam;
 import agg.gui.editor.EditorConstants;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Type;
 
 /**

@@ -8,7 +8,6 @@
  */
 package agg.xt_basis;
 
-import agg.util.XMLHelper;
 
 /**
  * GraphElement defines the common interface for all elements in a graph,

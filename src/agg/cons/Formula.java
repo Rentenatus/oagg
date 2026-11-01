@@ -19,7 +19,6 @@ import java.util.Vector;
 import java.io.Serializable;
 import de.jare.ndimcol.primint.ArrayMovieInt;
 import de.jare.ndimcol.primint.ArraySeasonInt;
-import agg.util.XMLHelper;
 import agg.xt_basis.NestedApplCond;
 
 @SuppressWarnings("serial")

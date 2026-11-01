@@ -17,7 +17,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;

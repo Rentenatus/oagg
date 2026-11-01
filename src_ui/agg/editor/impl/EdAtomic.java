@@ -23,7 +23,6 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.agt.MultiRule;
-import agg.util.XMLHelper;
 import agg.attribute.impl.CondTuple;
 import java.util.Iterator;
 

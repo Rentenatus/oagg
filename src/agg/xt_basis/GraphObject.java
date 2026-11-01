@@ -20,7 +20,6 @@ import agg.attribute.AttrTuple;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -29,7 +29,6 @@ import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.parser.javaExpr.Node;
 import agg.attribute.parser.javaExpr.SimpleNode;
-import agg.util.XMLHelper;
 
 /**
  * Holds an attribute handler expression, its type and the functionality for

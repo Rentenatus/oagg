@@ -31,8 +31,6 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.TupleMapping;
 import agg.attribute.impl.ContextView;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Completion_InjCSP;

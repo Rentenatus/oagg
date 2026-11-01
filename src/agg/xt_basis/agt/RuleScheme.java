@@ -21,7 +21,6 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.util.XMLHelper;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Graph;

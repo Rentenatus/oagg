@@ -20,7 +20,6 @@ import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;

@@ -43,8 +43,6 @@ import agg.attribute.impl.ContextView;
 import agg.attribute.view.AttrViewEvent;
 import agg.attribute.view.AttrViewObserver;
 import agg.attribute.view.AttrViewSetting;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;

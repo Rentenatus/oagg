@@ -37,7 +37,6 @@ import agg.xt_basis.TypeException;
 import agg.xt_basis.Match;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.ValueMember;
-import agg.util.XMLHelper;
 import agg.util.Pair;
 import org.w3c.dom.Element;
 // ****************************************************************************+

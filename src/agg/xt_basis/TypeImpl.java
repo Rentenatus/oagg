@@ -19,7 +19,6 @@ import java.util.List;
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 
 /**

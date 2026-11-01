@@ -12,8 +12,6 @@
 package agg.layout.evolutionary;
 
 import agg.xt_basis.Type;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 
 /**
  * This class contains information about a layout pattern of a type. This

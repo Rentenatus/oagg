@@ -24,8 +24,6 @@ import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;

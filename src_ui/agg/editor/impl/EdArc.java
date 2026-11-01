@@ -38,8 +38,6 @@ import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.ContextView;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;

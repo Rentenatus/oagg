@@ -18,7 +18,6 @@ import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.util.Change;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;

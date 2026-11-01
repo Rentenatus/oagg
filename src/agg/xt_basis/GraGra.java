@@ -33,8 +33,6 @@ import agg.ruleappl.ObjectFlow;
 import agg.ruleappl.RuleSequence;
 import agg.util.Disposable;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
