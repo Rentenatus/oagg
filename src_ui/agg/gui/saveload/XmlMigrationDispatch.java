@@ -32,22 +32,6 @@ public final class XmlMigrationDispatch {
     }
 
     /**
-     * Returns whether the DOM path is enabled and reachable.
-     *
-     * @return true if the new XML layer is active
-     */
-    public static boolean isUseNewXml() {
-        try {
-            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
-            java.lang.reflect.Method m = cls.getMethod("isUseNewXml");
-            Object result = m.invoke(null);
-            return result instanceof Boolean && ((Boolean) result).booleanValue();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * Saves an EdGraGra through the new XML layer (like GraGraSave.save
      * does with the legacy XMLHelper).
      *

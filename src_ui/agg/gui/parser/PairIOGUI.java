@@ -21,7 +21,6 @@ import agg.parser.PairContainer;
 import agg.parser.CriticalPair;
 import agg.parser.ConflictsDependenciesContainer;
 import agg.gui.saveload.XmlMigrationDispatch;
-import agg.util.XMLHelper;
 
 /**
  * This class controlls the load and save process. The choice of xml format for
@@ -236,44 +235,20 @@ public class PairIOGUI {
 	 *            The destination file name.
 	 */
 	public void save(String dir, String file) {
-        // DOM dispatch first; on failure fall through to the legacy path
         if (this.combined) {
             if (this.cdContainerSaveLoad != null) {
-                if (XmlMigrationDispatch.dispatchSaveCdContainerSaveLoad(
-                        this.cdContainerSaveLoad, dir + file)) {
-                    this.isSaved = true;
-                    return;
-                }
+                this.isSaved = XmlMigrationDispatch
+                        .dispatchSaveCdContainerSaveLoad(
+                                this.cdContainerSaveLoad, dir + file);
+                return;
             } else if (this.cdContainer != null) {
-                if (XmlMigrationDispatch.dispatchSaveCdContainer(
-                        this.cdContainer, dir + file)) {
-                    this.isSaved = true;
-                    return;
-                }
-            }
-        } else if (this.pc != null) {
-            if (XmlMigrationDispatch.dispatchSaveStandalonePairContainer(
-                    this.pc, dir + file)) {
-                this.isSaved = true;
+                this.isSaved = XmlMigrationDispatch.dispatchSaveCdContainer(
+                        this.cdContainer, dir + file);
                 return;
             }
-        }
-        XMLHelper xmlh = new XMLHelper();
-        // file = XMLHelper.replaceGermanSpecialCh(file);
-        if (this.combined) {
-            if (this.cdContainerSaveLoad != null) {
-                xmlh.addTopObject(this.cdContainerSaveLoad);
-                xmlh.save_to_xml(dir + file);
-                this.isSaved = true;
-            } else if (this.cdContainer != null) {
-                xmlh.addTopObject(this.cdContainer);
-                xmlh.save_to_xml(dir + file);
-                this.isSaved = true;
-            }
         } else if (this.pc != null) {
-            xmlh.addTopObject(this.pc);
-            xmlh.save_to_xml(dir + file);
-            this.isSaved = true;
+            this.isSaved = XmlMigrationDispatch
+                    .dispatchSaveStandalonePairContainer(this.pc, dir + file);
         }
     }
 
@@ -356,10 +331,8 @@ public class PairIOGUI {
                 && this.pc == null) {
             return null;
         }
-        Object result = null;
         this.directory = dir;
         this.fileName = file;
-        // DOM dispatch first; on failure fall through to the legacy path
         if (this.cdContainerSaveLoad != null) {
             this.combined = true;
             if (XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
@@ -380,26 +353,7 @@ public class PairIOGUI {
                 return this.pc;
             }
         }
-        XMLHelper h = new XMLHelper();
-        /*
-		 * if(XMLHelper.hasGermanSpecialCh(fileName)){ System.out.println(" Read
-		 * file name exception occurred! " +"\n Maybe the German characters like
-		 * ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or spase were used. " +"\n Please rename the file " +"\n
-		 * and try again."); return null; }
-         */
-        if (h.read_from_xml(this.directory + this.fileName)) {
-            if (this.cdContainerSaveLoad != null) {
-                this.combined = true;
-                result = h.getTopObject(this.cdContainerSaveLoad);
-            } else if (this.cdContainer != null) {
-                this.combined = true;
-                result = h.getTopObject(this.cdContainer);
-            } else if (this.pc != null) {
-                this.combined = false;
-                result = h.getTopObject(this.pc);
-            }
-        }
-        return result;
+        return null;
     }
 
     public Object reload(String fullFileName) {
@@ -408,8 +362,6 @@ public class PairIOGUI {
                 && this.pc == null) {
             return null;
         }
-        Object result = null;
-        // DOM dispatch first; on failure fall through to the legacy path
         if (this.cdContainerSaveLoad != null) {
             this.combined = true;
             if (XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
@@ -429,26 +381,7 @@ public class PairIOGUI {
                 return this.pc;
             }
         }
-        XMLHelper h = new XMLHelper();
-        /*
-		 * if(XMLHelper.hasGermanSpecialCh(fullFileName)){
-		 * System.out.println("Read file name exception occurred! " +"\nMaybe
-		 * the German characters like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. "
-		 * +"\nPlease rename the file " +"\nand try again."); return null; }
-         */
-        if (h.read_from_xml(fullFileName)) {
-            if (this.cdContainerSaveLoad != null) {
-                this.combined = true;
-                result = h.getTopObject(this.cdContainerSaveLoad);
-            } else if (this.cdContainer != null) {
-                this.combined = true;
-                result = h.getTopObject(this.cdContainer);
-            } else if (this.pc != null) {
-                this.combined = false;
-                result = h.getTopObject(this.pc);
-            }
-        }
-        return result;
+        return null;
     }
 
     public String getFileName() {

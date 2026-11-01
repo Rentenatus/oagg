@@ -3968,13 +3968,9 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void save(String filename) {
-        if (isUseNewXmlEnabled()) {
-            dispatchSave(this, filename);
-            return;
-        }
-        String ggx = ".ggx";
         storeUsedClassPackages();
-        String outfileName = "";
+        String ggx = ".ggx";
+        String outfileName;
         if ("".equals(filename)) {
             outfileName = this.itsName + "_out.ggx";
         } else {
@@ -3983,21 +3979,7 @@ public class GraGra implements Disposable, XMLObject {
                 outfileName = outfileName.concat(ggx);
             }
         }
-        if (outfileName.endsWith(ggx)) {
-            XMLHelper xmlh = new XMLHelper();
-            // outfileName = XMLHelper.replaceGermanSpecialCh(outfileName);
-            xmlh.addTopObject(this);
-            xmlh.save_to_xml(outfileName);
-            File f = new File(outfileName);
-            if (f.exists()) {
-                this.fileName = f.getName();
-                if (f.getParent() == null) {
-                    this.dirName = "." + File.separator;
-                } else {
-                    this.dirName = f.getParent() + File.separator;
-                }
-            }
-        }
+        dispatchSave(this, outfileName);
     }
 
     public void save(String dirname, String filename) {
@@ -4012,75 +3994,21 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void load(String filename) throws Exception {
-        if (isUseNewXmlEnabled()) {
-            dispatchLoad(this, filename);
-            return;
-        }
         File f = new File(filename);
-        if (f.exists()) {
-            if (filename.endsWith(".ggx")) {
-                XMLHelper h = new XMLHelper();
-                /*
-				 * if(XMLHelper.hasGermanSpecialCh(filename)){
-				 * System.out.println("Read file name exception occurred! "
-				 * +"\nMaybe the German umlaut like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼ or ÃƒÅ¸ were used. "
-				 * +"\nPlease replace it by ae, oe, ue or ss " +"\nand try
-				 * again."); return; }
-                 */
-                if (h.read_from_xml(filename)) {
-                    h.getTopObject(this);
-                    this.fileName = f.getName();
-                    if (f.getParent() == null) {
-                        this.dirName = "." + File.separator;
-                    } else {
-                        this.dirName = f.getParent() + File.separator;
-                    }
-                } else {
-                    throw new Exception("File  \"" + filename
-                            + "\"  is not an  AGG  file!");
-                }
-            } else {
-                throw new Exception("File  \"" + filename
-                        + "\"  is not a  \".ggx\"  file!");
-            }
-        } else {
+        if (!f.exists()) {
             throw new Exception("File  \"" + filename
                     + "\"  doesn't exist!");
         }
+        if (!filename.endsWith(".ggx")) {
+            throw new Exception("File  \"" + filename
+                    + "\"  is not a  \".ggx\"  file!");
+        }
+        dispatchLoad(this, filename);
     }
 
     public void read(String filename) throws Exception {
-        File f = new File(filename);
-        if (f.exists()) {
-            if (filename.endsWith(".ggx")) {
-                XMLHelper h = new XMLHelper();
-                /*
-				 * if(XMLHelper.hasGermanSpecialCh(filename)){
-				 * System.out.println("Read file name exception occurred! "
-				 * +"\nMaybe the German umlaut like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼ or ÃƒÅ¸ were used. "
-				 * +"\nPlease replace it by ae, oe, ue or ss " +"\nand try
-				 * again."); return; }
-                 */
-                if (h.read_from_xml(filename)) {
-                    h.getTopObject(this);
-                    this.fileName = f.getName();
-                    if (f.getParent() != null) {
-                        this.dirName = f.getParent() + File.separator;
-                    } else {
-                        this.dirName = "." + File.separator;
-                    }
-                    setUsedClassPackages();
-                } else {
-                    throw new Exception("File  \"" + filename
-                            + "\"  is not an AGG file!");
-                }
-            } else {
-                throw new Exception("File  \"" + filename
-                        + "\"  is not a  \".ggx\"  file!");
-            }
-        } else {
-            throw new Exception("File  \"" + filename + "\"  does not exist!");
-        }
+        load(filename);
+        setUsedClassPackages();
     }
 
     /**
@@ -4846,22 +4774,6 @@ public class GraGra implements Disposable, XMLObject {
 //			return (new ArrayList<SubGraGra>(0)).elements();
 //	}
     // ---- Feature flag dispatch via reflection (avoids compile dependency on agg-xml) ----
-
-    private static volatile Boolean cachedUseNewXml = null;
-
-    private static boolean isUseNewXmlEnabled() {
-        if (cachedUseNewXml != null) {
-            return cachedUseNewXml;
-        }
-        try {
-            Class<?> cls = Class.forName("agg.xml.migration.GraGraMigration");
-            java.lang.reflect.Method m = cls.getMethod("isUseNewXml");
-            cachedUseNewXml = (Boolean) m.invoke(null);
-        } catch (Exception e) {
-            cachedUseNewXml = Boolean.FALSE;
-        }
-        return cachedUseNewXml;
-    }
 
     private static void dispatchSave(GraGra graGra, String filename) {
         try {

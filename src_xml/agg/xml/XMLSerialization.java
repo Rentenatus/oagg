@@ -6,7 +6,6 @@
  */
 package agg.xml;
 
-import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xml.adapter.ApplRuleSequenceAdapter;
 import agg.xml.adapter.ConflictsDependenciesContainerAdapter;
@@ -27,9 +26,9 @@ import java.io.File;
  * It replaces direct calls to {@code XMLHelper.save_to_xml()} and
  * {@code XMLHelper.read_from_xml()} in the core domain classes.</p>
  *
- * <p>The methods delegate to {@link GraGraMigration} which uses a feature flag
- * ({@code agg.xml.newxml} system property) to switch between the legacy
- * XMLHelper path and the new DOM-based path.</p>
+ * <p>The GraGra save/load methods delegate to {@link GraGraMigration}; the
+ * former migration feature flag has been removed with the legacy XML
+ * cleanup - every save/load goes through the DOM-based adapters.</p>
  *
  * <p><b>Supported object types:</b></p>
  * <ul>
@@ -37,7 +36,7 @@ import java.io.File;
  *   <li>{@link agg.ruleappl.ApplRuleSequence} -- .rsx files (rule sequence applicability)</li>
  *   <li>{@link agg.parser.ConflictsDependenciesContainer} -- .cpx files (critical pairs)</li>
  *   <li>{@link agg.xt_basis.AGGBasicAppl} -- static GraGra load/save helpers</li>
- *   <li>Generic {@link XMLObject} -- any XMLObject via legacy XMLHelper</li>
+ *   <li>{@link agg.parser.PairContainer} -- standalone .cpx files</li>
  * </ul>
  *
  * @see GraGraMigration
@@ -46,30 +45,6 @@ import java.io.File;
 public final class XMLSerialization {
 
     private XMLSerialization() {
-    }
-
-    // ---- Feature flag control ----
-
-    /**
-     * Returns whether the new DOM-based XML serialization is enabled.
-     *
-     * @return true if the new XML path is active, false for legacy
-     */
-    public static boolean isUseNewXml() {
-        return GraGraMigration.isUseNewXml();
-    }
-
-    /**
-     * Enables or disables the new DOM-based XML serialization.
-     *
-     * <p>When enabled, save/load operations use the GraGraAdapter with
-     * direct DOM serialization. When disabled (default), the legacy
-     * XMLHelper path is used.</p>
-     *
-     * @param enabled true to use new XML, false for legacy
-     */
-    public static void setUseNewXml(boolean enabled) {
-        GraGraMigration.setUseNewXml(enabled);
     }
 
     // ---- GraGra save/load ----
@@ -145,7 +120,7 @@ public final class XMLSerialization {
         }
     }
 
-    // ---- Direct DOM serialization (bypassing feature flag) ----
+    // ---- Direct DOM serialization ----
 
     /**
      * Saves a GraGra directly using the new DOM-based serialization,
@@ -218,53 +193,6 @@ public final class XMLSerialization {
         return serializer.serializeToString(adapter);
     }
 
-    // ---- Generic XMLObject save/load (legacy-compatible) ----
-
-    /**
-     * Saves any XMLObject to a .ggx file using the legacy XMLHelper path.
-     *
-     * <p>This method is provided for backward compatibility with domain
-     * classes that implement {@link XMLObject} but are not GraGra.
-     * It uses the legacy XMLHelper internally.</p>
-     *
-     * @param object   The XMLObject to save
-     * @param filename The output filename
-     * @return true if saving succeeded
-     * @deprecated Use {@link #save(GraGra, String)} for GraGra objects.
-     *             For other XMLObject types, use the legacy XMLHelper directly
-     *             until dedicated adapters are available.
-     */
-    @Deprecated
-    public static boolean saveXmlObject(XMLObject object, String filename) {
-        if (object == null || filename == null) {
-            return false;
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        helper.addTopObject(object);
-        return helper.save_to_xml(filename);
-    }
-
-    /**
-     * Loads any XMLObject from a .ggx file using the legacy XMLHelper path.
-     *
-     * @param template  The XMLObject instance to populate
-     * @param filename  The input filename
-     * @return true if loading succeeded
-     * @deprecated Use {@link #load(GraGra, String)} for GraGra objects.
-     */
-    @Deprecated
-    public static boolean loadXmlObject(XMLObject template, String filename) {
-        if (template == null || filename == null) {
-            return false;
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        if (!helper.read_from_xml(filename)) {
-            return false;
-        }
-        helper.getTopObject(template);
-        return true;
-    }
-
     // ---- ApplRuleSequence save/load (.rsx files) ----
 
     /**
@@ -281,13 +209,7 @@ public final class XMLSerialization {
         if (applRuleSeq == null || filename == null) {
             return false;
         }
-        String outfileName = filename;
-        if (outfileName.indexOf(".rsx") == -1) {
-            outfileName = outfileName.concat(".rsx");
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        helper.addTopObject(applRuleSeq);
-        return helper.save_to_xml(outfileName);
+        return saveWithDom(applRuleSeq, filename);
     }
 
     /**
@@ -303,19 +225,7 @@ public final class XMLSerialization {
         if (applRuleSeq == null || filename == null) {
             return null;
         }
-        File f = new File(filename);
-        if (!f.exists()) {
-            throw new Exception("File \"" + filename + "\" doesn't exist!");
-        }
-        if (!filename.endsWith(".rsx")) {
-            throw new Exception("File \"" + filename + "\" is not a \".rsx\" file!");
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        if (helper.read_from_xml(filename)) {
-            helper.getTopObject(applRuleSeq);
-            return applRuleSeq.getGraGra();
-        }
-        throw new Exception("File \"" + filename + "\" is not an AGG .rsx file!");
+        return loadWithDom(applRuleSeq, filename);
     }
 
     /**
@@ -483,55 +393,6 @@ public final class XMLSerialization {
         return true;
     }
 
-    // ---- ConflictsDependenciesContainer save/load (.cpx files) ----
-
-    /**
-     * Saves a ConflictsDependenciesContainer to a .cpx file.
-     *
-     * <p>ConflictsDependenciesContainer holds computed critical pairs
-     * (exclude/dependency pairs) and is saved in .cpx format.</p>
-     *
-     * @param container The ConflictsDependenciesContainer to save
-     * @param filename  The output filename
-     * @return true if saving succeeded
-     */
-    public static boolean save(agg.parser.ConflictsDependenciesContainer container,
-            String filename) {
-        if (container == null || filename == null) {
-            return false;
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        helper.addTopObject(container);
-        return helper.save_to_xml(filename);
-    }
-
-    /**
-     * Loads a ConflictsDependenciesContainer from a .cpx file.
-     *
-     * @param filename The input filename (.cpx)
-     * @return the loaded ConflictsDependenciesContainer, or null if loading failed
-     */
-    public static agg.parser.ConflictsDependenciesContainer loadConflictsDependencies(
-            String filename) {
-        if (filename == null) {
-            return null;
-        }
-        File f = new File(filename);
-        if (!f.exists()) {
-            return null;
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        if (helper.read_from_xml(filename)) {
-            agg.parser.ConflictsDependenciesContainer cdc =
-                new agg.parser.ConflictsDependenciesContainer();
-            Object result = helper.getTopObject(cdc);
-            if (result != null) {
-                return (agg.parser.ConflictsDependenciesContainer) result;
-            }
-        }
-        return null;
-    }
-
     // ---- AGGBasicAppl static helpers ----
 
     /**
@@ -578,32 +439,6 @@ public final class XMLSerialization {
             outfileName = outfileName.concat(".ggx");
         }
         return save(graGra, outfileName);
-    }
-
-    // ---- WSDL load (.wsdl files) ----
-
-    /**
-     * Loads XML from a .wsdl file into an XMLHelper.
-     *
-     * <p>This replaces {@code ConverterWSDL.load(fName)}. WSDL files use
-     * the same XML parsing infrastructure but are not .ggx files.</p>
-     *
-     * @param filename The input filename (.wsdl)
-     * @return an XMLHelper with the parsed document, or null if loading failed
-     */
-    public static agg.util.XMLHelper loadWSDL(String filename) {
-        if (filename == null || !filename.endsWith(".wsdl")) {
-            return null;
-        }
-        File f = new File(filename);
-        if (!f.exists()) {
-            return null;
-        }
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        if (helper.read_from_xml(filename)) {
-            return helper;
-        }
-        return null;
     }
 
     // ---- File extension helpers ----

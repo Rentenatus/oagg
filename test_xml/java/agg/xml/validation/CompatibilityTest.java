@@ -10,7 +10,6 @@ import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
-import agg.xml.legacy.LegacyCompatibility;
 import agg.xml.migration.GraGraMigration;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -77,28 +76,8 @@ public class CompatibilityTest {
         }
     }
 
-    @Test
-    public void testLegacyCompatibilityCanLoad() {
-        for (String filename : TestDataHelper.SAMPLE_FILES) {
-            File file = TestDataHelper.resolveSample(filename);
-
-            assertTrue(LegacyCompatibility.canLoad(file),
-                "LegacyCompatibility.canLoad should return true: " + filename);
-        }
-    }
-
-    @Test
-    public void testGraGraMigrationLegacyPath() throws Exception {
-        GraGraMigration.setUseNewXml(false);
-        for (String filename : TestDataHelper.SAMPLE_FILES) {
-            File file = TestDataHelper.resolveSample(filename);
-
-            GraGra graGra = new GraGra();
-            boolean loaded = GraGraMigration.load(graGra, file.getAbsolutePath());
-            assertTrue(loaded, "GraGraMigration.load should succeed (legacy): " + filename);
-        }
-    }
-
+    
+    
     @Test
     public void testGraGraMigrationValidation() {
         for (String filename : TestDataHelper.SAMPLE_FILES) {

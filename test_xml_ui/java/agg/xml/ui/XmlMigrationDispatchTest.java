@@ -12,7 +12,6 @@ import agg.parser.CriticalPairOption;
 import agg.ruleappl.ApplRuleSequence;
 import agg.xt_basis.GraGra;
 import agg.xml.validation.XmlCanonicalComparator;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -32,7 +31,6 @@ public class XmlMigrationDispatchTest {
     private static final String OUTPUT_DIR = "target/ui-migration/";
 
     private File outputDir;
-    private boolean savedFlag;
 
     @BeforeMethod
     public void setUp() {
@@ -40,27 +38,9 @@ public class XmlMigrationDispatchTest {
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
-        savedFlag = UIMigration.isUseNewXml();
     }
 
-    @AfterMethod
-    public void tearDown() {
-        UIMigration.setUseNewXml(savedFlag);
-    }
-
-    /**
-     * The dispatch reflects the flag state without caching it.
-     */
-    @Test
-    public void testDispatchReflectsFlag() {
-        UIMigration.setUseNewXml(true);
-        assertTrue(XmlMigrationDispatch.isUseNewXml(),
-            "The dispatch should see the enabled flag");
-        UIMigration.setUseNewXml(false);
-        assertFalse(XmlMigrationDispatch.isUseNewXml(),
-            "The dispatch should see the disabled flag immediately");
-    }
-
+    
     /**
      * The EdGraGra dispatch loads the frozen UI reference and saves it
      * canonically identically to the raw reference - the .ggx contract of
@@ -68,7 +48,6 @@ public class XmlMigrationDispatchTest {
      */
     @Test
     public void testEdGraGraDispatchRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = new File(PREP_DIR, "ui_basic_graph_attrs.ggx");
         assertTrue(refFile.exists() && refFile.length() > 0,
             "Frozen UI reference missing (run LegacyPreparationTest first): "
@@ -96,7 +75,6 @@ public class XmlMigrationDispatchTest {
      */
     @Test
     public void testCoreGraGraDispatchRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = new File(PREP_DIR, "gen_basic_graph_attrs.ggx");
         assertTrue(refFile.exists() && refFile.length() > 0,
             "Generated reference missing (run LegacyPreparationTest first): "
@@ -118,24 +96,7 @@ public class XmlMigrationDispatchTest {
                 + result.getMessage());
     }
 
-    /**
-     * With the flag off the dispatch still works through the facade's
-     * legacy branch (the GUI calls it only when the flag is on, but the
-     * facade must stay symmetric).
-     */
-    @Test
-    public void testEdGraGraDispatchLegacyBranch() throws Exception {
-        UIMigration.setUseNewXml(false);
-        File refFile = new File(PREP_DIR, "ui_basic_graph_attrs.ggx");
-        assertTrue(refFile.exists() && refFile.length() > 0,
-            "Frozen UI reference missing: " + refFile.getPath());
-
-        EdGraGra loaded = XmlMigrationDispatch.dispatchLoad(refFile.getPath());
-        assertNotNull(loaded, "The legacy dispatch load should return an EdGraGra");
-        assertEquals(loaded.getBasisGraGra().getName(), "BasicGraphTest",
-            "The legacy dispatched load should keep the grammar name");
-    }
-
+    
 
     /**
      * The rule sequence dispatch loads the GUI reference (with the
@@ -144,7 +105,6 @@ public class XmlMigrationDispatchTest {
      */
     @Test
     public void testRuleSequenceDispatchRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = new File(PREP_DIR, "ui_appl_rule_sequence.rsx");
         assertTrue(refFile.exists() && refFile.length() > 0,
             "GUI .rsx reference missing (run LegacyPreparationTest first): "
@@ -185,7 +145,6 @@ public class XmlMigrationDispatchTest {
      */
     @Test
     public void testUiCpxDispatchRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = new File(PREP_DIR, "ui_conflicts_deps.cpx");
         assertTrue(refFile.exists() && refFile.length() > 0,
             "UI .cpx reference missing (run LegacyPreparationTest first): "
@@ -221,7 +180,6 @@ public class XmlMigrationDispatchTest {
      */
     @Test
     public void testStandalonePairContainerDispatchRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = new File(PREP_DIR, "gen_standalone_conflicts.cpx");
         assertTrue(refFile.exists() && refFile.length() > 0,
             "Standalone .cpx reference missing (run LegacyPreparationTest first): "

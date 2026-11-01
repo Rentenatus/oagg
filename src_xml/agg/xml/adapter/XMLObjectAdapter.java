@@ -6,7 +6,6 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLObject;
 import agg.xml.core.XMLSerializable;
 import agg.xml.core.XMLSerializerContext;
 import agg.xml.core.XMLDeserializerContext;
@@ -23,14 +22,14 @@ import agg.xml.core.XMLSerializationException;
  */
 public class XMLObjectAdapter implements XMLSerializable {
 
-    private final XMLObject wrappedObject;
+    private final Object wrappedObject;
 
     /**
      * Creates a new adapter wrapping the specified XMLObject.
      *
      * @param wrappedObject The XMLObject to adapt
      */
-    public XMLObjectAdapter(XMLObject wrappedObject) {
+    public XMLObjectAdapter(Object wrappedObject) {
         if (wrappedObject == null) {
             throw new IllegalArgumentException("XMLObject cannot be null");
         }
@@ -42,7 +41,7 @@ public class XMLObjectAdapter implements XMLSerializable {
      *
      * @return The wrapped XMLObject
      */
-    public XMLObject getWrappedObject() {
+    public Object getWrappedObject() {
         return wrappedObject;
     }
 

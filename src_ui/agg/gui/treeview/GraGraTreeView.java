@@ -167,7 +167,6 @@ import agg.attribute.impl.CondMember;
 import agg.convert.AGG2ColorGraph;
 import agg.convert.ConverterXML;
 import agg.ruleappl.RuleSequence;
-import agg.util.XMLHelper;
 import agg.cons.AtomConstraint;
 import agg.cons.Formula;
 import agg.util.Pair;
@@ -4817,7 +4816,7 @@ public class GraGraTreeView extends JPanel implements
                 File f = new File(fullFileName);
                 if (f.exists()) {
                     long time0 = System.currentTimeMillis();
-                    if (XmlMigrationDispatch.isUseNewXml()) {
+                    {
                         EdGraGra ed = XmlMigrationDispatch.dispatchLoad(fullFileName);
                         if (ed != null) {
                             loadedGraGra = ed;
@@ -4835,32 +4834,6 @@ public class GraGraTreeView extends JPanel implements
                                     + ">  loaded in  "
                                     + (System.currentTimeMillis() - time0) + "ms");
                         }
-                    }
-                    if (loadedGraGra == null) {
-                    XMLHelper h = new XMLHelper();
-                    if (h.read_from_xml(fullFileName)) {
-                        GraGra bgra = BaseFactory.theFactory().createGraGra();
-                        h.getTopObject(bgra);
-                        System.out.println("(Base) Grammar  <" + bgra.getName()
-                                + ">  loaded in  "
-                                + (System.currentTimeMillis() - time0) + "ms");
-                        loadedGraGra = new EdGraGra(bgra);
-                        if (f.getParent() != null) {
-                            loadedGraGra.setDirName(f.getParent());
-                        } else {
-                            loadedGraGra.setDirName(System.getProperty("user.dir")
-                                    + File.separator);
-                        }
-                        loadedGraGra.setFileName(f.getName());
-                        loadedGraGra.getTypeSet().setResourcesPath(
-                                loadedGraGra.getDirName());
-                        h.enrichObject(loadedGraGra);
-                        System.out.println("(Layouted) Grammar loaded in  "
-                                + (System.currentTimeMillis() - time0) + "ms");
-                        if (bgra.getRulesVec().size() > 20) {
-                            System.out.println("Grammar contains Rules: " + bgra.getRulesVec().size());
-                        }
-                    }
                     }
                 }
             } else {

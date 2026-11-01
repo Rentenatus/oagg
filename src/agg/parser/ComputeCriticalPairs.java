@@ -12,7 +12,6 @@
 package agg.parser;
 
 import java.io.File;
-import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -108,9 +107,7 @@ public class ComputeCriticalPairs implements ParserEventListener {
         /* save computed critical pairs */
         ConflictsDependenciesContainer cdPC = new ConflictsDependenciesContainer(
                 this.excludePairContainer, this.dependPairContainer, cpaGraph);
-        XMLHelper h = new XMLHelper();
-        h.addTopObject(cdPC);
-        h.save_to_xml(this.outfname);
+        saveCdPCWithDom(cdPC, this.outfname);
         System.out
                 .println("Computed critical pairs are saved in : " + this.outfname);
         System.out.println();
@@ -122,9 +119,7 @@ public class ComputeCriticalPairs implements ParserEventListener {
         ConflictsDependenciesContainer cdPC = new ConflictsDependenciesContainer(
                 this.excludePairContainer, this.dependPairContainer);
         renameLastSaving();
-        XMLHelper h = new XMLHelper();
-        h.addTopObject(cdPC);
-        h.save_to_xml(this.outfname);
+        saveCdPCWithDom(cdPC, this.outfname);
         System.out
                 .println("Computed critical pairs are saved in : " + this.outfname);
         System.out.println();
@@ -212,7 +207,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
         // create an empty GraGra
         this.gragra = BaseFactory.theFactory().createGraGra();
         // objects for critical pairs
-        XMLHelper h = new XMLHelper();
         if (args.length == 1) {
             this.fname = args[0];
             this.computeConflict = true;
@@ -273,15 +267,10 @@ public class ComputeCriticalPairs implements ParserEventListener {
         } else if (this.fname.indexOf(".cpx") != -1) {
             System.out.println("File to load:  " + this.fname);
             ConflictsDependenciesContainer cdc = new ConflictsDependenciesContainer();
-            Object o = null;
-            if (h.read_from_xml(this.fname)) {
-                o = h.getTopObject(cdc);
-            }
-            if (o == null) {
+            if (!loadCdPCWithDom(cdc, this.fname)) {
                 System.out.println("Loading file failed.");
                 return;
             }
-            cdc = (ConflictsDependenciesContainer) o;
             if (cdc.getExcludePairContainer() != null) {
                 this.excludePairContainer = cdc.getExcludePairContainer();
                 this.dependPairContainer = cdc.getDependencyPairContainer();
@@ -410,4 +399,36 @@ public class ComputeCriticalPairs implements ParserEventListener {
     public boolean computeDependency = true;
     public GraGra gragra;
     int pairsNumberToWrite, nP;
+
+    /**
+     * Saves the computed critical pairs through the DOM path of the
+     * agg-xml module (reflective: agg-core must not compile-depend on
+     * agg-xml).
+     */
+    private static void saveCdPCWithDom(ConflictsDependenciesContainer cdPC, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.XMLSerialization");
+            java.lang.reflect.Method m = cls.getMethod("saveWithDom",
+                ConflictsDependenciesContainer.class, String.class);
+            m.invoke(null, cdPC, filename);
+        } catch (Exception e) {
+            System.out.println("Save of critical pairs failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Loads critical pairs through the DOM path of the agg-xml module
+     * (reflective: agg-core must not compile-depend on agg-xml).
+     */
+    private static boolean loadCdPCWithDom(ConflictsDependenciesContainer cdc, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.XMLSerialization");
+            java.lang.reflect.Method m = cls.getMethod("loadWithDom",
+                ConflictsDependenciesContainer.class, String.class);
+            Object result = m.invoke(null, cdc, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

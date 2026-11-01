@@ -12,7 +12,6 @@ import agg.xt_basis.Graph;
 import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializerContext;
-import agg.xml.legacy.LegacyCompatibility;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -172,43 +171,4 @@ public class RoundtripTest {
         }
     }
 
-    /**
-     * Save and reload via LegacyCompatibility layer.
-     */
-    @Test
-    public void testLegacyCompatibilityRoundtrip() throws Exception {
-        File file = TestDataHelper.resolveSample("small_graph.ggx");
-
-        // Load via legacy
-        GraGra original = new GraGra();
-        original.load(file.getAbsolutePath());
-
-        // Save via LegacyCompatibility
-        File tempFile = File.createTempFile("agg-compat-", ".ggx");
-        tempFile.deleteOnExit();
-        LegacyCompatibility.serializeToFile(original, tempFile);
-        assertTrue(tempFile.exists(), "Temp file should exist after save");
-        assertTrue(tempFile.length() > 0, "Temp file should not be empty");
-
-        // Reload via legacy
-        GraGra reloaded = new GraGra();
-        reloaded.load(tempFile.getAbsolutePath());
-
-        assertEquals(reloaded.getName(), original.getName(),
-            "Names should match after LegacyCompatibility roundtrip");
-        assertEquals(reloaded.getGraphsVec().size(), original.getGraphsVec().size(),
-            "Graph counts should match");
-
-        // Deep comparison: node and edge counts
-        for (int i = 0; i < original.getGraphsVec().size(); i++) {
-            Graph origGraph = original.getGraphsVec().get(i);
-            Graph reloadedGraph = reloaded.getGraphsVec().get(i);
-            assertEquals(reloadedGraph.getNodesCount(), origGraph.getNodesCount(),
-                "Node count should match for graph " + i);
-            assertEquals(reloadedGraph.getArcsCount(), origGraph.getArcsCount(),
-                "Edge count should match for graph " + i);
-        }
-
-        tempFile.delete();
     }
-}

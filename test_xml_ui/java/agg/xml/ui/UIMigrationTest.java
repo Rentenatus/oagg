@@ -15,7 +15,6 @@ import agg.ruleappl.ApplRuleSequence;
 import agg.parser.CriticalPairOption;
 import agg.xt_basis.GraGra;
 import agg.xml.validation.XmlCanonicalComparator;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -35,7 +34,6 @@ public class UIMigrationTest {
     private static final String OUTPUT_DIR = "target/ui-migration/";
 
     private File outputDir;
-    private boolean savedFlag;
 
     @BeforeMethod
     public void setUp() {
@@ -43,12 +41,6 @@ public class UIMigrationTest {
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
-        savedFlag = UIMigration.isUseNewXml();
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        UIMigration.setUseNewXml(savedFlag);
     }
 
     private File prepFile(String filename) {
@@ -65,7 +57,6 @@ public class UIMigrationTest {
      */
     @Test
     public void testEdGraGraDomRoundtrip() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = prepFile("ui_basic_graph_attrs.ggx");
 
         EdGraGra loaded = UIMigration.load(refFile.getPath());
@@ -83,51 +74,13 @@ public class UIMigrationTest {
                 + result.getMessage());
     }
 
-    /**
-     * Flag off: the legacy path of the facade loads the UI reference and
-     * saves canonically identically to the frozen legacy re-save
-     * reference (the legacy reader derives LayoutNode.frozen from age,
-     * so the legacy branch is compared against the legacy oracle, not
-     * against the raw reference).
-     */
-    @Test
-    public void testEdGraGraLegacyAgreesWithDom() throws Exception {
-        File refFile = prepFile("ui_basic_graph_attrs.ggx");
-        File resavedFile = prepFile("ui_basic_graph_attrs_resaved.ggx");
-
-        UIMigration.setUseNewXml(false);
-        EdGraGra legacyLoaded = UIMigration.load(refFile.getPath());
-        assertNotNull(legacyLoaded, "Legacy load should return an EdGraGra");
-        assertEquals(legacyLoaded.getBasisGraGra().getName(), "BasicGraphTest",
-            "The legacy loaded grammar should keep its name");
-        File legacyFile = new File(outputDir, "ui_migration_basic_legacy.ggx");
-        assertTrue(UIMigration.save(legacyLoaded, legacyFile.getPath()),
-            "Legacy save through the facade should succeed");
-        XmlCanonicalComparator.ComparisonResult legacyResult =
-            XmlCanonicalComparator.compareFiles(resavedFile, legacyFile);
-        assertTrue(legacyResult.isEqual(),
-            "Legacy save through the facade differs from the frozen legacy"
-                + " re-save reference: " + legacyResult.getMessage());
-
-        // the DOM save of the same file stays canonically identical to the
-        // raw reference (covered by testEdGraGraDomRoundtrip); both paths
-        // agree on the model structure
-        UIMigration.setUseNewXml(true);
-        EdGraGra domLoaded = UIMigration.load(refFile.getPath());
-        assertNotNull(domLoaded, "DOM load should return an EdGraGra");
-        assertEquals(domLoaded.getRules().size(), legacyLoaded.getRules().size(),
-            "Both paths should load the same rule count");
-        assertEquals(domLoaded.getGraphs().size(), legacyLoaded.getGraphs().size(),
-            "Both paths should load the same graph count");
-    }
-
+    
     /**
      * Flag on: the core .ggx dispatch (saveBase/reloadBase counterpart)
      * loads the generated reference and saves it canonically identically.
      */
     @Test
     public void testCoreGraGraDomDispatch() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = prepFile("gen_basic_graph_attrs.ggx");
 
         GraGra graGra = new GraGra();
@@ -154,7 +107,6 @@ public class UIMigrationTest {
     public void testCpxDispatch() throws Exception {
         File refFile = prepFile("gen_conflicts_deps.cpx");
 
-        UIMigration.setUseNewXml(true);
         ConflictsDependenciesContainer cdc = new ConflictsDependenciesContainer();
         assertTrue(UIMigration.load(cdc, refFile.getPath()),
             "DOM .cpx load through the facade should succeed");
@@ -169,12 +121,6 @@ public class UIMigrationTest {
             "DOM .cpx save through the facade differs from the reference: "
                 + result.getMessage());
 
-        UIMigration.setUseNewXml(false);
-        ConflictsDependenciesContainer legacyCdc = new ConflictsDependenciesContainer();
-        assertTrue(UIMigration.load(legacyCdc, refFile.getPath()),
-            "Legacy .cpx load through the facade should succeed");
-        assertEquals(legacyCdc.getGrammar().getName(), "BasicGraphTest",
-            "The legacy loaded embedded grammar should keep its name");
     }
 
     /**
@@ -183,7 +129,6 @@ public class UIMigrationTest {
      */
     @Test
     public void testRsxDispatch() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = prepFile("gen_appl_rule_sequence.rsx");
 
         ApplRuleSequence applRuleSeq = new ApplRuleSequence(new CriticalPairOption());
@@ -224,7 +169,6 @@ public class UIMigrationTest {
      */
     @Test
     public void testRsxWithUiDispatch() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = prepFile("ui_appl_rule_sequence.rsx");
 
         ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
@@ -260,36 +204,7 @@ public class UIMigrationTest {
             "The UI .rsx path should be stable: " + stableResult.getMessage());
     }
 
-    /**
-     * Flag off: the legacy branch of the .rsx facade loads the GUI
-     * reference (editor layer via enrichObject) and its save is
-     * canonically identical to the frozen re-saved reference - both
-     * sides come from the legacy-loaded state.
-     */
-    @Test
-    public void testRsxWithUiLegacyBranch() throws Exception {
-        UIMigration.setUseNewXml(false);
-        File refFile = prepFile("ui_appl_rule_sequence.rsx");
-        File resavedFile = prepFile("ui_appl_rule_sequence_resaved.rsx");
-
-        ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
-        EdGraGra ed = UIMigration.loadRuleSequence(ars, refFile.getPath());
-        assertNotNull(ed, "The legacy UI .rsx load should return an EdGraGra");
-        assertEquals(ars.getGraGra().getName(), "RuleSequenceTest",
-            "The embedded grammar should keep its name");
-        assertEquals(ed.getGraph().getNodes().get(0).getX(), 110,
-            "The pinned host node position should be applied by enrichObject");
-
-        File outFile = new File(outputDir, "ui_migration_rsx_ui_legacy.rsx");
-        assertTrue(UIMigration.saveRuleSequence(ars, ed, outFile.getPath()),
-            "The legacy UI .rsx save should succeed");
-        XmlCanonicalComparator.ComparisonResult result =
-            XmlCanonicalComparator.compareFiles(resavedFile, outFile);
-        assertTrue(result.isEqual(),
-            "The legacy UI .rsx save differs from the frozen re-saved"
-                + " reference: " + result.getMessage());
-    }
-
+    
     // ---- UI .cpx (ConflictsDependenciesContainerSaveLoad like PairIOGUI) ----
 
     /**
@@ -303,7 +218,6 @@ public class UIMigrationTest {
      */
     @Test
     public void testUiCpxDispatch() throws Exception {
-        UIMigration.setUseNewXml(true);
         File refFile = prepFile("ui_conflicts_deps.cpx");
 
         agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
@@ -361,41 +275,7 @@ public class UIMigrationTest {
                 + stableResult.getMessage());
     }
 
-    /**
-     * Flag off: the legacy branch of the UI .cpx facade loads the GUI
-     * reference (editor layer via enrichObject, exactly like the frozen
-     * clone) and its save is canonically identical to the frozen re-saved
-     * reference - both sides come from the legacy-loaded state.
-     */
-    @Test
-    public void testUiCpxLegacyBranch() throws Exception {
-        UIMigration.setUseNewXml(false);
-        File refFile = prepFile("ui_conflicts_deps.cpx");
-        File resavedFile = prepFile("ui_conflicts_deps_resaved.cpx");
-
-        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
-            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
-        assertTrue(UIMigration.loadCdContainerSaveLoad(saveLoad, refFile.getPath()),
-            "Legacy UI .cpx load through the facade should succeed");
-        assertEquals(saveLoad.getGrammar().getName(), "CpaComputedTest",
-            "The legacy loaded embedded grammar should keep its name");
-        EdNode lhsNode = findRule(saveLoad.getPairsGraGra(), "useItem")
-            .getLeft().getNodes().get(0);
-        assertEquals(lhsNode.getX(), 110,
-            "The pinned LHS node position should be applied by enrichObject");
-        assertEquals(lhsNode.getY(), 210,
-            "The pinned LHS node position should be applied by enrichObject");
-
-        File outFile = new File(outputDir, "ui_migration_cpx_ui_legacy.cpx");
-        assertTrue(UIMigration.saveCdContainerSaveLoad(saveLoad, outFile.getPath()),
-            "The legacy UI .cpx save should succeed");
-        XmlCanonicalComparator.ComparisonResult result =
-            XmlCanonicalComparator.compareFiles(resavedFile, outFile);
-        assertTrue(result.isEqual(),
-            "The legacy UI .cpx save differs from the frozen re-saved"
-                + " reference: " + result.getMessage());
-    }
-
+    
     // ---- standalone PairContainer (like PairIOGUI) ----
 
     /**
@@ -408,7 +288,6 @@ public class UIMigrationTest {
     public void testStandalonePairContainerDispatch() throws Exception {
         File refFile = prepFile("gen_standalone_conflicts.cpx");
 
-        UIMigration.setUseNewXml(true);
         agg.parser.ExcludePairContainer pc =
             new agg.parser.ExcludePairContainer(new GraGra());
         assertTrue(UIMigration.loadStandalonePairContainer(pc, refFile.getPath()),
@@ -426,13 +305,6 @@ public class UIMigrationTest {
             "The standalone .cpx DOM save differs from the reference: "
                 + result.getMessage());
 
-        UIMigration.setUseNewXml(false);
-        agg.parser.ExcludePairContainer legacyPc =
-            new agg.parser.ExcludePairContainer(new GraGra());
-        assertTrue(UIMigration.loadStandalonePairContainer(legacyPc, refFile.getPath()),
-            "Legacy standalone .cpx load through the facade should succeed");
-        assertEquals(legacyPc.getGrammar().getName(), "CpaComputedTest",
-            "The legacy loaded embedded grammar should keep its name");
     }
 
     /**
