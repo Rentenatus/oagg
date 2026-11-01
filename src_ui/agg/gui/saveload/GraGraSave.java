@@ -104,6 +104,17 @@ public class GraGraSave {
                     this.fileName = this.fileName.concat(".ggx");
                 }
             }
+            if (XmlMigrationDispatch.isUseNewXml()
+                    && XmlMigrationDispatch.dispatchSave(this.gra,
+                            this.dirName + this.fileName)) {
+                this.gra.setDirName(this.dirName);
+                this.gra.setFileName(this.fileName);
+                this.gra.getTypeSet().setResourcesPath(this.dirName);
+                this.gra.setChanged(false);
+                fireSave(new SaveEvent(this, SaveEvent.SAVED, this.dirName
+                        + this.fileName));
+                return true;
+            }
             XMLHelper xmlh = new XMLHelper();
             // this.fileName = XMLHelper.replaceGermanSpecialCh(this.fileName);
             xmlh.addTopObject(this.gra);
@@ -166,6 +177,13 @@ public class GraGraSave {
             }
 //				if (this.fileName.endsWith(".ggx"))
             {
+                if (XmlMigrationDispatch.isUseNewXml()
+                        && XmlMigrationDispatch.dispatchSave(this.basis,
+                                this.dirName + this.fileName)) {
+                    fireSave(new SaveEvent(this, SaveEvent.SAVED, this.dirName
+                            + this.fileName));
+                    return true;
+                }
                 XMLHelper xmlh = new XMLHelper();
                 // this.fileName = XMLHelper.replaceGermanSpecialCh(this.fileName);
                 xmlh.addTopObject(this.basis);

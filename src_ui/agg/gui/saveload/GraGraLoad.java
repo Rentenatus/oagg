@@ -119,6 +119,24 @@ public class GraGraLoad {
             File f = new File(this.dirName + this.fileName);
             if (f.exists()) {
                 fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+                if (XmlMigrationDispatch.isUseNewXml()) {
+                    long time0 = System.currentTimeMillis();
+                    EdGraGra ed = XmlMigrationDispatch.dispatchLoad(
+                            this.dirName + this.fileName);
+                    if (ed != null) {
+                        this.gra = ed;
+                        this.gra.setDirName(this.dirName);
+                        this.gra.setFileName(this.fileName);
+                        this.gra.getTypeSet().setResourcesPath(this.dirName);
+                        System.out.println("(NewXML) Grammar  <" + this.gra.getName()
+                                + ">  loaded in  "
+                                + (System.currentTimeMillis() - time0) + "ms");
+                        fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
+                                + this.fileName));
+                        fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
+                        return;
+                    }
+                }
                 XMLHelper h = new XMLHelper();
                 /*
 				 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
@@ -259,6 +277,16 @@ public class GraGraLoad {
         if (this.fileName.endsWith(".ggx")
                 && this.chooser.getFileFilter() == this.filterXML) {
             fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+            if (XmlMigrationDispatch.isUseNewXml()) {
+                GraGra basis = new GraGra(false);
+                if (XmlMigrationDispatch.dispatchLoad(basis,
+                        this.dirName + this.fileName)) {
+                    this.basis = basis;
+                    fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
+                            + this.fileName));
+                    return;
+                }
+            }
             XMLHelper h = new XMLHelper();
             /*
 			 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
