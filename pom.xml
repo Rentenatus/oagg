@@ -81,6 +81,14 @@
     </dependencyManagement>
 
     <build>
+        <!--
+            All module build outputs go into a single target/ tree at the
+            repository root (target/<artifactId>), so the source folders of
+            the modules stay free of generated files. The .mvn directory at
+            the root anchors maven.multiModuleProjectDirectory for every
+            module regardless of its nesting depth.
+        -->
+        <directory>${maven.multiModuleProjectDirectory}/target/${project.artifactId}</directory>
         <pluginManagement>
             <plugins>
                 <plugin>

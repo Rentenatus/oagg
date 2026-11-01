@@ -60,12 +60,13 @@
     <build>
         <!--
             Non-standard source layout: Java sources live directly under src_xml/
-            (not under src/main/java). Test sources live under the repository-wide
-            test root test_xml/java. Tests run with the repository-wide test working
+            (not under src/main/java). Test sources live directly under the
+            repository-wide test root test_xml (packages start at test_xml/agg).
+            Tests run with the repository-wide test working
             directory assets_test_xml.
         -->
         <sourceDirectory>.</sourceDirectory>
-        <testSourceDirectory>../test_xml/java</testSourceDirectory>
+        <testSourceDirectory>../test_xml</testSourceDirectory>
 
         <resources>
             <resource>
@@ -91,7 +92,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>../test_xml_common/java</source>
+                                <source>../test_xml_common</source>
                             </sources>
                         </configuration>
                     </execution>
