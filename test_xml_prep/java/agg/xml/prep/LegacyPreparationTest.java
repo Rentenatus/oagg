@@ -504,6 +504,63 @@ public class LegacyPreparationTest {
         saveLegacy(TestDataGenerator.createEdgeAttributeRule(), "attr_edge_form.ggx");
     }
 
+    /**
+     * Produces the reference .rsx exactly the way the GUI saves it:
+     * through ApplRuleSequenceSaveLoad, so the embedded grammar carries
+     * the UI segments (layout of the editor grammar). The DOM side
+     * compares against this reference.
+     */
+    @Test
+    public void prepareUiApplRuleSequence() throws Exception {
+        GraGra graGra = TestDataGenerator.createWithRuleSequence(true);
+        agg.ruleappl.ApplRuleSequence ars = TestDataGenerator.createApplRuleSequence(graGra);
+        agg.editor.impl.EdGraGra edGraGra = new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        for (agg.editor.impl.EdRule rule : edGraGra.getRules()) {
+            pos = pinGraphPositions(rule.getLeft(), pos);
+            pos = pinGraphPositions(rule.getRight(), pos);
+        }
+
+        agg.gui.ruleappl.ApplRuleSequenceSaveLoad saveLoad =
+            new agg.gui.ruleappl.ApplRuleSequenceSaveLoad(ars, edGraGra);
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(saveLoad);
+        File rsxFile = new File(prepDir, "ui_appl_rule_sequence.rsx");
+        assertTrue(helper.save_to_xml(rsxFile.getAbsolutePath()),
+            "Frozen legacy UI .rsx save should succeed");
+        assertTrue(rsxFile.exists() && rsxFile.length() > 0,
+            "UI .rsx reference file should be non-empty");
+
+        // Reference re-save of the loaded state: the legacy .rsx reader binds
+        // the grammar's rule sequences into the container (reader side
+        // effect), so a save from the LOADED state carries the sequence in
+        // the RuleSequences section. The DOM side compares against this
+        // re-saved reference (same pattern as appl_rule_sequence_resaved).
+        GraGra reloadGra = new GraGra();
+        agg.ruleappl.ApplRuleSequence reloadArs =
+            new agg.ruleappl.ApplRuleSequence(new agg.parser.CriticalPairOption());
+        reloadArs.setGraGra(reloadGra);
+        XMLHelper loadHelper = new XMLHelper();
+        assertTrue(loadHelper.read_from_xml(rsxFile.getAbsolutePath()),
+            "Frozen legacy UI .rsx load should succeed");
+        Object reloadedTop = loadHelper.getTopObject(reloadArs);
+        assertNotNull(reloadedTop, "Frozen legacy UI .rsx reload should return the top object");
+        agg.editor.impl.EdGraGra reloadedEd = new agg.editor.impl.EdGraGra(reloadArs.getGraGra());
+        loadHelper.enrichObject(reloadedEd);
+
+        agg.gui.ruleappl.ApplRuleSequenceSaveLoad resaveLoad =
+            new agg.gui.ruleappl.ApplRuleSequenceSaveLoad(reloadArs, reloadedEd);
+        XMLHelper resaveHelper = new XMLHelper();
+        resaveHelper.addTopObject(resaveLoad);
+        File resavedFile = new File(prepDir, "ui_appl_rule_sequence_resaved.rsx");
+        assertTrue(resaveHelper.save_to_xml(resavedFile.getAbsolutePath()),
+            "Frozen legacy UI .rsx re-save should succeed");
+        assertTrue(resavedFile.exists() && resavedFile.length() > 0,
+            "Re-saved UI .rsx reference should be non-empty");
+    }
+
     // ---- UI layer scenarios (EdGraGra roundtrip like GraGraSave) ----
 
     /**

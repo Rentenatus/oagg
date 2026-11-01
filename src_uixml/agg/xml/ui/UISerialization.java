@@ -15,11 +15,13 @@ import agg.editor.impl.EdRuleScheme;
 import agg.layout.evolutionary.LayoutArc;
 import agg.layout.evolutionary.LayoutNode;
 import agg.xml.adapter.DOMSerializationRegistry;
+import agg.xml.adapter.ApplRuleSequenceAdapter;
 import agg.xml.adapter.GraGraAdapter;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializerContext;
 import agg.xml.core.XMLSerializationException;
 import agg.xml.util.XMLUtils;
+import agg.ruleappl.ApplRuleSequence;
 import agg.xt_basis.GraGra;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -78,6 +80,95 @@ public final class UISerialization {
         } catch (XMLSerializationException e) {
             return false;
         }
+    }
+
+    // ---- Rule sequence with the UI layer (like ApplRuleSequenceSaveLoad) ----
+
+    /**
+     * Saves an ApplRuleSequence with the editor layer of its grammar:
+     * the rule sequence structure (core) plus the UI segments attached
+     * to the Node/Edge elements of the embedded grammar - exactly what
+     * ApplRuleSequenceSaveLoad writes into a .rsx file.
+     *
+     * @param applSeq The rule sequence to save
+     * @param edGraGra The editor grammar carrying the UI state
+     * @param filename The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean saveRuleSequenceWithDom(ApplRuleSequence applSeq,
+            EdGraGra edGraGra, String filename) {
+        if (applSeq == null || edGraGra == null || filename == null) {
+            return false;
+        }
+        try {
+            String outfileName = filename;
+            if (!outfileName.toLowerCase().endsWith(".rsx")) {
+                outfileName = outfileName + ".rsx";
+            }
+            Document doc = serializeRuleSequenceToDocument(applSeq, edGraGra);
+            writeDocumentToFile(doc, new File(outfileName));
+            return true;
+        } catch (XMLSerializationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Serializes an ApplRuleSequence with its grammar and attaches the UI
+     * segments of the editor grammar to the Node/Edge elements.
+     *
+     * @param applSeq The rule sequence to serialize
+     * @param edGraGra The editor grammar carrying the UI state
+     * @return The DOM document
+     * @throws XMLSerializationException if serialization fails
+     */
+    public static Document serializeRuleSequenceToDocument(ApplRuleSequence applSeq,
+            EdGraGra edGraGra) throws XMLSerializationException {
+        if (applSeq == null) {
+            throw new XMLSerializationException("ApplRuleSequence is null");
+        }
+        if (edGraGra == null) {
+            throw new XMLSerializationException("EdGraGra is null");
+        }
+        DOMXMLSerializerContext context = new DOMXMLSerializerContext();
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        ApplRuleSequenceAdapter adapter = new ApplRuleSequenceAdapter(applSeq);
+        adapter.serialize(context, registry);
+        attachUiSegments(edGraGra, context.getDocument(), registry);
+        return context.getDocument();
+    }
+
+    /**
+     * Loads an ApplRuleSequence with the editor layer of its grammar:
+     * the core content first, then the UI segments applied onto the
+     * editor objects.
+     *
+     * @param applSeq The rule sequence instance to populate
+     * @param filename The input filename (.rsx)
+     * @return The loaded editor grammar
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public static EdGraGra loadRuleSequenceWithDom(ApplRuleSequence applSeq,
+            String filename) throws XMLSerializationException {
+        if (applSeq == null || filename == null) {
+            throw new XMLSerializationException("ApplRuleSequence or filename is null");
+        }
+        File file = new File(filename);
+        if (!file.exists()) {
+            throw new XMLSerializationException("File not found: " + filename);
+        }
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        ApplRuleSequenceAdapter adapter = new ApplRuleSequenceAdapter(applSeq);
+        adapter.deserialize(context, registry);
+        GraGra core = applSeq.getGraGra();
+        if (core == null) {
+            throw new XMLSerializationException(
+                "The rule sequence carries no grammar after the load");
+        }
+        EdGraGra edGraGra = new EdGraGra(core);
+        applyUiSegments(edGraGra, registry, context.getDocument());
+        return edGraGra;
     }
 
     /**

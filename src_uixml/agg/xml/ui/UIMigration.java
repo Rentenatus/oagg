@@ -198,6 +198,72 @@ public final class UIMigration {
     // ---- .rsx (ApplRuleSequence, like ApplRuleSequenceSaveLoad) ----
 
     /**
+     * Saves an ApplRuleSequence with the editor layer of its grammar
+     * (like {@code ApplRuleSequenceSaveLoad.save}): DOM path with the
+     * flag on, legacy XMLHelper path otherwise.
+     *
+     * @param applRuleSeq The rule sequence to save
+     * @param edGraGra The editor grammar carrying the UI state
+     * @param filename The output filename (.rsx)
+     * @return true if saving succeeded
+     */
+    public static boolean saveRuleSequence(ApplRuleSequence applRuleSeq,
+            EdGraGra edGraGra, String filename) {
+        if (applRuleSeq == null || edGraGra == null || filename == null) {
+            return false;
+        }
+        if (isUseNewXml()) {
+            return UISerialization.saveRuleSequenceWithDom(applRuleSeq, edGraGra,
+                filename);
+        }
+        String outfileName = filename;
+        if (outfileName.indexOf(".rsx") == -1) {
+            outfileName = outfileName.concat(".rsx");
+        }
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(applRuleSeq);
+        helper.addObject("GraphTransformationSystem", edGraGra, false);
+        return helper.save_to_xml(outfileName);
+    }
+
+    /**
+     * Loads an ApplRuleSequence with the editor layer of its grammar
+     * (like {@code ApplRuleSequenceSaveLoad.load}): DOM path with the
+     * flag on, legacy XMLHelper path otherwise. Returns the loaded
+     * editor grammar, or null on failure.
+     *
+     * @param applRuleSeq The rule sequence instance to populate
+     * @param filename The input filename (.rsx)
+     * @return the loaded editor grammar, or null if loading failed
+     */
+    public static EdGraGra loadRuleSequence(ApplRuleSequence applRuleSeq,
+            String filename) {
+        if (applRuleSeq == null || filename == null) {
+            return null;
+        }
+        if (isUseNewXml()) {
+            try {
+                return UISerialization.loadRuleSequenceWithDom(applRuleSeq,
+                    filename);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        try {
+            applRuleSeq.setGraGra(null);
+            XMLHelper helper = new XMLHelper();
+            applRuleSeq.load(filename, helper);
+            EdGraGra ed = new EdGraGra(applRuleSeq.getGraGra());
+            helper.enrichObject(ed);
+            return ed;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // ---- .rsx (ApplRuleSequence, core only) ----
+
+    /**
      * Saves an ApplRuleSequence: DOM path with the flag on, legacy
      * XMLHelper path otherwise.
      *

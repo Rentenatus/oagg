@@ -8,6 +8,8 @@ package agg.xml.ui;
 
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.XmlMigrationDispatch;
+import agg.parser.CriticalPairOption;
+import agg.ruleappl.ApplRuleSequence;
 import agg.xt_basis.GraGra;
 import agg.xml.validation.XmlCanonicalComparator;
 import org.testng.annotations.AfterMethod;
@@ -133,4 +135,45 @@ public class XmlMigrationDispatchTest {
         assertEquals(loaded.getBasisGraGra().getName(), "BasicGraphTest",
             "The legacy dispatched load should keep the grammar name");
     }
-}
+
+
+    /**
+     * The rule sequence dispatch loads the GUI reference (with the
+     * editor layer) and saves it canonically identically - the .rsx
+     * contract of ApplRuleSequenceSaveLoad.
+     */
+    @Test
+    public void testRuleSequenceDispatchRoundtrip() throws Exception {
+        UIMigration.setUseNewXml(true);
+        File refFile = new File(PREP_DIR, "ui_appl_rule_sequence.rsx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "GUI .rsx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra ed = XmlMigrationDispatch.dispatchLoad(ars, refFile.getPath());
+        assertNotNull(ed, "The rule sequence dispatch load should return an EdGraGra");
+        assertEquals(ars.getGraGra().getName(), "RuleSequenceTest",
+            "The dispatched load should keep the grammar name");
+
+        assertTrue(!ars.getRuleSequences().isEmpty(),
+            "The rule sequences should be bound into the container");
+        File outFile = new File(outputDir, "ui_dispatch_rsx_new.rsx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(ars, ed, outFile.getPath()),
+            "The rule sequence dispatch save should succeed");
+        // no canonical comparison against a legacy reference is possible
+        // (the raw one misses the reader-side sequence binding, the
+        // re-saved one carries the legacy LayoutNode.frozen derivation);
+        // the DOM dispatch is verified through stability instead
+        ApplRuleSequence reloadedArs = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra reloaded = XmlMigrationDispatch.dispatchLoad(reloadedArs, outFile.getPath());
+        assertNotNull(reloaded, "The dispatched save should be reloadable");
+        File stableFile = new File(outputDir, "ui_dispatch_rsx_stable.rsx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(reloadedArs, reloaded, stableFile.getPath()),
+            "The rule sequence dispatch stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(result.isEqual(),
+            "The dispatched rule sequence path should be stable: "
+                + result.getMessage());
+    }}

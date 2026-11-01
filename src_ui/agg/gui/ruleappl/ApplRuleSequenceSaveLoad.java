@@ -18,6 +18,7 @@ import javax.swing.JFileChooser;
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.AGGFileFilter;
 import agg.ruleappl.ApplRuleSequence;
+import agg.gui.saveload.XmlMigrationDispatch;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
@@ -60,6 +61,11 @@ public class ApplRuleSequenceSaveLoad implements XMLObject {
             if (!this.fname.endsWith(".rsx")) {
                 this.fname = this.fname.concat(".rsx");
             }
+            if (XmlMigrationDispatch.isUseNewXml()
+                    && XmlMigrationDispatch.dispatchSave(this.ars, this.layout,
+                            this.dirName + File.separator + this.fname)) {
+                return true;
+            }
             XMLHelper xmlh = new XMLHelper();
             xmlh.addTopObject(this);
             if (xmlh.save_to_xml(this.dirName + File.separator + this.fname)) {
@@ -86,6 +92,15 @@ public class ApplRuleSequenceSaveLoad implements XMLObject {
             }
         }
         if (!"".equals(this.fname)) {
+            if (XmlMigrationDispatch.isUseNewXml()) {
+                EdGraGra ed = XmlMigrationDispatch.dispatchLoad(applrulesequence,
+                        this.dirName + File.separator + this.fname);
+                if (ed != null) {
+                    this.ars = applrulesequence;
+                    this.layout = ed;
+                    return;
+                }
+            }
             this.ars = applrulesequence;
             this.ars.setGraGra(null);
             try {

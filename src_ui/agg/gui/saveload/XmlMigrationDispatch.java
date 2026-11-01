@@ -123,4 +123,48 @@ public final class XmlMigrationDispatch {
             return false;
         }
     }
+
+    /**
+     * Saves an ApplRuleSequence with the editor layer of its grammar
+     * through the new XML layer (like ApplRuleSequenceSaveLoad.save does
+     * with the legacy XMLHelper).
+     *
+     * @param applRuleSeq The rule sequence to save
+     * @param edGraGra The editor grammar carrying the UI state
+     * @param filename The output filename
+     * @return true if the new layer saved the file
+     */
+    public static boolean dispatchSave(agg.ruleappl.ApplRuleSequence applRuleSeq,
+            EdGraGra edGraGra, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("saveRuleSequence",
+                agg.ruleappl.ApplRuleSequence.class, EdGraGra.class, String.class);
+            Object result = m.invoke(null, applRuleSeq, edGraGra, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads an ApplRuleSequence with the editor layer of its grammar
+     * through the new XML layer (like ApplRuleSequenceSaveLoad.load does
+     * with the legacy XMLHelper).
+     *
+     * @param applRuleSeq The rule sequence instance to populate
+     * @param filename The input filename
+     * @return the loaded editor grammar, or null on failure
+     */
+    public static EdGraGra dispatchLoad(agg.ruleappl.ApplRuleSequence applRuleSeq,
+            String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.ui.UIMigration");
+            java.lang.reflect.Method m = cls.getMethod("loadRuleSequence",
+                agg.ruleappl.ApplRuleSequence.class, String.class);
+            return (EdGraGra) m.invoke(null, applRuleSeq, filename);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

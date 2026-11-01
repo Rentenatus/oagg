@@ -7,6 +7,7 @@
 package agg.xml.ui;
 
 import agg.editor.impl.EdGraGra;
+import agg.editor.impl.EdNode;
 import agg.parser.ConflictsDependenciesContainer;
 import agg.ruleappl.ApplRuleSequence;
 import agg.parser.CriticalPairOption;
@@ -204,5 +205,86 @@ public class UIMigrationTest {
             XmlCanonicalComparator.compareFiles(outFile, stableFile);
         assertTrue(result.isEqual(),
             "The DOM .rsx path should be stable: " + result.getMessage());
+    }
+
+
+    /**
+     * Flag on: the .rsx dispatch with the editor layer loads the GUI
+     * reference (layout segments applied onto the editor objects, the
+     * rule sequences bound into the container like the legacy reader
+     * does) and is stable across a second DOM roundtrip. No canonical
+     * comparison against a legacy reference is possible here: the raw
+     * GUI reference still has an empty RuleSequences section (the
+     * binding is a reader side effect), while the re-saved reference
+     * went through the legacy reader and therefore carries the
+     * LayoutNode.frozen derivation - the DOM path preserves the file
+     * values instead (the documented oracle decision).
+     */
+    @Test
+    public void testRsxWithUiDispatch() throws Exception {
+        UIMigration.setUseNewXml(true);
+        File refFile = prepFile("ui_appl_rule_sequence.rsx");
+
+        ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra ed = UIMigration.loadRuleSequence(ars, refFile.getPath());
+        assertNotNull(ed, "The UI .rsx load should return an EdGraGra");
+        assertEquals(ars.getGraGra().getName(), "RuleSequenceTest",
+            "The embedded grammar should keep its name");
+        assertTrue(!ars.getRuleSequences().isEmpty(),
+            "The rule sequences should be bound into the container");
+        assertTrue(!ed.getGraph().getNodes().isEmpty(),
+            "The editor grammar should carry graph nodes");
+        EdNode firstNode = ed.getGraph().getNodes().get(0);
+        assertEquals(firstNode.getX(), 110,
+            "The pinned host node position should be applied");
+        assertEquals(firstNode.getY(), 210,
+            "The pinned host node position should be applied");
+
+        File outFile = new File(outputDir, "ui_migration_rsx_ui_new.rsx");
+        assertTrue(UIMigration.saveRuleSequence(ars, ed, outFile.getPath()),
+            "The UI .rsx save through the facade should succeed");
+
+        ApplRuleSequence reloadedArs = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra reloaded = UIMigration.loadRuleSequence(reloadedArs, outFile.getPath());
+        assertNotNull(reloaded, "The DOM .rsx output should be reloadable");
+        assertEquals(reloaded.getGraph().getNodes().get(0).getX(), 110,
+            "The pinned host node position should survive the reload");
+        File stableFile = new File(outputDir, "ui_migration_rsx_ui_stable.rsx");
+        assertTrue(UIMigration.saveRuleSequence(reloadedArs, reloaded, stableFile.getPath()),
+            "The UI .rsx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "The UI .rsx path should be stable: " + stableResult.getMessage());
+    }
+
+    /**
+     * Flag off: the legacy branch of the .rsx facade loads the GUI
+     * reference (editor layer via enrichObject) and its save is
+     * canonically identical to the frozen re-saved reference - both
+     * sides come from the legacy-loaded state.
+     */
+    @Test
+    public void testRsxWithUiLegacyBranch() throws Exception {
+        UIMigration.setUseNewXml(false);
+        File refFile = prepFile("ui_appl_rule_sequence.rsx");
+        File resavedFile = prepFile("ui_appl_rule_sequence_resaved.rsx");
+
+        ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra ed = UIMigration.loadRuleSequence(ars, refFile.getPath());
+        assertNotNull(ed, "The legacy UI .rsx load should return an EdGraGra");
+        assertEquals(ars.getGraGra().getName(), "RuleSequenceTest",
+            "The embedded grammar should keep its name");
+        assertEquals(ed.getGraph().getNodes().get(0).getX(), 110,
+            "The pinned host node position should be applied by enrichObject");
+
+        File outFile = new File(outputDir, "ui_migration_rsx_ui_legacy.rsx");
+        assertTrue(UIMigration.saveRuleSequence(ars, ed, outFile.getPath()),
+            "The legacy UI .rsx save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(resavedFile, outFile);
+        assertTrue(result.isEqual(),
+            "The legacy UI .rsx save differs from the frozen re-saved"
+                + " reference: " + result.getMessage());
     }
 }

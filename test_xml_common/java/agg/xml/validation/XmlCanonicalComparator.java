@@ -53,8 +53,31 @@ public final class XmlCanonicalComparator {
     /** Attributes that reference object IDs (point to generated IDs). */
     private static final java.util.Set<String> REF_ATTRS = java.util.Set.of(
         "type", "source", "target", "orig", "image", "id", "Rule",
-        "R1", "R2", "object"
+        "R1", "R2", "object", "GraphTransformationSystem"
     );
+
+    /**
+     * Whether a reference attribute value points to an element that
+     * does not exist in the document (an ID-shaped value no element
+     * carries). The legacy writers produce such dangling references
+     * for wrapper objects that are never written as elements (the
+     * GraphTransformationSystem attribute of the type graph in a GUI
+     * .rsx references the EdGraGra member object). Keyword-valued
+     * references (the source attribute of overlap morphisms) do not
+     * match the ID shape and are never treated as dangling.
+     */
+    private static boolean isDanglingIdRef(Map<String, String> idMap, String value) {
+        if (value == null || value.length() < 2
+                || value.charAt(0) != 'I') {
+            return false;
+        }
+        for (int i = 1; i < value.length(); i++) {
+            if (!Character.isDigit(value.charAt(i))) {
+                return false;
+            }
+        }
+        return idMap != null && !idMap.containsKey(value);
+    }
 
     /**
      * Whether the attribute with the given name holds an object ID
@@ -212,6 +235,9 @@ public final class XmlCanonicalComparator {
             if (isRefAttr(name)) {
                 if (!includeRefs) {
                     continue; // skip raw references in the first iteration
+                }
+                if (isDanglingIdRef(idMap, value)) {
+                    continue; // dangling references are write artifacts
                 }
                 if (idMap != null && !idMap.isEmpty()) {
                     value = idMap.getOrDefault(value, value);
@@ -427,6 +453,9 @@ public final class XmlCanonicalComparator {
             if (ID_ATTR.equals(name)) {
                 value = idMap.getOrDefault(value, value);
             } else if (isRefAttr(name)) {
+                if (isDanglingIdRef(idMap, value)) {
+                    continue; // dangling references are write artifacts
+                }
                 value = idMap.getOrDefault(value, value);
             } else if ("name".equals(name)) {
                 // Normalize :: to : (legacy XreadObject does this replacement)
