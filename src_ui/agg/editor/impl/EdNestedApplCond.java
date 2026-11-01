@@ -17,7 +17,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;
@@ -694,21 +693,5 @@ public class EdNestedApplCond extends EdPAC {
         return null;
     }
 
-    public void XreadObject(XMLHelper h) {
-        super.XreadObject(h);
-        h.peekObject(this.bGraph, this);
-        for (int j = 0; j < this.itsACs.size(); j++) {
-            EdPAC ac = this.itsACs.get(j);
-            h.enrichObject(ac);
-        }
+    
     }
-
-    public void XwriteObject(XMLHelper h) {
-        super.XwriteObject(h);
-        if (h.openObject(this.bGraph, this)) {
-            for (int j = 0; j < this.itsACs.size(); j++) {
-                h.addObject("", this.itsACs.get(j), true);
-            }
-        }
-    }
-}

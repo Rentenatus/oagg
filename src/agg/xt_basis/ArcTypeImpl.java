@@ -16,7 +16,6 @@ package agg.xt_basis;
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -433,74 +432,6 @@ public class ArcTypeImpl implements Type {
             this.additionalRepr = repr;
         }
         this.resetKey();
-    }
-
-    @Override
-    public void XwriteObject(XMLHelper h) {
-        String n = getStringRepr();
-//		System.out.println("TypeImpl.XwriteObject: " +getAdditionalRepr());
-        if ((getAdditionalRepr() != null) && (!getAdditionalRepr().equals(""))) {
-            n += ("%" + getAdditionalRepr());
-        }
-        if (n.contains("[EDGE]")) {
-            h.openNewElem("EdgeType", this);
-        } else {
-            h.openNewElem("Type", this);
-        }
-        h.addAttr("name", n);
-        if (!this.comment.equals("")) {
-            h.addAttr("comment", this.comment);
-        }
-        h.addAttr("abstract", String.valueOf(false));
-        if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() > 0) {
-            h.addObject("", this.itsAttrType, true);
-        }
-        // multiplicity will be written in the Arc
-        // object in the type graph
-        h.close();
-    }
-
-    @Override
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("NodeType", this) || h.isTag("EdgeType", this)
-                || h.isTag("Type", this)) {
-            String n = h.readAttr("name");
-//			n = XMLHelper.checkNameDueToSpecialCharacters(n);
-//			System.out.println("TypeImpl.XreadObject: " +n);
-            String str = h.readAttr("comment");
-            if (!str.equals("")) {
-                this.comment = str;
-            }
-            h.readAttr("abstract");
-            int i = n.indexOf('%');
-            // set type name
-            if (i != -1) {
-                String test = n.substring(0, i);
-                test = XMLHelper.checkNameDueToSpecialCharacters(test);
-                this.itsStringRepr = test;
-//				itsStringRepr = n.substring(0, i);
-            } else {
-                String test = XMLHelper.checkNameDueToSpecialCharacters(n);
-                this.itsStringRepr = test;
-//				itsStringRepr = n;				
-            }
-            AttrType tmpAttr = agg.attribute.impl.AttrTupleManager
-                    .getDefaultManager().newType();
-            h.enrichObject(tmpAttr);
-            if (tmpAttr.getNumberOfEntries() != 0) {
-                this.itsAttrType = tmpAttr;
-            } else {
-                this.itsAttrType = null;
-            }
-            if (i != -1) {
-                String a = n.substring(i + 1);
-                a = a.replaceAll("::", ":");
-                n = n.substring(0, i);
-                setAdditionalRepr(a);
-            }
-            // NOTE:: multiplicity will be read in the TypeGraph
-            h.close();
-        }
     }
 
     /**

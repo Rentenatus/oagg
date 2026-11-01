@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="RuleWithNacPacTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Item%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:"/>
+            <EdgeType ID="I2" abstract="false" name="link%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:"/>
+            <Graph ID="I3" kind="TG" name="TypeGraph">
+                <Node ID="I4" type="I1"/>
+                <Node ID="I5" type="I1"/>
+                <Edge ID="I6" source="I4" target="I5" type="I2"/>
+            </Graph>
+        </Types>
+        <Graph ID="I7" kind="HOST" name="Host">
+            <Node ID="I8" type="I1"/>
+        </Graph>
+        <Rule ID="I9" formula="true" name="transformItem">
+            <Graph ID="I11" kind="LHS" name="Left">
+                <Node ID="I12" type="I1"/>
+                <Node ID="I13" type="I1"/>
+                <Edge ID="I14" source="I12" target="I13" type="I2"/>
+            </Graph>
+            <Graph ID="I15" kind="RHS" name="Right">
+                <Node ID="I16" type="I1"/>
+            </Graph>
+            <Morphism name="transformItem">
+                <Mapping image="I16" orig="I12"/>
+            </Morphism>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I17" kind="NAC" name="Graph">
+                        <Node ID="I18" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I18" orig="I12"/>
+                    </Morphism>
+                </NAC>
+                <PAC>
+                    <Graph ID="I19" kind="PAC" name="Graph">
+                        <Node ID="I20" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I20" orig="I12"/>
+                    </Morphism>
+                </PAC>
+                <NestedAC>
+                    <Graph ID="I21" kind="AC" name="Graph">
+                        <Node ID="I22" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I22" orig="I12"/>
+                    </Morphism>
+                </NestedAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="1"/>
+            <TaggedValue Tag="priority" TagValue="5"/>
+        </Rule>
+    </GraphTransformationSystem>
+</Document>

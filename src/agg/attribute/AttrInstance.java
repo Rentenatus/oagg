@@ -10,7 +10,6 @@
  */
 package agg.attribute;
 
-import agg.util.XMLObject;
 
 /**
  * Interface of tuples of attribute values.
@@ -18,7 +17,7 @@ import agg.util.XMLObject;
  * @version $Id: AttrInstance.java,v 1.4 2010/08/05 14:12:04 olga Exp $
  * @author $Author: olga $
  */
-public interface AttrInstance extends AttrTuple, XMLObject {
+public interface AttrInstance extends AttrTuple {
 
     /**
      * Retrieving the type of an instance.

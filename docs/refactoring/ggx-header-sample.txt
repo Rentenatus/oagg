@@ -1,0 +1,207 @@
+==> test-data/baseline/samples/large_graph.ggx <==
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I1" directed="true"
+        name="TicTacToeSemantik" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="ruleSequence" TagValue="true"/>
+        <TaggedValue Tag="breakAllLayer" TagValue="true"/>
+        <TaggedValue Tag="showGraphAfterStep" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I2" abstract="false" name="Feld%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:">
+                <AttrType ID="I4" attrname="indexS" typename="int" visible="true"/>
+                <AttrType ID="I5" attrname="x" typename="int" visible="true"/>
+                <AttrType ID="I6" attrname="y" typename="int" visible="true"/>
+                <AttrType ID="I7" attrname="matter" typename="float" visible="true"/>
+                <AttrType ID="I8" attrname="indexM" typename="int" visible="true"/>
+                <AttrType ID="I9" attrname="variation_w"
+                    typename="float" visible="true"/>
+                <AttrType ID="I10" attrname="w" typename="int" visible="true"/>
+            </NodeType>
+            <NodeType ID="I11" abstract="false" name="Dran%:RECT:java.awt.Color[r=51,g=153,b=0]:[NODE]:">
+                <AttrType ID="I13" attrname="script" typename="String" visible="true"/>
+                <AttrType ID="I14" attrname="matter" typename="float" visible="true"/>
+                <AttrType ID="I15" attrname="indexM" typename="int" visible="true"/>
+            </NodeType>
+            <NodeType ID="I16" abstract="false" name="A%:RECT:java.awt.Color[r=255,g=0,b=0]:[NODE]:">
+                <AttrType ID="I18" attrname="indexS" typename="int" visible="true"/>
+                <AttrType ID="I19" attrname="zustand" typename="String" visible="true"/>
+                <AttrType ID="I20" attrname="matter" typename="float" visible="true"/>
+                <AttrType ID="I21" attrname="indexM" typename="int" visible="true"/>
+                <AttrType ID="I22" attrname="script" typename="String" visible="true"/>
+            </NodeType>
+            <NodeType ID="I23" abstract="false" name="B%:CIRCLE:java.awt.Color[r=0,g=0,b=255]:[NODE]:">
+                <AttrType ID="I25" attrname="indexS" typename="int" visible="true"/>
+                <AttrType ID="I26" attrname="zustand" typename="String" visible="true"/>
+                <AttrType ID="I27" attrname="matter" typename="float" visible="true"/>
+                <AttrType ID="I28" attrname="indexM" typename="int" visible="true"/>
+                <AttrType ID="I29" attrname="script" typename="String" visible="true"/>
+            </NodeType>
+            <NodeType ID="I30" abstract="false" name="Linie%:ROUNDRECT:java.awt.Color[r=204,g=0,b=204]:[NODE]:">
+
+==> test-data/baseline/samples/medium_graph.ggx <==
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I1" directed="true"
+        name="KnotsSemantik" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="breakAllLayer" TagValue="true"/>
+        <TaggedValue Tag="showGraphAfterStep" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I2" abstract="false" name="Workrecord%:RECT:java.awt.Color[r=255,g=175,b=175]:[NODE]:">
+                <AttrType ID="I4" attrname="step" typename="String" visible="true"/>
+                <AttrType ID="I5" attrname="indexR" typename="int" visible="true"/>
+                <AttrType ID="I6" attrname="indexS" typename="int" visible="true"/>
+                <AttrType ID="I7" attrname="logkey" typename="String" visible="true"/>
+            </NodeType>
+            <NodeType ID="I8" abstract="false" name="Recordcursor%:RECT:java.awt.Color[r=255,g=175,b=175]:[NODE]:"/>
+            <NodeType ID="I9" abstract="false" comment="Kreuzung" name="cut%:RECT:java.awt.Color[r=0,g=0,b=0]:FILLED:[NODE]:">
+                <AttrType ID="I11" attrname="level" typename="String" visible="true"/>
+            </NodeType>
+            <NodeType ID="I12" abstract="false" comment="Teil" name="part%:CIRCLE:java.awt.Color[r=0,g=0,b=0]:[NODE]:"/>
+            <EdgeType ID="I13" abstract="false" name="work%:SOLID_LINE:java.awt.Color[r=255,g=175,b=175]:BOLD:[EDGE]:"/>
+            <EdgeType ID="I14" abstract="false"
+                comment="Kreuzungsverbindung" name="I%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:BOLD:[EDGE]:"/>
+            <EdgeType ID="I15" abstract="false" comment="z" name="Z%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <EdgeType ID="I16" abstract="false" name="msg%:SOLID_LINE:java.awt.Color[r=255,g=175,b=175]:[EDGE]:"/>
+        </Types>
+        <Graph ID="I17" kind="HOST" name="gra">
+            <Node ID="I18" type="I2">
+                <Attribute constant="true" type="I4">
+                    <Value>
+                        <string>start</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I7">
+                    <Value>
+                        <string>start</string>
+                    </Value>
+                </Attribute>
+                <NodeLayout X="164" Y="102"/>
+                <additionalLayout age="0" force="10" frozen="true" zone="50"/>
+
+==> test-data/baseline/samples/small_graph.ggx <==
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="Lovers_Graph" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="consistency" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="ENABLED_MAX"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Person%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:">
+                <AttrType ID="I3" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I4" attrname="age" typename="int" visible="true"/>
+                <AttrType ID="I5" attrname="sex" typename="String" visible="true"/>
+            </NodeType>
+            <EdgeType ID="I6" abstract="false" name="loves%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <Graph ID="I7" kind="TG" name="TypeGraph">
+                <Node ID="I8" type="I1"/>
+                <Edge ID="I10" source="I8" sourcemin="0" target="I8"
+                    targetmax="1" targetmin="0" type="I6"/>
+            </Graph>
+        </Types>
+        <Graph ID="I11" kind="HOST" name="HostGraph">
+            <Node ID="I12" type="I1">
+                <Attribute constant="true" type="I3">
+                    <Value>
+                        <string>Otti</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I4">
+                    <Value>
+                        <int>13</int>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I5">
+                    <Value>
+                        <string>m</string>
+                    </Value>
+                </Attribute>
+            </Node>
+            <Node ID="I17" type="I1">
+                <Attribute constant="true" type="I3">
+                    <Value>
+
+==> test-data/baseline/samples/small_graph_layered.ggx <==
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="Lovers_Graph_layered" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="consistency" TagValue="true"/>
+        <TaggedValue Tag="layered" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="ENABLED_MAX"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Person%:RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:">
+                <AttrType ID="I3" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I4" attrname="age" typename="int" visible="true"/>
+                <AttrType ID="I5" attrname="sex" typename="String" visible="true"/>
+            </NodeType>
+            <EdgeType ID="I6" abstract="false" name="loves%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:"/>
+            <Graph ID="I7" kind="TG" name="TypeGraph">
+                <Node ID="I8" type="I1"/>
+                <Edge ID="I10" source="I8" sourcemin="0" target="I8"
+                    targetmax="1" targetmin="0" type="I6"/>
+            </Graph>
+        </Types>
+        <Graph ID="I11" kind="HOST" name="HostGraph">
+            <Node ID="I12" type="I1">
+                <Attribute constant="true" type="I3">
+                    <Value>
+                        <string>Otti</string>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I4">
+                    <Value>
+                        <int>13</int>
+                    </Value>
+                </Attribute>
+                <Attribute constant="true" type="I5">
+                    <Value>
+                        <string>m</string>
+                    </Value>
+                </Attribute>
+            </Node>
+            <Node ID="I17" type="I1">
+                <Attribute constant="true" type="I3">

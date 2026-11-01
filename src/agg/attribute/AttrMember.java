@@ -11,7 +11,6 @@
 package agg.attribute;
 
 import java.io.Serializable;
-import agg.util.XMLObject;
 
 /**
  * An abstract tuple member interface.
@@ -19,7 +18,7 @@ import agg.util.XMLObject;
  * @version $Id: AttrMember.java,v 1.2 2007/09/10 13:05:31 olga Exp $
  * @author $Author: olga $
  */
-public interface AttrMember extends Serializable, XMLObject {
+public interface AttrMember extends Serializable {
 
     static final long serialVersionUID = 7298845703304764209L;
 

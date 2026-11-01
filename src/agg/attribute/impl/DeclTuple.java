@@ -24,12 +24,9 @@ import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-import org.w3c.dom.Element;
 //import agg.util.Debug;
 
 /**
@@ -37,8 +34,7 @@ import org.w3c.dom.Element;
  * @version $Id: DeclTuple.java,v 1.30 2010/11/28 22:11:36 olga Exp $
  */
 @SuppressWarnings("serial")
-public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
-        XMLObject {
+public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode {
 
     protected static AttrViewSetting fixedFormSetting;
     private OpenViewSetting view;
@@ -489,59 +485,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         int index = getIndexForName(name);
         if (index >= 0) {
             deleteMemberAt(index);
-        }
-    }
-
-    public void XwriteObject(XMLHelper h) {
-        int num = getNumberOfEntries();
-        for (int i = 0; i < num; i++) {
-            DeclMember mem = (DeclMember) getMemberAt(i);
-            if (mem.getTypeName() != null && mem.getName() != null
-                    && mem.getTypeName().length() != 0 && mem.getName().length() != 0) {
-                h.addObject("", mem, true);
-            }
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        String handlerName = agg.attribute.handler.impl.javaExpr.JexHandler
-                .getLabelName();
-        AttrHandler handler = getAttrManager().getHandler(handlerName);
-        Iterator<Element> en = h.getEnumeration("", null, true, "AttrType");
-        while (en.hasNext()) {
-            h.peekElement(en.next());
-            String t = h.readAttr("typename");
-            String n = h.readAttr("attrname");
-            String vis = h.readAttr("visible");
-            if (t.length() != 0 && n.length() != 0) {
-                AttrTypeMember mem = addMember(handler, t, n);
-                if (vis.equals("true") || vis.equals("")) {
-                    ((DeclMember) mem).setVisible(true);
-                } else {
-                    ((DeclMember) mem).setVisible(false);
-                }
-//				if (mem.getType() == null || mem.getTypeName().length() == 0) {
-//					System.out
-//							.println("DeclTuple.XreadObject: WARNING!"
-//									+ "\nThe type of an attribute member is empty."
-//									+ "\nPlease check attribute declarations"
-//									+ "\nor check in AGG GUI the part of the attribute editor"
-//									+ "\n<Customize/ Handler / Searched Packages>  "
-//									+ "\nand append the missed package.");
-//				}
-//				if (mem.getName() == null || mem.getName().length() == 0) {
-//					System.out.println("DeclTuple.XreadObject: WARNING!"
-//							+ "\nThe name of an attribute member is empty."
-//							+ "\nPlease check attribute declarations.");
-//				}
-                h.loadObject(mem);
-            }
-//			else if (t.length() == 0 && n.length() == 0) {
-//				System.out.println("DeclTuple.XreadObject: WARNING!"
-//						+ "\nAn attribute member could not be created, "
-//						+ "\nbecause type and name of the member are empty.");
-//			}
-            h.close();
         }
     }
 

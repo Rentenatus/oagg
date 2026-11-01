@@ -23,7 +23,6 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.agt.MultiRule;
-import agg.util.XMLHelper;
 import agg.attribute.impl.CondTuple;
 import java.util.Iterator;
 
@@ -393,27 +392,8 @@ public class EdAtomic extends EdRule {
         return vec;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        h.addObject("", this.eLeft, true);
-        if (this.conclusions.size() > 0) {
-            for (int i = 0; i < this.conclusions.size(); i++) {
-                EdAtomic concl = this.conclusions.elementAt(i);
-                EdGraph g = concl.getRight();
-                h.addObject("", g, true);
-            }
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        // System.out.println("EdAtomic.XreadObject... "+getName());
-        h.enrichObject(this.eLeft);
-        for (int i = 0; i < this.conclusions.size(); i++) {
-            EdAtomic concl = this.conclusions.elementAt(i);
-            h.enrichObject(concl.getRight());
-        }
-        updateRule();
-    }
-
+    
+    
     public boolean deleteGraphObjectsOfType(
             final EdGraphObject tgo,
             boolean addToUndo) {

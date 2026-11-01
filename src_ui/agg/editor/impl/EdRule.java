@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.swing.undo.*;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;
@@ -52,7 +50,7 @@ import de.jare.ndimcol.ref.ArrayMovie;
  * @author $Author: olga $
  * @version $Id: EdRule.java,v 1.65 2010/11/11 17:21:34 olga Exp $
  */
-public class EdRule implements XMLObject, StateEditable {
+public class EdRule implements StateEditable {
 
     protected Rule bRule;
     protected EdTypeSet typeSet;
@@ -3156,53 +3154,8 @@ public class EdRule implements XMLObject, StateEditable {
         }
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (h.openObject(this.bRule, this)) {
-            if (this.animated) {
-                // refresh animation kind
-                this.setAnimated(true);
-                h.addAttr("animated", "true");
-            }
-        }
-        h.addObject("", this.eLeft, true);
-        h.addObject("", this.eRight, true);
-        for (int j = 0; j < this.itsNACs.size(); j++) {
-            h.addObject("", this.itsNACs.get(j), true);
-        }
-        for (int j = 0; j < this.itsPACs.size(); j++) {
-            h.addObject("", this.itsPACs.get(j), true);
-        }
-        for (int j = 0; j < this.itsACs.size(); j++) {
-            h.addObject("", this.itsACs.get(j), true);
-        }
+    
     }
-
-    public void XreadObject(XMLHelper h) {
-        h.peekObject(this.bRule, this);
-        String animatedAttr = h.readAttr("animated");
-        if ("true".equals(animatedAttr)) {
-            this.setAnimated(true);
-        }
-        h.enrichObject(this.eLeft);
-        h.enrichObject(this.eRight);
-        for (int j = 0; j < this.itsNACs.size(); j++) {
-            EdNAC ac = this.itsNACs.get(j);
-            h.enrichObject(ac);
-        }
-        for (int j = 0; j < this.itsPACs.size(); j++) {
-            EdPAC ac = this.itsPACs.get(j);
-            h.enrichObject(ac);
-        }
-        for (int j = 0; j < this.itsACs.size(); j++) {
-            EdNestedApplCond ac = (EdNestedApplCond) this.itsACs.get(j);
-            h.enrichObject(ac);
-        }
-        updateRule();
-        updateNACs();
-        updatePACs();
-        updateNestedACs();
-    }
-}
 // $Log: EdRule.java,v $
 // Revision 1.65  2010/11/11 17:21:34  olga
 // tuning

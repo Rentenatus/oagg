@@ -16,7 +16,6 @@ package agg.ruleappl;
 import agg.parser.CriticalPairOption;
 import agg.util.Pair;
 import agg.util.Triple;
-import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.ConcurrentRule;
 import agg.xt_basis.GraGra;
@@ -185,6 +184,17 @@ public class RuleSequence implements GraTraEventListener {
 
     public void setSubsequenceList(final List<Pair<List<Pair<String, String>>, String>> list) {
         this.subSequenceList = list;
+    }
+
+    /**
+     * Adds a subsequence with the specified rule names and iteration count.
+     *
+     * @param ruleNames  List of (ruleName, iterations) pairs
+     * @param iterations The iteration count for this subsequence
+     */
+    public void addSubsequence(final List<Pair<String, String>> ruleNames, final String iterations) {
+        this.subSequenceList.add(
+            new Pair<List<Pair<String, String>>, String>(ruleNames, iterations));
     }
 
     private void copySubsequenceList(final List<Pair<List<Pair<String, String>>, String>> list) {
@@ -801,6 +811,14 @@ public class RuleSequence implements GraTraEventListener {
         this.ruleNames.add(to, r.getName());
     }
 
+    /**
+     * Marks whether the applicability of this sequence has been checked.
+     * Used by the XML load to restore the checked state.
+     */
+    public void setChecked(boolean b) {
+        this.checked = b;
+    }
+
     public boolean isChecked() {
         return this.checked;
     }
@@ -924,9 +942,7 @@ public class RuleSequence implements GraTraEventListener {
         }
         if (dosave) {
             String aname = "CR_".concat(this.gragra.getName()).concat(".ggx");
-            XMLHelper xmlh = new XMLHelper();
-            xmlh.addTopObject(this.gragra);
-            xmlh.save_to_xml(aname);
+            this.gragra.save(aname);
             //remove concurrent rules from grammar
             for (int i = 0; i < nn; i++) {
                 int indx = this.gragra.getListOfRules().size() - 1;

@@ -1,0 +1,206 @@
+/**
+ * <copyright>
+ * Copyright (c) 2026, AGG XML Serialization Refactoring Project.
+ * All rights reserved.
+ * </copyright>
+ */
+package agg.xml.ui;
+
+import agg.editor.impl.EdGraGra;
+import agg.gui.saveload.XmlMigrationDispatch;
+import agg.parser.CriticalPairOption;
+import agg.ruleappl.ApplRuleSequence;
+import agg.xt_basis.GraGra;
+import agg.xml.validation.XmlCanonicalComparator;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import static org.testng.Assert.*;
+
+import java.io.File;
+
+/**
+ * Tests the real reflection wiring the GUI uses:
+ * {@code agg.gui.saveload.XmlMigrationDispatch} (agg-ui) reflects into
+ * {@link UIMigration} (agg-ui-xml) and must behave exactly like the
+ * facade - the same contract the GraGraSave/GraGraLoad entry points rely
+ * on when the migration flag is enabled.
+ */
+public class XmlMigrationDispatchTest {
+
+    private static final String PREP_DIR = "target/legacy_prep/";
+    private static final String OUTPUT_DIR = "target/ui-migration/";
+
+    private File outputDir;
+
+    @BeforeMethod
+    public void setUp() {
+        outputDir = new File(OUTPUT_DIR);
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+    }
+
+    
+    /**
+     * The EdGraGra dispatch loads the frozen UI reference and saves it
+     * canonically identically to the raw reference - the .ggx contract of
+     * GraGraSave/GraGraLoad.
+     */
+    @Test
+    public void testEdGraGraDispatchRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_graph_attrs.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        EdGraGra loaded = XmlMigrationDispatch.dispatchLoad(refFile.getPath());
+        assertNotNull(loaded, "The dispatch load should return an EdGraGra");
+        assertEquals(loaded.getBasisGraGra().getName(), "BasicGraphTest",
+            "The dispatched load should keep the grammar name");
+
+        File outFile = new File(outputDir, "ui_dispatch_basic_new.ggx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(loaded, outFile.getPath()),
+            "The dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched save differs from the raw reference: "
+                + result.getMessage());
+    }
+
+    /**
+     * The core GraGra dispatch loads the generated reference and saves it
+     * canonically identically - the .ggx contract of
+     * GraGraSave.saveBase/GraGraLoad.reloadBase.
+     */
+    @Test
+    public void testCoreGraGraDispatchRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "gen_basic_graph_attrs.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Generated reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        GraGra graGra = new GraGra();
+        assertTrue(XmlMigrationDispatch.dispatchLoad(graGra, refFile.getPath()),
+            "The core dispatch load should succeed");
+        assertEquals(graGra.getName(), "BasicGraphTest",
+            "The dispatched core load should keep the grammar name");
+
+        File outFile = new File(outputDir, "ui_dispatch_core_new.ggx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(graGra, outFile.getPath()),
+            "The core dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched core save differs from the reference: "
+                + result.getMessage());
+    }
+
+    
+
+    /**
+     * The rule sequence dispatch loads the GUI reference (with the
+     * editor layer) and saves it canonically identically - the .rsx
+     * contract of ApplRuleSequenceSaveLoad.
+     */
+    @Test
+    public void testRuleSequenceDispatchRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_appl_rule_sequence.rsx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "GUI .rsx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        ApplRuleSequence ars = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra ed = XmlMigrationDispatch.dispatchLoad(ars, refFile.getPath());
+        assertNotNull(ed, "The rule sequence dispatch load should return an EdGraGra");
+        assertEquals(ars.getGraGra().getName(), "RuleSequenceTest",
+            "The dispatched load should keep the grammar name");
+
+        assertTrue(!ars.getRuleSequences().isEmpty(),
+            "The rule sequences should be bound into the container");
+        File outFile = new File(outputDir, "ui_dispatch_rsx_new.rsx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(ars, ed, outFile.getPath()),
+            "The rule sequence dispatch save should succeed");
+        // no canonical comparison against a legacy reference is possible
+        // (the raw one misses the reader-side sequence binding, the
+        // re-saved one carries the legacy LayoutNode.frozen derivation);
+        // the DOM dispatch is verified through stability instead
+        ApplRuleSequence reloadedArs = new ApplRuleSequence(new CriticalPairOption());
+        EdGraGra reloaded = XmlMigrationDispatch.dispatchLoad(reloadedArs, outFile.getPath());
+        assertNotNull(reloaded, "The dispatched save should be reloadable");
+        File stableFile = new File(outputDir, "ui_dispatch_rsx_stable.rsx");
+        assertTrue(XmlMigrationDispatch.dispatchSave(reloadedArs, reloaded, stableFile.getPath()),
+            "The rule sequence dispatch stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(result.isEqual(),
+            "The dispatched rule sequence path should be stable: "
+                + result.getMessage());
+    }
+
+    /**
+     * The UI .cpx dispatch loads the frozen GUI reference through the
+     * real reflection wiring (like PairIOGUI does with the SaveLoad
+     * wrapper) and saves it canonically identically to the raw reference.
+     */
+    @Test
+    public void testUiCpxDispatchRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_conflicts_deps.cpx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "UI .cpx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        agg.gui.cpa.ConflictsDependenciesContainerSaveLoad saveLoad =
+            new agg.gui.cpa.ConflictsDependenciesContainerSaveLoad();
+        assertTrue(XmlMigrationDispatch.dispatchLoadCdContainerSaveLoad(
+                saveLoad, refFile.getPath()),
+            "The UI .cpx dispatch load should succeed");
+        assertEquals(saveLoad.getGrammar().getName(), "CpaComputedTest",
+            "The dispatched load should keep the grammar name");
+        assertNotNull(saveLoad.getPairsGraGra(),
+            "The dispatched load should restore the editor grammar");
+        assertNotNull(saveLoad.getCPAGraph(),
+            "The dispatched load should restore the CPA graph");
+
+        File outFile = new File(outputDir, "ui_dispatch_cpx_new.cpx");
+        assertTrue(XmlMigrationDispatch.dispatchSaveCdContainerSaveLoad(
+                saveLoad, outFile.getPath()),
+            "The UI .cpx dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched UI .cpx save differs from the reference: "
+                + result.getMessage());
+    }
+
+    /**
+     * The standalone pair container dispatch loads the frozen reference
+     * through the real reflection wiring (like PairIOGUI does with the
+     * pc) and saves it canonically identically to the reference.
+     */
+    @Test
+    public void testStandalonePairContainerDispatchRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "gen_standalone_conflicts.cpx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Standalone .cpx reference missing (run LegacyPreparationTest first): "
+                + refFile.getPath());
+
+        agg.parser.ExcludePairContainer pc =
+            new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(XmlMigrationDispatch.dispatchLoadStandalonePairContainer(
+                pc, refFile.getPath()),
+            "The standalone .cpx dispatch load should succeed");
+        assertEquals(pc.getGrammar().getName(), "CpaComputedTest",
+            "The dispatched load should keep the grammar name");
+
+        File outFile = new File(outputDir, "ui_dispatch_standalone_new.cpx");
+        assertTrue(XmlMigrationDispatch.dispatchSaveStandalonePairContainer(
+                pc, outFile.getPath()),
+            "The standalone .cpx dispatch save should succeed");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "The dispatched standalone .cpx save differs from the reference: "
+                + result.getMessage());
+    }
+}

@@ -18,14 +18,13 @@ import javax.swing.JFileChooser;
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.AGGFileFilter;
 import agg.ruleappl.ApplRuleSequence;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
+import agg.gui.saveload.XmlMigrationDispatch;
 
 /**
  * @author olga
  *
  */
-public class ApplRuleSequenceSaveLoad implements XMLObject {
+public class ApplRuleSequenceSaveLoad {
 
     public ApplRuleSequence ars;
     public EdGraGra layout;
@@ -60,12 +59,8 @@ public class ApplRuleSequenceSaveLoad implements XMLObject {
             if (!this.fname.endsWith(".rsx")) {
                 this.fname = this.fname.concat(".rsx");
             }
-            XMLHelper xmlh = new XMLHelper();
-            xmlh.addTopObject(this);
-            if (xmlh.save_to_xml(this.dirName + File.separator + this.fname)) {
-                return true;
-            }
-            return false;
+            return XmlMigrationDispatch.dispatchSave(this.ars, this.layout,
+                    this.dirName + File.separator + this.fname);
         }
         return false;
     }
@@ -86,28 +81,13 @@ public class ApplRuleSequenceSaveLoad implements XMLObject {
             }
         }
         if (!"".equals(this.fname)) {
-            this.ars = applrulesequence;
-            this.ars.setGraGra(null);
-            try {
-                XMLHelper h = new XMLHelper();
-                this.ars.load(this.dirName + File.separator + this.fname, h);
-                this.layout = new EdGraGra(this.ars.getGraGra());
-                h.enrichObject(this.layout);
-            } catch (Exception ex) {
-                System.out.println("Loading File: " + this.fname + "   ERROR: " + ex.getMessage());
-//				throw ex;
+            EdGraGra ed = XmlMigrationDispatch.dispatchLoad(applrulesequence,
+                    this.dirName + File.separator + this.fname);
+            if (ed != null) {
+                this.ars = applrulesequence;
+                this.layout = ed;
             }
         }
     }
 
-    public void XreadObject(XMLHelper h) {
-        h.peekObject(this.ars, this);
-        h.enrichObject(this.layout);
-    }
-
-    public void XwriteObject(XMLHelper h) {
-//		System.out.println("### XwriteObject   ApplRuleSequenceSaveLoad "+layout+"   "+ars);
-        h.addTopObject(this.ars);
-        h.addObject("GraphTransformationSystem", this.layout, false);
-    }
 }

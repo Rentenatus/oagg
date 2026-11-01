@@ -1,0 +1,424 @@
+/**
+ * <copyright>
+ * Copyright (c) 2026, AGG XML Serialization Refactoring Project.
+ * All rights reserved.
+ * </copyright>
+ */
+package agg.xml.ui;
+
+import agg.editor.impl.EdArc;
+import agg.editor.impl.EdGraGra;
+import agg.editor.impl.EdGraph;
+import agg.editor.impl.EdNode;
+import agg.editor.impl.EdRule;
+import agg.layout.evolutionary.LayoutArc;
+import agg.layout.evolutionary.LayoutNode;
+import agg.xml.validation.XmlCanonicalComparator;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static org.testng.Assert.*;
+
+import java.io.File;
+
+/**
+ * DOM-side regression tests of the UI layer serialization.
+ *
+ * <p>The preparation half ran against the FROZEN legacy clone
+ * (agg-core-legacy): {@code agg.xml.prep.LegacyPreparationTest}
+ * produced the reference file {@code target/legacy_prep/ui_basic_graph_attrs.ggx}
+ * with the legacy XMLHelper path (EdGraGra as top object, exactly like
+ * GraGraSave). This class is the "actual" half running against the current
+ * src_ui / src_uixml code:</p>
+ * <ol>
+ *   <li>DOM load of the frozen UI reference via {@link UISerialization}.</li>
+ *   <li>Verification that the UI segments (positions, text offsets, layout
+ *       data) were applied onto the editor objects.</li>
+ *   <li>DOM save and canonical comparison against the frozen reference.</li>
+ * </ol>
+ */
+public class UiDomRegressionTest {
+
+    private static final String PREP_DIR = "target/legacy_prep/";
+    private static final String OUTPUT_DIR = "target/ui-regression/";
+
+    private File outputDir;
+
+    @BeforeClass
+    public void setUp() {
+        outputDir = new File(OUTPUT_DIR);
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+    }
+
+    /**
+     * Basic graph scenario: DOM load of the frozen UI reference, UI state
+     * verification, DOM save and canonical comparison.
+     */
+    @Test
+    public void uiBasicScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_graph_attrs.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        verifyHostGraphUiState(loaded);
+        verifyTypeGraphUiState(loaded);
+
+        roundtripAndCompare(loaded, "ui_basic_graph_attrs_new.ggx", refFile);
+    }
+
+    /**
+     * Rule scenario: rule graphs (LHS/RHS), NAC, PAC, nested AC, a bent
+     * edge and a loop edge. DOM load of the frozen UI reference, UI state
+     * verification, DOM save and canonical comparison.
+     */
+    @Test
+    public void uiRuleScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_rule_nac.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 1, "Rule count");
+        EdRule rule = loaded.getRules().get(0);
+        assertEquals(rule.getName(), "transformItem", "Rule name");
+
+        verifyRuleGraphUiState(rule);
+        verifyHostLoopUiState(loaded);
+
+        roundtripAndCompare(loaded, "ui_rule_nac_new.ggx", refFile);
+    }
+
+    /**
+     * Constraint scenario: atomic constraint and formula constraint in a
+     * UI-layer save. DOM load of the frozen UI reference, UI state
+     * verification, DOM save and canonical comparison.
+     */
+    @Test
+    public void uiConstraintScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_constraints.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getAtomics().size(), 1, "Atomic constraint count");
+        assertEquals(loaded.getConstraints().size(), 1, "Formula count");
+        assertEquals(loaded.getName(), "ConstraintTest", "GraGra name");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+
+        roundtripAndCompare(loaded, "ui_constraints_new.ggx", refFile);
+    }
+
+    /**
+     * Basic graph scenario WITHOUT a type graph: the loaded editor grammar
+     * must have no type graph, the host UI state must be applied and the
+     * DOM save must match the frozen reference canonically.
+     */
+    @Test
+    public void uiBasicNoTypeGraphRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_noTG.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertNull(loaded.getTypeGraph(), "Type graph should not exist");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node 1 position");
+        assertTrue(hasNodeAt(loaded.getGraph(), 117, 217), "Host node 2 position");
+
+        EdArc hostArc = loaded.getGraph().getArcs().get(0);
+        assertEquals(hostArc.getTextOffset().x, 13, "Host arc text offset X");
+        assertEquals(hostArc.getTextOffset().y, -7, "Host arc text offset Y");
+        assertFalse(hostArc.isElementOfTypeGraph(),
+            "Host arc is not a type graph element");
+
+        roundtripAndCompare(loaded, "ui_basic_noTG_new.ggx", refFile);
+    }
+
+    /**
+     * Basic graph scenario with UNDIRECTED arcs: the loaded editor grammar
+     * must keep the undirected flag, the UI state must be applied and the
+     * DOM save must match the frozen reference canonically.
+     */
+    @Test
+    public void uiBasicUndirectedRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_undir.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertNotNull(loaded.getTypeGraph(), "Type graph should exist");
+        assertFalse(loaded.getBasisGraGra().getTypeSet().isArcDirected(),
+            "Arcs should be undirected");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node 1 position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 124, 224),
+            "Type graph node 1 position");
+
+        roundtripAndCompare(loaded, "ui_basic_undir_new.ggx", refFile);
+    }
+
+    /**
+     * Composite scenario: two rules (one with NAC/PAC/nested AC), an atomic
+     * constraint, a formula, a match and a rule sequence in one UI-layer
+     * save. DOM load, structural verification, DOM save and canonical
+     * comparison.
+     */
+    @Test
+    public void uiCompositeScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_composite.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 2, "Rule count");
+        assertEquals(loaded.getAtomics().size(), 1, "Atomic constraint count");
+        assertEquals(loaded.getConstraints().size(), 1, "Formula count");
+        assertNotNull(loaded.getTypeGraph(), "Type graph should exist");
+
+        EdRule firstRule = loaded.getRules().get(0);
+        assertEquals(firstRule.getName(), "transformItem", "First rule name");
+        assertEquals(firstRule.getNACs().size(), 1, "NAC count");
+        assertEquals(firstRule.getPACs().size(), 1, "PAC count");
+        assertEquals(firstRule.getNestedACs().size(), 1, "Nested AC count");
+        assertTrue(hasNodeAt(firstRule.getLeft(), 131, 231),
+            "First rule LHS node position");
+
+        EdRule secondRule = loaded.getRules().get(1);
+        assertEquals(secondRule.getName(), "compositeRule2", "Second rule name");
+        assertTrue(hasNodeAt(secondRule.getLeft(), 152, 252),
+            "Second rule LHS node position");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 117, 217),
+            "Type graph node position");
+
+        java.util.List<agg.ruleappl.RuleSequence> sequences =
+            loaded.getBasisGraGra().getRuleSequences();
+        assertEquals(sequences.size(), 1, "Rule sequence count");
+        assertEquals(sequences.get(0).getName(), "compositeSequence",
+            "Rule sequence name");
+        assertNotNull(sequences.get(0).getGraph(),
+            "Rule sequence start graph should be restored");
+
+        roundtripAndCompare(loaded, "ui_composite_new.ggx", refFile);
+    }
+
+    /**
+     * Rule scheme scenario: kernel rule and multi rule inside a RuleScheme
+     * section. The scheme graphs are not registered in the DOM registry,
+     * so the UI segments are paired structurally. DOM load, UI state
+     * verification (pinned kernel/multi positions), DOM save and canonical
+     * comparison.
+     */
+    @Test
+    public void uiRuleSchemeScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_rule_scheme.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 1, "Rule count");
+        assertTrue(loaded.getRules().get(0) instanceof agg.editor.impl.EdRuleScheme,
+            "The only rule should be an EdRuleScheme");
+        agg.editor.impl.EdRuleScheme scheme =
+            (agg.editor.impl.EdRuleScheme) loaded.getRules().get(0);
+
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 117, 217),
+            "Type graph node position");
+
+        assertTrue(hasNodeAt(scheme.getKernelRule().getLeft(), 124, 224),
+            "Kernel LHS node position");
+        assertTrue(hasNodeAt(scheme.getKernelRule().getRight(), 131, 231),
+            "Kernel RHS node position");
+        assertEquals(scheme.getMultiRules().size(), 1, "Multi rule count");
+        assertTrue(hasNodeAt(scheme.getMultiRules().get(0).getLeft(), 138, 238),
+            "Multi LHS node position");
+        assertTrue(hasNodeAt(scheme.getMultiRules().get(0).getRight(), 152, 252),
+            "Multi RHS node position");
+
+        // The RuleScheme section of a DOM save is produced by the core path
+        // through a legacy helper load, which renames rule graphs on load
+        // (LeftOf_/RightOf_) and drops the scheme layer/priority tagged
+        // values on the second roundtrip. A canonical comparison is
+        // therefore not meaningful (same approach as the core suite:
+        // structural verification of the reloaded save).
+        File outFile = new File(outputDir, "ui_rule_scheme_new.ggx");
+        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        EdGraGra reloaded = UISerialization.loadWithDom(outFile.getPath());
+        assertNotNull(reloaded, "Second DOM UI load should succeed");
+        assertEquals(reloaded.getRules().size(), 1, "Rule count after reload");
+        assertTrue(reloaded.getRules().get(0) instanceof agg.editor.impl.EdRuleScheme,
+            "The reloaded rule should still be an EdRuleScheme");
+        agg.editor.impl.EdRuleScheme reloadedScheme =
+            (agg.editor.impl.EdRuleScheme) reloaded.getRules().get(0);
+        assertNotNull(reloadedScheme.getKernelRule(), "Kernel rule after reload");
+        assertTrue(reloadedScheme.getMultiRules().size() > 0,
+            "Multi rules after reload");
+        assertTrue(hasNodeAt(reloadedScheme.getKernelRule().getLeft(), 124, 224),
+            "Kernel LHS node position after reload");
+    }
+
+    /**
+     * Saves the given editor grammar with the DOM UI path and compares the
+     * result canonically against the frozen reference file.
+     */
+    private void roundtripAndCompare(EdGraGra edGraGra, String outputName,
+            File refFile) throws Exception {
+        File outFile = new File(outputDir, outputName);
+        assertTrue(UISerialization.saveWithDom(edGraGra, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "DOM UI save differs from the frozen reference: "
+            + result.getMessage());
+    }
+
+    /**
+     * The rule graphs must carry the pinned UI state: distinct LHS/RHS/NAC/
+     * PAC positions and the bent LHS edge.
+     */
+    private void verifyRuleGraphUiState(EdRule rule) {
+        assertEquals(rule.getLeft().getNodes().size(), 2, "LHS node count");
+        assertEquals(rule.getLeft().getArcs().size(), 1, "LHS arc count");
+        assertEquals(rule.getRight().getNodes().size(), 1, "RHS node count");
+
+        assertTrue(hasNodeAt(rule.getLeft(), 131, 231), "LHS node 1 position");
+        assertTrue(hasNodeAt(rule.getLeft(), 138, 238), "LHS node 2 position");
+        assertTrue(hasNodeAt(rule.getRight(), 145, 245), "RHS node position");
+
+        EdArc lhsArc = rule.getLeft().getArcs().get(0);
+        assertEquals(lhsArc.getX(), 25, "Bent LHS edge X");
+        assertEquals(lhsArc.getY(), 30, "Bent LHS edge Y");
+        assertFalse(lhsArc.hasDefaultAnchor(), "Bent LHS edge anchor");
+
+        assertEquals(rule.getNACs().size(), 1, "NAC count");
+        assertEquals(rule.getNACs().get(0).getNodes().size(), 1, "NAC node count");
+        assertEquals(rule.getNACs().get(0).getNodes().get(0).getX(), 152,
+            "NAC node X position");
+        assertEquals(rule.getNACs().get(0).getNodes().get(0).getY(), 252,
+            "NAC node Y position");
+
+        assertEquals(rule.getPACs().size(), 1, "PAC count");
+        assertEquals(rule.getPACs().get(0).getNodes().get(0).getX(), 159,
+            "PAC node X position");
+        assertEquals(rule.getPACs().get(0).getNodes().get(0).getY(), 259,
+            "PAC node Y position");
+
+        assertEquals(rule.getNestedACs().size(), 1, "Nested AC count");
+        EdGraph nestedAC = rule.getNestedACs().get(0);
+        assertTrue(hasNodeAt(nestedAC, 100, 100),
+            "Nested AC node keeps the default position");
+    }
+
+    /**
+     * The host graph contains a loop edge; its layout must survive the
+     * roundtrip with the raw (zero) loop dimensions of the reference.
+     */
+    private void verifyHostLoopUiState(EdGraGra edGraGra) {
+        EdGraph host = edGraGra.getGraph();
+        assertEquals(host.getNodes().size(), 1, "Host node count");
+        assertEquals(host.getArcs().size(), 1, "Host arc count");
+        assertTrue(hasNodeAt(host, 110, 210), "Host node position");
+
+        EdArc loop = host.getArcs().get(0);
+        assertFalse(loop.isLine(), "Host edge should be a loop");
+        assertEquals(loop.getWidth(), 0, "Loop width");
+        assertEquals(loop.getHeight(), 0, "Loop height");
+        assertTrue(loop.hasDefaultAnchor(), "Loop anchor");
+    }
+
+    /**
+     * Returns whether the graph contains a node at the given position.
+     */
+    private boolean hasNodeAt(EdGraph graph, int x, int y) {
+        for (EdNode node : graph.getNodes()) {
+            if (node.getX() == x && node.getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * The host graph editor objects must carry the pinned UI state from the
+     * reference (distinct positions and text offset, not the EdNode/EdArc
+     * defaults).
+     */
+    private void verifyHostGraphUiState(EdGraGra edGraGra) {
+        EdGraph host = edGraGra.getGraph();
+        assertNotNull(host, "Host graph should exist");
+        assertEquals(host.getNodes().size(), 2, "Host graph node count");
+        assertEquals(host.getArcs().size(), 1, "Host graph arc count");
+
+        int pos = 10;
+        for (EdNode node : host.getNodes()) {
+            assertEquals(node.getX(), 100 + pos, "Host node X position");
+            assertEquals(node.getY(), 200 + pos, "Host node Y position");
+            pos += 5;
+
+            LayoutNode layoutNode = node.getLayoutNode();
+            assertNotNull(layoutNode, "Host node should have a LayoutNode");
+            assertEquals(layoutNode.getAge(), 0, "LayoutNode age");
+            assertEquals(layoutNode.getForce(), 10, "LayoutNode force");
+            assertFalse(layoutNode.isFrozen(), "LayoutNode frozen");
+            assertEquals(layoutNode.getZone(), 50, "LayoutNode zone");
+        }
+
+        EdArc arc = host.getArcs().get(0);
+        assertEquals(arc.getTextOffset().x, 13, "Host arc text offset X");
+        assertEquals(arc.getTextOffset().y, -7, "Host arc text offset Y");
+        assertTrue(arc.hasDefaultAnchor(), "Host arc should have default anchor");
+
+        LayoutArc layoutArc = arc.getLayoutArc();
+        assertNotNull(layoutArc, "Host arc should have a LayoutArc");
+        assertEquals(layoutArc.getPrefLength(), 200, "LayoutArc preflength");
+        assertEquals(layoutArc.getAktLength(), 200, "LayoutArc aktlength");
+        assertEquals(layoutArc.getForce(), 10, "LayoutArc force");
+    }
+
+    /**
+     * The type graph editor nodes keep their default positions in the
+     * reference; they must be present and carry layout nodes.
+     */
+    private void verifyTypeGraphUiState(EdGraGra edGraGra) {
+        EdGraph typeGraph = edGraGra.getTypeGraph();
+        assertNotNull(typeGraph, "Type graph should exist");
+        assertTrue(typeGraph.getNodes().size() >= 2, "Type graph node count");
+
+        for (EdNode node : typeGraph.getNodes()) {
+            assertEquals(node.getX(), 100, "Type graph node X position");
+            assertEquals(node.getY(), 100, "Type graph node Y position");
+            assertNotNull(node.getLayoutNode(),
+                "Type graph node should have a LayoutNode");
+        }
+        for (EdArc arc : typeGraph.getArcs()) {
+            assertTrue(arc.isElementOfTypeGraph(),
+                "Type graph arcs are type graph elements");
+        }
+    }
+}

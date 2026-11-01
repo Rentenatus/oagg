@@ -1,0 +1,1670 @@
+/**
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
+ */
+package agg.termination;
+
+import agg.util.Pair;
+import agg.xt_basis.Arc;
+import agg.xt_basis.BaseFactory;
+import agg.xt_basis.Completion_InjCSP;
+import agg.xt_basis.GraGra;
+import agg.xt_basis.Graph;
+import agg.xt_basis.GraphObject;
+import agg.xt_basis.OrdinaryMorphism;
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
+import agg.xt_basis.Type;
+import de.jare.ndimcol.ref.IteratorWalker;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+//import com.objectspace.jgl.OrderedSet;
+//import com.objectspace.jgl.OrderedSetIterator;
+
+/**
+ * This class implements termination conditions of Layered Graph Grammar.
+ *
+ * @author $Author: olga $
+ * @version $Id: TerminationLGTS.java,v 1.29 2010/09/23 08:26:15 olga Exp $
+ */
+public class TerminationLGTS implements TerminationLGTSInterface {
+
+    /**
+     * The graph grammar
+     */
+    private GraGra grammar;
+    private List<Rule> listOfRules;
+    private boolean layered, priority;
+    private List<Rule> deletionRule;
+    private List<Rule> nondeletionRule;
+    private List<Rule> creationRule;
+    private Map<Rule, Integer> ruleLayer;
+    private Map<Type, Integer> creationLayer;
+    private Map<Type, Integer> deletionLayer;
+    private boolean generateRuleLayer;
+    private Map<Rule, Integer> oldRuleLayer;
+    private int maxl;
+    private Map<Integer, HashSet<Rule>> invertedRuleLayer;
+    private SortedSeasonSet<Integer> orderedRuleLayerSet;
+    private Map<Integer, HashSet<Object>> invertedTypeDeletionLayer;
+    private SortedSeasonSet<Integer> orderedTypeDeletionLayerSet;
+    private Map<Integer, HashSet<Object>> invertedTypeCreationLayer;
+    private SortedSeasonSet<Integer> orderedTypeCreationLayerSet;
+    private Integer //startLayer, 
+            startRuleLayer;
+    private ArraySeasonInt orderedRuleLayer;
+    // private List orderedTypeDeletionLayer;
+    // private List orderedTypeCreationLayer;
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultTypeDeletion;
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultDeletion;
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultNonDeletion;
+    private Map<Integer, List<String>> errorMsg;
+    private Map<Integer, List<String>> errorMsgDeletion1;
+    private Map<Integer, List<String>> errorMsgDeletion2;
+    private Map<Integer, List<String>> errorMsgNonDeletion;
+    private Map<Integer, List<Type>> deletionType;
+    private boolean needCorrection = false;
+    /**
+     * The error message if termination conditions are not valid
+     */
+    private String errMsg;
+    /**
+     * true if termination conditions are valid
+     */
+    private boolean valid;
+
+    public TerminationLGTS() {
+    }
+
+    public void dispose() {
+        if (this.grammar != null) {
+            unsetLayer();
+        }
+        this.grammar = null;
+    }
+
+    /**
+     * Initialize a termination layers of the grammar. Initially the termination
+     * conditions are invalid.
+     *
+     * @param gra the graph grammar.
+     */
+    public void setGrammar(GraGra gra) {
+        if (gra == null) {
+            unsetLayer();
+            this.grammar = null;
+        } else {
+            this.grammar = gra;
+            this.listOfRules = this.getListOfEnabledRules();
+            this.errMsg = "";
+            this.valid = false;
+            this.oldRuleLayer = new HashMap<>();
+            setKind();
+            initRuleLayer(this.grammar);
+            initCreationLayer(this.grammar);
+            initDeletionLayer(this.grammar);
+            initOrderedRuleLayer(this.grammar);
+            this.deletionType = new HashMap<>();
+            initResults();
+        }
+    }
+
+    public void resetGrammar() {
+        if (this.grammar != null) {
+            this.listOfRules = this.getListOfEnabledRules();
+            this.errMsg = "";
+            this.valid = false;
+            setKind();
+            reinitRuleLayer();
+            reinitCreationLayer();
+            reinitDeletionLayer();
+            reinitOrderedRuleLayer();
+            this.deletionType.clear();
+            reinitResults();
+        }
+    }
+
+    public GraGra getGrammar() {
+        return this.grammar;
+    }
+
+    public List<Rule> getListOfEnabledRules() {
+        List<Rule> list = new Vector<>();
+        for (int i = 0; i < this.grammar.getListOfRules().size(); i++) {
+            Rule r = this.grammar.getListOfRules().get(i);
+            if (r.isEnabled()) {
+                list.add(r);
+            }
+        }
+        return list;
+    }
+
+    public boolean hasGrammarChanged() {
+        if (this.grammar != null) {
+            boolean changed = false;
+            if (this.grammar.hasRuleChangedEvailability()
+                    || (this.layered && this.grammar.trafoByPriority())
+                    || (this.priority && this.grammar.isLayered())
+                    || (this.layered && this.grammar.hasRuleChangedLayer())
+                    || (this.priority && this.grammar.hasRuleChangedPriority())
+                    || (this.layered && !this.grammar.isLayered())) {
+                changed = true;
+                this.setGrammar(this.grammar);
+            }
+            return changed;
+        }
+        return false;
+    }
+
+    public List<Rule> getListOfRules() {
+        return this.listOfRules;
+    }
+
+    public Map<Integer, HashSet<Rule>> getInvertedRuleLayer() {
+        return this.invertedRuleLayer;
+    }
+
+    public ArrayMovieInt getOrderedRuleLayer() {
+        return this.orderedRuleLayer;
+    }
+
+    public Map<Integer, HashSet<Object>> getInvertedTypeDeletionLayer() {
+        return this.invertedTypeDeletionLayer;
+    }
+
+    // public List getOrderedTypeDeletionLayer()
+    // { return orderedTypeDeletionLayer; }
+    public Map<Integer, HashSet<Object>> getInvertedTypeCreationLayer() {
+        return this.invertedTypeCreationLayer;
+    }
+
+    // public List getOrderedTypeCreationLayer()
+    // { return orderedTypeCreationLayer; }
+    /**
+     * This table maps an Integer layer number to a List of Types the objects of
+     * which (nodes resp. edges) will be deleted by some rules.
+     */
+    public Map<Integer, List<Type>> getDeletionType() {
+        return this.deletionType;
+    }
+
+    /**
+     * The result table maps an Integer layer number to a Pair with a Boolean
+     * result for a List of Rules.
+     */
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion() {
+        return this.resultTypeDeletion;
+    }
+
+    /**
+     * The result table maps an Integer layer number to a Pair with a Boolean
+     * result for a List of Rules.
+     */
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultDeletion() {
+        return this.resultDeletion;
+    }
+
+    /**
+     * The result table maps an Integer layer number to a Pair with a Boolean
+     * result for a List of Rules.
+     */
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion() {
+        return this.resultNonDeletion;
+    }
+
+    public void resetLayer() {
+        this.maxl = 0;
+        setKind();
+        initRuleLayer(this.oldRuleLayer);
+        initCreationLayer(this.grammar);
+        initDeletionLayer(this.grammar);
+        initOrderedRuleLayer(this.grammar);
+        this.deletionType = new HashMap<>();
+        initResults();
+    }
+
+    private void setKind() {
+//		System.out.println(this.getClass().getName()+".seKind()");
+//		System.out.println(this.grammar.isLayered()+"   "+this.grammar.isPriority());
+//		System.out.println(this.layered +"    "+this.priority);
+        this.priority = this.grammar.trafoByPriority();
+        this.layered = this.grammar.isLayered() || !this.priority;
+        this.oldRuleLayer.clear();
+        this.saveRuleLayerInto(this.oldRuleLayer);
+//		System.out.println(this.layered +"    "+this.priority);
+    }
+
+    private void unsetLayer() {
+        this.creationLayer.clear();
+        this.deletionLayer.clear();
+        this.deletionType.clear();
+        this.deletionRule.clear();
+        this.creationRule.clear();
+        this.nondeletionRule.clear();
+        this.invertedRuleLayer.clear();
+//		this.invertedTypeDeletionLayer.clear();
+        this.ruleLayer.clear();
+        this.oldRuleLayer.clear();
+        this.orderedRuleLayerSet.clear();
+//		this.orderedTypeDeletionLayerSet.clear();
+//		this.invertedTypeCreationLayer.clear();
+//		this.orderedTypeCreationLayerSet.clear();
+        this.resultTypeDeletion.clear();
+        this.resultDeletion.clear();
+        this.resultNonDeletion.clear();
+        clearErrors();
+    }
+
+    private void initRuleLayer(GraGra gragra) {
+        this.ruleLayer = new HashMap<>();
+        this.deletionRule = new Vector<>();
+        this.nondeletionRule = new Vector<>();
+        this.creationRule = new Vector<>();
+        Iterator<Rule> rules = this.listOfRules.iterator();
+        while (rules.hasNext()) {
+            Rule rule = rules.next();
+//			System.out.println(rule.getName()+"  layer: "+rule.getLayer()+"  prior: "+rule.getPriority());
+            if (this.priority) {
+                this.ruleLayer.put(rule, Integer.valueOf(rule.getPriority()));
+            } else {
+                this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
+            }
+            if (isDeleting(rule)) {
+                this.deletionRule.add(rule);
+//					System.out.println("Deleting rule:  "+rule.getName());
+//					if (isCreating(rule)) {
+//						creationRule.add(rule);
+//						System.out.println("Deleting and Creating rule:  "+rule.getName());
+//					}
+            } else {
+                if (isCreating(rule)) {
+                    this.creationRule.add(rule);
+//						System.out.println("Creating rule:  "+rule.getName());
+                }
+                this.nondeletionRule.add(rule);
+            }
+        }
+    }
+
+    private void reinitRuleLayer() {
+        this.ruleLayer.clear();
+        this.deletionRule.clear();
+        this.nondeletionRule.clear();
+        this.creationRule.clear();
+        Iterator<Rule> rules = this.listOfRules.iterator();
+        while (rules.hasNext()) {
+            Rule rule = rules.next();
+            if (this.priority) {
+                this.ruleLayer.put(rule, Integer.valueOf(rule.getPriority()));
+            } else {
+                this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
+            }
+            if (isDeleting(rule)) {
+                this.deletionRule.add(rule);
+//				System.out.println("Deleting rule:  "+rule.getName());
+            } else {
+                if (isCreating(rule)) {
+                    this.creationRule.add(rule);
+//					System.out.println("Creating rule:  "+rule.getName());
+                }
+                this.nondeletionRule.add(rule);
+            }
+        }
+    }
+
+    /*
+	private void initRuleLayer(int init) {
+		for (Enumeration<Rule> keys = ruleLayer.keys(); keys.hasMoreElements();) {
+			Rule rule = keys.nextElement();
+			if (rule.isEnabled()) {
+				ruleLayer.put(rule, Integer.valueOf(init));
+			}
+		}
+	}
+     */
+    public void initRuleLayer(Map<?, Integer> init) {
+        for (Object key : init.keySet()) {
+            Rule rule = (Rule) key;
+            if (rule.isEnabled()) {
+                Integer rl = init.get(rule);
+                this.ruleLayer.put(rule, Integer.valueOf(rl.intValue()));
+            }
+        }
+    }
+
+    private void initCreationLayer(GraGra gragra) {
+        this.creationLayer = new HashMap<Type, Integer>();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
+        while (types.hasNext()) {
+            Type t = types.next();
+            this.creationLayer.put(t, Integer.valueOf(0));
+        }
+    }
+
+    private void reinitCreationLayer() {
+        this.creationLayer.clear();
+        IteratorWalker<Type> types = this.grammar.getTypeWalker();
+        while (types.hasNext()) {
+            Type t = types.next();
+            this.creationLayer.put(t, Integer.valueOf(0));
+        }
+    }
+
+    private void initCreationLayer(int init) {
+        for (Type t : this.creationLayer.keySet()) {
+            this.creationLayer.put(t, Integer.valueOf(init));
+        }
+    }
+
+    private void initDeletionLayer(GraGra gragra) {
+        this.deletionLayer = new HashMap<Type, Integer>();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
+        while (types.hasNext()) {
+            Type t = types.next();
+            this.deletionLayer.put(t, Integer.valueOf(0));
+        }
+    }
+
+    private void reinitDeletionLayer() {
+        this.deletionLayer.clear();
+        IteratorWalker<Type> types = this.grammar.getTypeWalker();
+        while (types.hasNext()) {
+            Type t = types.next();
+            this.deletionLayer.put(t, Integer.valueOf(0));
+        }
+    }
+
+    private void initDeletionLayer(int init) {
+        for (Type t : this.deletionLayer.keySet()) {
+            this.deletionLayer.put(t, Integer.valueOf(init));
+        }
+    }
+
+    private void initOrderedRuleLayer(GraGra gragra) {
+        RuleLayer layer = new RuleLayer(this.listOfRules);
+        this.invertedRuleLayer = layer.invertLayer();
+        this.startRuleLayer = layer.getStartLayer();
+        this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : this.invertedRuleLayer.keySet()) {
+            this.orderedRuleLayerSet.add(key);
+        }
+    }
+
+    private void reinitOrderedRuleLayer() {
+        RuleLayer layer = new RuleLayer(this.listOfRules);
+        this.invertedRuleLayer = layer.invertLayer();
+        this.startRuleLayer = layer.getStartLayer();
+        this.orderedRuleLayerSet.clear();
+        for (Integer key : this.invertedRuleLayer.keySet()) {
+            this.orderedRuleLayerSet.add(key);
+        }
+    }
+
+    private void initOrderedTypeDeletionLayer() {
+        TypeLayer layer = new TypeLayer(this.deletionLayer);
+        this.invertedTypeDeletionLayer = layer.invertLayer();
+//		startLayer = layer.getStartLayer();
+        this.invertedTypeDeletionLayer = layer.invertLayer();
+        this.orderedTypeDeletionLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : this.invertedTypeDeletionLayer.keySet()) {
+            this.orderedTypeDeletionLayerSet.add(key);
+        }
+    }
+
+    private void initOrderedTypeCreationLayer() {
+        TypeLayer layer = new TypeLayer(this.creationLayer);
+        this.invertedTypeCreationLayer = layer.invertLayer();
+//		startLayer = layer.getStartLayer();
+        this.invertedTypeCreationLayer = layer.invertLayer();
+        this.orderedTypeCreationLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : this.invertedTypeCreationLayer.keySet()) {
+            this.orderedTypeCreationLayerSet.add(key);
+        }
+    }
+
+    private void initResults() {
+        this.orderedRuleLayer = new ArraySeasonInt();
+        this.resultTypeDeletion = new HashMap<>();
+        this.resultDeletion = new HashMap<>();
+        this.resultNonDeletion = new HashMap<>();
+        this.errorMsg = new HashMap<>();
+        this.errorMsgDeletion1 = new HashMap<>();
+        this.errorMsgDeletion2 = new HashMap<>();
+        this.errorMsgNonDeletion = new HashMap<>();
+    }
+
+    private void reinitResults() {
+        this.orderedRuleLayer.clear();
+        this.resultTypeDeletion.clear();
+        this.resultDeletion.clear();
+        this.resultNonDeletion.clear();
+        clearErrors();
+    }
+
+    public void initAll(boolean generate) {
+        if (generate) {
+            // initRuleLayer(0);
+            initRuleLayer(this.oldRuleLayer);
+            initCreationLayer(0);
+            initDeletionLayer(0);
+            initResults();
+            this.maxl = 0;
+        } else {
+            resetLayer();
+        }
+    }
+
+    private boolean isDeleting(Rule r) {
+        for (Iterator<GraphObject> elems = r.getLeft().iteratorOfElems(); elems.hasNext();) {
+            GraphObject go = elems.next();
+            if (r.getImage(go) == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isCreating(Rule r) {
+        for (Iterator<GraphObject> elems = r.getRight().iteratorOfElems(); elems
+                .hasNext();) {
+            GraphObject go = elems.next();
+            if (!r.hasInverseImage(go)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Object> getCreatedTypesOnDeletionLayer(Integer layer) {
+        List<Object> types = new Vector<>();
+        for (Iterator<Rule> en = this.deletionRule.iterator(); en.hasNext();) {
+            Rule r = en.next();
+            for (Iterator<GraphObject> elems = r.getRight().iteratorOfElems(); elems
+                    .hasNext();) {
+                GraphObject go = elems.next();
+                if (!r.hasInverseImage(go)) {
+                    Type t = go.getType();
+                    Integer tLayer = this.creationLayer.get(t);
+                    if ((tLayer.intValue() == layer.intValue())
+                            && !types.contains(t)) {
+                        types.add(t);
+                    }
+                }
+            }
+        }
+        return types;
+    }
+
+    private void generateCreationLayer() {
+        for (Iterator<Rule> en = this.nondeletionRule.iterator(); en.hasNext();) {
+            Rule r = en.next();
+            for (Type t : this.creationLayer.keySet()) {
+                setCreationLayer(r, t);
+            }
+        }
+    }
+
+    private void setCreationLayer(Rule r, Type t) {
+        for (Iterator<GraphObject> en = r.getRight().iteratorOfElems(); en.hasNext();) {
+            GraphObject grob = en.next();
+            if (!r.hasInverseImage(grob)) {
+                if (grob.getType().compareTo(t)) {
+                    Integer rl = this.ruleLayer.get(r);
+                    Integer cl = this.creationLayer.get(t);
+                    if (cl.intValue() <= rl.intValue()) {
+                        int l = rl.intValue() + 1;
+                        this.creationLayer.put(t, Integer.valueOf(l));
+                        if (l > this.maxl) {
+                            this.maxl = l;
+                        }
+                    }
+                }
+            }
+        }
+        // now for preserved graph objects
+        for (Iterator<GraphObject> en = r.getLeft().iteratorOfElems(); en.hasNext();) {
+            GraphObject grob = en.next();
+            if (r.getImage(grob) != null) {
+                if (grob.getType().compareTo(t)) {
+                    Integer rl = this.ruleLayer.get(r);
+                    Integer cl = this.creationLayer.get(t);
+                    if (cl.intValue() > rl.intValue()) {
+                        if (this.generateRuleLayer) {
+                            this.ruleLayer.put(r, Integer.valueOf(cl.intValue()));
+                            rl = this.ruleLayer.get(r);
+                            this.needCorrection = true;
+                        } else {
+                            this.creationLayer.put(t, Integer.valueOf(rl.intValue()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+	private boolean increaseRuleLayer(Enumeration<Rule> rules, Type t,
+			Rule excludedRule) {
+		boolean increased = false;
+		while (rules.hasMoreElements()) {
+			Rule r = rules.nextElement();
+			if (!r.equals(excludedRule)) {
+				if (usesType(t, r)) {
+					if (layered)
+						r.setLayer(r.getLayer() + 1);
+					else if (priority)
+						r.setPriority(r.getPriority() + 1);
+					else
+						r.setLayer(r.getLayer() + 1);
+					increased = true;
+				}
+			}
+		}
+		return increased;
+	}
+	
+	private boolean usesType(Type t, Rule r) {
+		for (Enumeration<GraphObject> elems = r.getLeft().getElements(); elems
+				.hasMoreElements();) {
+			GraphObject go = elems.nextElement();
+			if (r.getImage(go) != null)
+				if (go.getType().compareTo(t))
+					return true;
+		}
+		return false;
+	}
+	private void passCreationLayer() {
+		for (Enumeration<Rule> en = creationRule.elements(); en.hasMoreElements();) {
+			Rule r = en.nextElement();
+			for (Type t : creationLayer.keySet()) {
+				// System.out.print("creation type: <"+t.getStringRepr()+">");
+				Integer rl = ruleLayer.get(r);
+				Integer cl = creationLayer.get(t);
+				if (cl.intValue() <= rl.intValue()) {
+					int l = rl.intValue() + 1;
+					creationLayer.put(t, Integer.valueOf(l));
+					cl = creationLayer.get(t);
+					if (l > maxl)
+						maxl = l;
+				}
+			}
+		}
+	}
+     */
+    private void generateDeletionLayer() {
+        if (this.generateRuleLayer) {
+            // set rule layer of deletion rules to maxl first
+            for (Iterator<Rule> en = this.deletionRule.iterator(); en.hasNext();) {
+                Rule r = en.next();
+                Integer rl = getRuleLayer().get(r);
+                if (rl.intValue() < this.maxl) {
+                    this.ruleLayer.put(r, Integer.valueOf(this.maxl));
+                }
+            }
+        }
+        for (Iterator<Rule> en = this.deletionRule.iterator(); en.hasNext();) {
+            Rule r = en.next();
+            for (Type t : this.deletionLayer.keySet()) {
+                setDeletionLayer(r, t);
+            }
+        }
+        // set deletion layer of unused types to maxl
+        for (Iterator<Object> en = getDeletionLayer().keySet().iterator(); en.hasNext();) {
+            Type key = (Type) en.next();
+            Integer dl = getDeletionLayer().get(key);
+            Integer cl = this.creationLayer.get(key);
+            if (dl.intValue() < cl.intValue()) {
+                this.deletionLayer.put(key, Integer.valueOf(cl.intValue()));
+            }
+        }
+    }
+
+    private void setDeletionLayer(Rule r, Type t) {
+        for (Iterator<GraphObject> en = r.getLeft().iteratorOfElems(); en.hasNext();) {
+            // first graph objects to delete
+            GraphObject grob = en.next();
+            if (r.getImage(grob) == null) {
+                if (grob.getType().compareTo(t)) {
+                    Integer rl = this.ruleLayer.get(r);
+                    Integer cl = this.creationLayer.get(t);
+                    Integer dl = this.deletionLayer.get(t);
+                    int l = cl.intValue(); // + 1;
+                    if (l > this.maxl) {
+                        this.maxl = l;
+                    }
+                    if (this.generateRuleLayer && (rl.intValue() < this.maxl)) {
+                        this.ruleLayer.put(r, Integer.valueOf(this.maxl));
+                        rl = this.ruleLayer.get(r);
+                    }
+                    if (dl.intValue() < cl.intValue()) {
+                        this.deletionLayer.put(t, Integer.valueOf(this.maxl));
+                        dl = this.deletionLayer.get(t);
+                    }
+                    if ((dl.intValue() > rl.intValue()) && this.generateRuleLayer) {
+                        this.ruleLayer.put(r, Integer.valueOf(dl.intValue()));
+                        rl = this.ruleLayer.get(r);
+                    }
+                    if (dl.intValue() == 0) {
+                        this.deletionLayer.put(t, Integer.valueOf(rl.intValue()));
+                        dl = this.deletionLayer.get(t);
+//						System.out.println("setDeletionLayer:: "+r.getName()+"   <"+t.getName()+">   cl: "+cl+"   dl: "+dl);
+                    }
+                }
+            }
+        }
+        // now for new graph objects
+        for (Iterator<GraphObject> en = r.getRight().iteratorOfElems(); en.hasNext();) {
+            GraphObject grob = en.next();
+            if (!r.getInverseImage(grob).hasNext()) {
+                if (grob.getType().compareTo(t)) {
+                    Integer rl = this.ruleLayer.get(r);
+//					Integer dl = deletionLayer.get(t);
+                    Integer cl = this.creationLayer.get(t);
+                    if (cl.intValue() <= rl.intValue()) {
+                        // if(cl.intValue() < rl.intValue()) {
+                        this.creationLayer.put(t, Integer.valueOf(rl.intValue() + 1));
+                        cl = this.creationLayer.get(t);
+                    }
+                }
+            }
+        }
+    }
+
+    private void clearErrors() {
+        this.errorMsg.clear();
+        this.errorMsgDeletion1.clear();
+        this.errorMsgDeletion2.clear();
+        this.errorMsgNonDeletion.clear();
+    }
+
+    /**
+     * Checks layer conditions .
+     *
+     * @return true if conditions are valid.
+     */
+    public boolean checkTermination() {
+        clearErrors();
+        if (this.generateRuleLayer) {
+            initAll(this.generateRuleLayer);
+        }
+        generateCreationLayer();
+        generateDeletionLayer();
+        int n = this.listOfRules.size();
+        while (this.needCorrection && n >= 0) {
+            this.needCorrection = false;
+            generateCreationLayer();
+            generateDeletionLayer();
+            n--;
+        }
+        // check totality of rule layer function
+        for (Iterator<Rule> en = this.listOfRules.iterator(); en.hasNext();) {
+            Rule r = en.next();
+            Integer rl = this.ruleLayer.get(r);
+            /* layer function must be total*/
+            if (rl == null) {
+                this.errMsg = "Termination check failed.\n\n" + "Rule :  <"
+                        + r.getName() + "> \n"
+                        + "The condition that \n"
+                        + "rl  is a total function \n" + "is not satisfied.";
+                return false;
+            }
+        }
+        // check totality of deletion/creation layer functions
+        for (IteratorWalker<Type> en = this.grammar.getTypeWalker(); en.hasNext();) {
+            Type t = en.next();
+            Integer dl = this.deletionLayer.get(t);
+            Integer cl = this.creationLayer.get(t);
+            /* layer function must be total */
+            if (cl == null) {
+                this.errMsg = "Termination check failed.\n\n" + "Type :  <"
+                        + t.getStringRepr() + ">\n"
+                        + "The condition that \n" + "cl  is total function \n"
+                        + "is not satisfied.";
+                return false;
+            } else if (dl == null) {
+                this.errMsg = "Termination check failed.\n\n" + "Type :  <"
+                        + t.getStringRepr() + ">\n"
+                        + "The condition that\n" + "dl  is total function\n"
+                        + "is not satisfied.";
+                return false;
+            }
+        }
+        boolean result = checkTerminationConditions();
+        initOrderedTypeDeletionLayer();
+        initOrderedTypeCreationLayer();
+        this.valid = this.setValidResult();
+        return result;
+    }
+
+    private void addErrorMessage(
+            final Map<Integer, List<String>> msgContainer,
+            final Integer key,
+            final String msg) {
+        List<String> errList = msgContainer.get(key);
+        if (errList == null) {
+            errList = new Vector<>();
+            msgContainer.put(key, errList);
+        }
+        errList.add(this.errMsg);
+    }
+
+    private boolean checkTerminationConditions() {
+        Integer currentLayer = this.startRuleLayer;
+        int i = 0;
+        boolean nextLayerExists = true;
+        while (nextLayerExists && (currentLayer != null)) {
+            // get rules for layer
+            HashSet<Rule> rulesForLayer = this.invertedRuleLayer.get(currentLayer);
+            if (rulesForLayer != null) {
+                this.orderedRuleLayer.add(currentLayer);
+                List<Rule> currentRules = new Vector<>();
+                Iterator<?> en = rulesForLayer.iterator();
+                while (en.hasNext()) {
+                    Rule rule = (Rule) en.next();
+                    currentRules.add(rule);
+                }
+                if (checkTypeDeletion(currentLayer, currentRules)) {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(true), currentRules);
+                    this.resultTypeDeletion.put(currentLayer, value);
+                } else {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(false), currentRules);
+                    this.resultTypeDeletion.put(currentLayer, value);
+                }
+                if (checkNonDeletionLayer(currentRules)) {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(true), currentRules);
+                    this.resultNonDeletion.put(currentLayer, value);
+                } else {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(false), currentRules);
+                    this.resultNonDeletion.put(currentLayer, value);
+                }
+                if (checkDeletionLayer(currentRules)) {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(true), currentRules);
+                    this.resultDeletion.put(currentLayer, value);
+                } else {
+                    Pair<Boolean, List<Rule>> value = new Pair<>(
+                            Boolean.valueOf(false), currentRules);
+                    this.resultDeletion.put(currentLayer, value);
+                }
+            }
+//			OrderedSetIterator osi = this.orderedRuleLayerSet.find(currentLayer);
+//			if ((osi == null) || osi.atEnd())
+//				nextLayerExists = false;
+//			else {
+//				osi.advance();
+//				currentLayer = (Integer) osi.get();
+//			}
+            i++;
+            if (i < orderedRuleLayerSet.size()) {
+                currentLayer = orderedRuleLayerSet.get(i);
+            } else {
+                nextLayerExists = false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks first (type) deletion condition of rules on a certain layer .
+     * These rules must to delete at least one node or edge of a certain type.
+     *
+     * @param rules belong to the same rule layer
+     * @return true if condition is satisfied.
+     */
+    private boolean checkTypeDeletion(Integer layer, List<Rule> rules) {
+        // Deletion Layer Conditions (1)
+        boolean checkOK = true;
+        // 1) check: each rule decreases the number of graph items
+        for (int j = 0; j < rules.size(); j++) {
+            Rule r = rules.get(j);
+            // each rule has to delete
+            if (this.deletionRule.contains(r)) {
+                if (r.getLeft().getSize() < r.getRight().getSize()) {
+                    checkOK = false;
+                    this.errMsg = "Rule <" + r.getName()
+                            + "> does not decrease the number of graph items of one special type.";
+                    addErrorMessage(this.errorMsgDeletion1, layer, this.errMsg);
+                    break;
+                }
+            } else if (/*r.isEmptyRule() && */r.isTriggerOfLayer()) {
+            } else {
+                this.errMsg = "Rule <" + r.getName()
+                        + "> does not decrease the number of graph items.";
+                addErrorMessage(this.errorMsgDeletion1, layer, this.errMsg);
+                return false;
+            }
+        }
+        if (checkOK) {
+            return true;
+        }
+        // or
+        // 2) check: each rule decreases the number of graph items of one
+        // special type
+        Map<Pair<Type, Object>, List<Rule>> deletedType = new HashMap<>();
+        for (int j = 0; j < rules.size(); j++) {
+            Rule r = rules.get(j);
+            // each rule has to delete is already checked
+            // check one special type
+            for (Iterator<GraphObject> en = r.getLeft().iteratorOfElems(); en.hasNext();) {
+                GraphObject o = en.next();
+                if (r.getImage(o) == null) {
+                    boolean containsKey = false;
+                    Type t = o.getType();
+                    Pair<Type, Object> delt = new Pair<Type, Object>(t, null);
+                    if (o.isArc()) {
+                        delt = new Pair<Type, Object>(t, new Pair<Type, Type>(
+                                ((Arc) o).getSource().getType(), ((Arc) o)
+                                .getTarget().getType()));
+                    }
+                    Pair<Type, Object> t1 = null;
+                    for (Pair<Type, Object> t3 : deletedType.keySet()) {
+                        t1 = t3;
+                        if (t.isRelatedTo(t1.first)) {
+                            if (t1.second == null && delt.second == null) {
+                                containsKey = true;
+                                break;
+                            }
+                            if (t1.second != null && delt.second != null) {
+                                Pair<?, ?> t1sec = (Pair<?, ?>) t1.second;
+                                Pair<?, ?> deltsec = (Pair<?, ?>) delt.second;
+                                if (((Type) deltsec.first).isRelatedTo((Type) t1sec.first)
+                                        && ((Type) deltsec.second)
+                                                .isRelatedTo((Type) t1sec.second)) {
+                                    containsKey = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (containsKey) {
+                        if (!deletedType.get(t1).contains(r)) {
+                            deletedType.get(t1).add(r);
+                        }
+                    } else {
+                        List<Rule> v = new Vector<>(rules.size());
+                        v.add(r);
+                        deletedType.put(delt, v);
+                    }
+                }
+            }
+        }
+        List<Type> ltypes = new Vector<>();
+        for (Pair<Type, Object> key : deletedType.keySet()) {
+            Type t = key.first;
+            List<Rule> v = deletedType.get(key);
+            if (v.size() == rules.size()) {
+                for (int j = 0; j < rules.size(); j++) {
+                    Rule r = rules.get(j);
+                    if (key.second == null) { // node type
+                        if (r.getLeft().getElementsOfTypeAsList(t).size() <= r
+                                .getRight().getElementsOfTypeAsList(t).size()) {
+                            this.errMsg = "Rule <" + r.getName()
+                                    + "> does not decrease the number of graph items of one special type <"
+                                    + t.getName() + ">";
+                            addErrorMessage(this.errorMsgDeletion1, layer, this.errMsg);
+                            return false;
+                        }
+                    } else { // arc type
+                        if (r.getLeft().getElementsOfTypeAsList(t,
+                                (Type) ((Pair<?, ?>) key.second).first,
+                                (Type) ((Pair<?, ?>) key.second).second).size() <= r
+                                        .getRight().getElementsOfTypeAsList(t,
+                                                (Type) ((Pair<?, ?>) key.second).first,
+                                                (Type) ((Pair<?, ?>) key.second).second)
+                                        .size()) {
+                            this.errMsg = "Rule <" + r.getName()
+                                    + "> does not decrease the number of graph items of one special type <"
+                                    + t.getName() + ">";
+                            addErrorMessage(this.errorMsgDeletion1, layer, this.errMsg);
+                            return false;
+                        }
+                    }
+                }
+                ltypes.add(t);
+            }
+        }
+        if (ltypes.size() != 0) {
+            this.deletionType.put(layer, ltypes);
+            return true;
+        }
+        this.errMsg = "Rules do not decrease the number of graph items.";
+        addErrorMessage(this.errorMsgDeletion1, layer, this.errMsg);
+        return false;
+    }
+
+    /**
+     * Checks deletion cond. of rules on a certain layer.
+     *
+     * @return true if condition is satisfied.
+     */
+    private boolean checkDeletionLayer(List<Rule> rules) {
+        // Deletion Layer Conditions (2)
+        boolean result = true;
+        HashSet<GraphObject> deletionSet = new HashSet<GraphObject>();
+        HashSet<GraphObject> creationSet = new HashSet<GraphObject>();
+        for (int j = 0; j < rules.size(); j++) {
+            deletionSet.clear();
+            creationSet.clear();
+            Rule rule = rules.get(j);
+            if (this.deletionRule.contains(rule)) {
+                Integer rl = this.ruleLayer.get(rule);
+                Graph leftGraph = rule.getLeft();
+                Graph rightGraph = rule.getRight();
+                /* alle geloeschten Objekte suchen */
+                for (Iterator<GraphObject> en = leftGraph.iteratorOfElems(); en.hasNext();) {
+                    GraphObject grob = en.next();
+                    if (rule.getImage(grob) == null) {
+                        deletionSet.add(grob);
+                    }
+                }
+                /* 1. is deleting at least one item */
+                if (deletionSet.isEmpty()) {
+                    result = false;
+                    this.errMsg = "Rule <" + rule.getName() + ">"
+                            + "  does not delete at least one graph item.";
+                    addErrorMessage(this.errorMsgDeletion2, rl, this.errMsg);
+                    break;
+                }
+                /* 2. 0<= cl(l)<=dl(l)<=n */
+                for (Object obj : getDeletionLayer().keySet()) {
+                    Type key = (Type) obj;
+                    Integer dl = getDeletionLayer().get(key);
+                    Integer cl = getCreationLayer().get(key);
+                    if (!(0 <= cl.intValue())
+                            || !(cl.intValue() <= dl.intValue())) {
+                        result = false;
+                        this.errMsg = "Type  <"
+                                + key.getStringRepr() + ">"
+                                + ", rl = " + rl.intValue()
+                                + ", cl = " + cl.intValue()
+                                + ", dl = " + dl.intValue()
+                                + "  do not satisfy condition:"
+                                + " 0 <= cl <= dl <= rl";
+                        addErrorMessage(this.errorMsgDeletion2, dl, this.errMsg);
+                        break;
+                    }
+                }
+                /* 3. dl(l) <= rl(r) */
+                for (Iterator<?> en = deletionSet.iterator(); en.hasNext()
+                        && result;) {
+                    GraphObject grob = (GraphObject) en.next();
+                    Type t = grob.getType();
+                    Integer dl = getDeletionLayer().get(t);
+                    if (dl.intValue() > rl.intValue()) {
+                        result = false;
+                        this.errMsg = "Rule <" + rule.getName() + ">, "
+                                + "Type <" + t.getStringRepr() + ">"
+                                + ", dl = " + dl.intValue()
+                                + ", rl = " + rl.intValue()
+                                + " do not satisfy condition"
+                                + " dl <= rl.";
+                        addErrorMessage(this.errorMsgDeletion2, rl, this.errMsg);
+                        break;
+                    }
+                }
+                if (!result) {
+                    break;
+                }
+                /* alle erzeugten Objekte suchen */
+                for (Iterator<GraphObject> en = rightGraph.iteratorOfElems(); en.hasNext();) {
+                    GraphObject grob = en.next();
+                    if (!rule.getInverseImage(grob).hasNext()) {
+                        creationSet.add(grob);
+                    }
+                }
+                /* 4. cl(l) > rl(r) */
+                for (Iterator<?> en = creationSet.iterator(); en.hasNext()
+                        && result;) {
+                    GraphObject grob = (GraphObject) en.next();
+                    Type t = grob.getType();
+                    Integer cl = getCreationLayer().get(t);
+                    if (cl.intValue() <= rl.intValue()) {
+                        result = false;
+                        this.errMsg = "Rule <" + rule.getName() + ">, "
+                                + "Type <" + t.getStringRepr() + ">"
+                                + ", cl = " + cl.intValue()
+                                + ", rl = " + rl.intValue()
+                                + " do not satisfy condition"
+                                + " cl > rl.";
+                        addErrorMessage(this.errorMsgDeletion2, rl, this.errMsg);
+                        break;
+                    }
+                }
+            } else {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks nondeletion cond. of rules on a certain layer.
+     *
+     * @return true if condition is satisfied.
+     */
+    private boolean checkNonDeletionLayer(List<Rule> rules) {
+        // Creation Layer Conditions (3)
+        boolean result = true;
+        HashSet<GraphObject> preservedSet = new HashSet<GraphObject>();
+        HashSet<GraphObject> creationSet = new HashSet<GraphObject>();
+        for (int j = 0; j < rules.size(); j++) {
+            Rule rule = rules.get(j);
+            int errKey = rule.getLayer();
+            if (this.priority) {
+                errKey = rule.getPriority();
+            }
+            if (this.nondeletionRule.contains(rule)) {
+                /* rule is total */
+                if (!rule.isTotal()) {
+                    this.errMsg = "Rule <" + rule.getName()
+                            + "> is not total.";
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+                    return false;
+                }
+                /* 1. rule is injective */
+                if (!rule.isInjective()) {
+                    this.errMsg = "Rule <" + rule.getName()
+                            + "> is not injective.";
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+                    return false;
+                } /* 2. rule has a NAC */ else if (rule.isCreating()
+                        && rule.getNACsList().isEmpty()) {
+                    this.errMsg = "Rule <" + rule.getName()
+                            + "> does not have any NAC.";
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+                    return false;
+                } /* 2. NAC : L -> N with N -> R injective */ else if (!this.ruleWithRightInjNAC(errKey, rule)) {
+                    return false;
+                }
+                Integer rl = this.ruleLayer.get(rule);
+                creationSet.clear();
+                preservedSet.clear();
+                Graph leftGraph = rule.getLeft();
+                Graph rightGraph = rule.getRight();
+                /* alle erhaltende Objekte suchen */
+                for (Iterator<GraphObject> en = leftGraph.iteratorOfElems(); en.hasNext();) {
+                    GraphObject grob = en.next();
+                    if (rule.getImage(grob) != null) {
+                        preservedSet.add(grob);
+                    }
+                }
+                /* alle erzeugten Objekte suchen */
+                for (Iterator<GraphObject> en = rightGraph.iteratorOfElems(); en.hasNext();) {
+                    GraphObject grob = en.next();
+                    if (!rule.getInverseImage(grob).hasNext()) {
+                        creationSet.add(grob);
+                    }
+                }
+                /* 3. for preserved objects: cl(l) <= rl(r) */
+                for (Iterator<?> en = preservedSet.iterator(); en.hasNext()
+                        && result;) {
+                    GraphObject grob = (GraphObject) en.next();
+                    Type t = grob.getType();
+                    Integer cl = getCreationLayer().get(t);
+                    if (cl.intValue() > rl.intValue()) {
+//						if (this.ruleHasRightInjectiveNAC(rule, t)) {}
+//						else 
+                        {
+                            result = false;
+                            this.errMsg = "Nondeletion Layer Condition ( Nondeletion ): \n"
+                                    + "Termination check failed.\n\n"
+                                    + "Rule :  <"
+                                    + rule.getName()
+                                    + "> \n"
+                                    + "Type :  <"
+                                    + t.getStringRepr()
+                                    + "> \n"
+                                    + "The condition that \n"
+                                    + "r preserves nodes and edges with label \n"
+                                    + "l  such that  cl(l) <= rl(r) \n"
+                                    + "is not satisfied. \n"
+                                    + "( cl = "
+                                    + cl.intValue()
+                                    + " , "
+                                    + "rl = "
+                                    + rl.intValue() + " )";
+                            break;
+                        }
+                    }
+                }
+                /* 4. for created objects: cl(l) > rl(r) */
+                for (Iterator<?> en = creationSet.iterator(); en.hasNext()
+                        && result;) {
+                    GraphObject grob = (GraphObject) en.next();
+                    Type t = grob.getType();
+                    Integer cl = getCreationLayer().get(t);
+                    if (cl.intValue() <= rl.intValue()) {
+                        result = false;
+                        this.errMsg = "Nondeletion Layer Condition ( Nondeletion ): \n"
+                                + "Termination check failed.\n\n"
+                                + "Rule :  <"
+                                + rule.getName()
+                                + "> \n"
+                                + "Type :  <"
+                                + t.getStringRepr()
+                                + "> \n"
+                                + "The condition that \n"
+                                + "r  creates only nodes and edges with label \n"
+                                + "l  such that  cl(l) > rl(r) \n"
+                                + "is not satisfied. \n"
+                                + "( cl = "
+                                + cl.intValue()
+                                + " , "
+                                + "rl = "
+                                + rl.intValue() + " )";
+                        break;
+                    }
+                }
+            } else {
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * exists a NAC : L -> N with N -> R injective
+     */
+    private boolean ruleWithRightInjNAC(int errKey, final Rule rule) {
+        /* 2. NAC : L -> N with N -> R injective */
+        final List<OrdinaryMorphism> nacs = rule.getNACsList();
+        if (nacs.isEmpty()) {
+            return false;
+        }
+        boolean result = false;
+        for (int l = 0; l < nacs.size() && !result; l++) {
+            final OrdinaryMorphism nac = nacs.get(l);
+            if (nac.isEnabled()) {
+                boolean failed = false;
+                OrdinaryMorphism nprime = BaseFactory.theFactory()
+                        .createMorphism(nac.getTarget(),
+                                rule.getRight());
+                nprime.setCompletionStrategy(new Completion_InjCSP());
+                Iterator<GraphObject> dom = rule.getDomain();
+                while (dom.hasNext()) {
+                    GraphObject grob = dom.next();
+                    GraphObject nacob = nac.getImage(grob);
+                    if (nacob != null) {
+                        try {
+                            nprime.addMapping(nacob, rule
+                                    .getImage(grob));
+                        } catch (agg.xt_basis.BadMappingException ex) {
+                            failed = true;
+                            break;
+                        }
+                    }
+                }
+                // at least one NAC exists so that n':N->R injective 
+                if (!failed) {
+                    result = nprime.nextCompletionWithConstantsChecking();
+                }
+            }
+        }
+        if (!result) {
+            this.errMsg = "Rule <" + rule.getName() + "> "
+                    + "does not have any right injective NACs.";
+            addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+        }
+        return result;
+    }
+
+    /* exists a NAC : L -> N with N -> R injective 
+     */
+ /*
+	private boolean ruleHasRightInjectiveNAC(int errKey, final Rule rule, final Type t) {
+		// 2. NAC : L -> N with N -> R injective 
+		final List<OrdinaryMorphism> nacs = rule.getNACsList();
+		if (nacs.isEmpty()) {
+			return false;
+		}
+		
+		boolean result = false;
+		for (int l=0; l<nacs.size(); l++) {
+			final OrdinaryMorphism nac = nacs.get(l);		
+			final Enumeration<GraphObject> ttyped = nac.getTarget().getElementsOfType(t);
+			if (!ttyped.hasMoreElements()) {
+				continue;
+			}
+			boolean fobidden = false;
+			while (ttyped.hasMoreElements()) {
+				final GraphObject o = ttyped.nextElement();
+				if (!nac.getInverseImage(o).hasMoreElements()) {
+					fobidden = true;
+					break;
+				}
+			}
+			if (!fobidden) {
+				continue;
+			}
+			
+			OrdinaryMorphism nprime = BaseFactory.theFactory()
+					.createMorphism(nac.getTarget(),
+							rule.getRight());
+			nprime.setCompletionStrategy(new Completion_InjCSP());
+			Enumeration<GraphObject> dom = rule.getDomain();
+			while (dom.hasMoreElements()) {
+				GraphObject grob = dom.nextElement();
+				GraphObject nacob = nac.getImage(grob);
+				if (nacob != null) {
+					try {
+						nprime.addMapping(nacob, rule
+								.getImage(grob));
+						if (nprime.getImage(nacob) == null) {
+							this.errMsg = "Rule <"+ rule.getName()+ "> : "
+									+ "Mapping of N': N->R accross  N<-L->R  failed.";
+							addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+							return false;
+						}
+					} catch (agg.xt_basis.BadMappingException ex) {
+						this.errMsg = "Rule <"+ rule.getName()+ "> : "
+								+ "Mapping of N': N->R accross  N<-L->R  failed.";
+						addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+						return false;
+					}
+				}
+			}
+			// at least one NAC exists so that n':N->R injective 
+			result = true;
+			if (!nprime.nextCompletionWithConstantsChecking()) {
+				this.errMsg = "Rule <"+ rule.getName()+ "> "
+						+ "does not have any right injective NACs.";			
+				addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
+				result = false;
+			}
+		}
+		
+		return result;					
+	}
+     */
+    /**
+     * A fast check on validity.
+     *
+     * @return true if the layer function is valid.
+     */
+    public boolean isValid() {
+        return this.valid;
+    }
+
+    private boolean setValidResult() {
+        boolean result = true;
+        for (int i = 0; i < this.orderedRuleLayer.size(); i++) {
+            int currentLayer = this.orderedRuleLayer.get(i);
+//			System.out.println("Layer: "+currentLayer);
+            boolean localresult = false;
+            Pair<Boolean, List<Rule>> p = this.resultTypeDeletion.get(currentLayer);
+            if (p != null) {
+                localresult = p.first.booleanValue();
+            }
+            if (!localresult) {
+                p = this.resultNonDeletion.get(currentLayer);
+                localresult = p.first.booleanValue();
+                if (!localresult) {
+                    p = this.resultDeletion.get(currentLayer);
+                    localresult = p.first.booleanValue();
+                    if (localresult) {
+//						System.out.println("Layer: "+currentLayer.intValue()+"  Deletion_2: "+localresult);
+                        this.errorMsgDeletion1.remove(currentLayer);
+                        this.errorMsgDeletion2.remove(currentLayer);
+                        this.errorMsgNonDeletion.remove(currentLayer);
+                    }
+                } else {
+//					System.out.println("Layer: "+currentLayer.intValue()+"  NonDeletion: "+localresult);
+                    this.errorMsgDeletion1.remove(currentLayer);
+                    this.errorMsgDeletion2.remove(currentLayer);
+                    this.errorMsgNonDeletion.remove(currentLayer);
+                }
+            } else {
+//				System.out.println("Layer: "+currentLayer.intValue()+" Deletion_1:  "+localresult);
+                this.errorMsgDeletion1.remove(currentLayer);
+                this.errorMsgDeletion2.remove(currentLayer);
+                this.errorMsgNonDeletion.remove(currentLayer);
+            }
+            result = result && localresult;
+        }
+        return result;
+    }
+
+    /**
+     * Returns an error message if the layer function is not valid.
+     *
+     * @return The error message.
+     */
+    public String getErrorMessage() {
+        String str = getErrorOfTypeDeletion(10);
+        String str1 = getErrorOfDeletion(10);
+        String str2 = getErrorOfNonDeletion(10);
+        if (!str1.equals("")) {
+            str = str.concat("\n\n");
+            str = str.concat(str1);
+        }
+        if (!str2.equals("")) {
+            str = str.concat("\n\n");
+            str = str.concat(str2);
+        }
+        return str;
+    }
+
+    private String getErrorOfTypeDeletion(int maxErrors) {
+        int n = 0;
+        String str0 = "*** (Type) Deletion Layer Condition ( Deletion_1 ) ***";
+        String str = "";
+        for (Integer key : this.errorMsgDeletion1.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion1.get(key);
+            for (int i = 0; i < list.size(); i++) {
+                str = str.concat("\n");
+                str = str.concat(list.get(i));
+                n++;
+                if (n > maxErrors) {
+                    str = str.concat("\n ... ");
+                    break;
+                }
+            }
+        }
+        if (!str.equals("")) {
+            str = str0.concat(str);
+        }
+        return str;
+    }
+
+    private String getErrorOfDeletion(int maxErrors) {
+        int n = 0;
+        String str0 = "*** Deletion Layer Condition ( Deletion_2 ) ***";
+        String str = "";
+        for (Integer key : this.errorMsgDeletion2.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion2.get(key);
+            for (int i = 0; i < list.size(); i++) {
+                str = str.concat("\n");
+                str = str.concat(list.get(i));
+                n++;
+                if (n > maxErrors) {
+                    str = str.concat("\n ... ");
+                    break;
+                }
+            }
+        }
+        if (!str.equals("")) {
+            str = str0.concat(str);
+        }
+        return str;
+    }
+
+    private String getErrorOfNonDeletion(int maxErrors) {
+        int n = 0;
+        String str0 = "*** Nondeletion Layer Condition ( Nondeletion ) ***";
+        String str = "";
+        for (Integer key : this.errorMsgNonDeletion.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgNonDeletion.get(key);
+            for (int i = 0; i < list.size(); i++) {
+                str = str.concat("\n");
+                str = str.concat(list.get(i));
+                if (n > maxErrors) {
+                    str = str.concat("\n ... ");
+                    break;
+                }
+            }
+        }
+        if (!str.equals("")) {
+            str = str0.concat(str);
+        }
+        return str;
+    }
+
+    /**
+     * Returns the rule layer of the layer function.
+     *
+     * @return The rule layer.
+     */
+    public Map<Rule, Integer> getRuleLayer() {
+        int size = this.listOfRules.size();
+        if (size != this.ruleLayer.size()) {
+            initRuleLayer(this.grammar);
+            return this.ruleLayer;
+        }
+        Iterator<Rule> en = this.listOfRules.iterator();
+        while (en.hasNext()) {
+            Object key = en.next();
+            if (!this.ruleLayer.containsKey(key)) {
+                initRuleLayer(this.grammar);
+                return this.ruleLayer;
+            }
+        }
+        return this.ruleLayer;
+    }
+
+    public int getRuleLayer(Rule r) {
+        if (this.ruleLayer.containsKey(r)) {
+            return this.ruleLayer.get(r).intValue();
+        }
+        return 0;
+    }
+
+    /**
+     * The result table maps a Type to a layer on which it is created.
+     *
+     * @return The creation layer.
+     */
+    public Map<Object, Integer> getCreationLayer() {
+        int size = 0;
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
+        while (en.hasNext()) {
+            en.next();
+            size++;
+        }
+        if (size != this.creationLayer.size()) {
+            initCreationLayer(this.grammar);
+            return new HashMap<Object, Integer>(this.creationLayer);
+        }
+        en = this.grammar.getTypeWalker();
+        while (en.hasNext()) {
+            Object key = en.next();
+            if (!this.creationLayer.containsKey(key)) {
+                initCreationLayer(this.grammar);
+                return new HashMap<Object, Integer>(this.creationLayer);
+            }
+        }
+        return new HashMap<Object, Integer>(this.creationLayer);
+    }
+
+    /**
+     * Returns creation layer of the specified type.
+     */
+    public int getCreationLayer(Type t) {
+        if (this.creationLayer.containsKey(t)) {
+            return this.creationLayer.get(t).intValue();
+        }
+        return 0;
+    }
+
+    /**
+     * The result table maps a Type to a layer on which it is deleted.
+     *
+     * @return The deletion layer.
+     */
+    public Map<Object, Integer> getDeletionLayer() {
+        int size = 0;
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
+        while (en.hasNext()) {
+            en.next();
+            size++;
+        }
+        if (size != this.deletionLayer.size()) {
+            initDeletionLayer(this.grammar);
+            return new HashMap<Object, Integer>(this.deletionLayer);
+        }
+        en = this.grammar.getTypeWalker();
+        while (en.hasNext()) {
+            Object key = en.next();
+            if (!this.deletionLayer.containsKey(key)) {
+                initDeletionLayer(this.grammar);
+                return new HashMap<Object, Integer>(this.deletionLayer);
+            }
+        }
+        return new HashMap<Object, Integer>(this.deletionLayer);
+    }
+
+    /**
+     * Returns deletion layer of the specified type.
+     */
+    public int getDeletionLayer(Type t) {
+        if (this.deletionLayer.containsKey(t)) {
+            return this.deletionLayer.get(t).intValue();
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the smallest layer of the rule layer.
+     *
+     * @return The smallest layer.
+     */
+    public Integer getStartLayer() {
+        int startL = Integer.MAX_VALUE;
+        Integer result = null;
+        for (Object key : this.ruleLayer.keySet()) {
+            Integer layer = this.ruleLayer.get(key);
+            if (layer.intValue() < startL) {
+                startL = layer.intValue();
+                result = layer;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
+     *
+     * @param layer The layer function will be inverted.
+     * @return The inverted layer function.
+     */
+    public Map<Integer, HashSet<Rule>> invertLayer(
+            Map<Rule, Integer> layer) {
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        for (Rule key : layer.keySet()) {
+            Integer value = layer.get(key);
+            HashSet<Rule> invertedValue = inverted.get(value);
+            if (invertedValue == null) {
+                invertedValue = new HashSet<Rule>();
+                invertedValue.add(key);
+                inverted.put(value, invertedValue);
+            } else {
+                invertedValue.add(key);
+            }
+        }
+        return inverted;
+    }
+
+    public void saveRuleLayer() {
+        for (Rule r : this.ruleLayer.keySet()) {
+            Integer layer = this.ruleLayer.get(r);
+            if (this.layered) {
+                r.setLayer(layer.intValue());
+            } else if (this.priority) {
+                r.setPriority(layer.intValue());
+            } else {
+                r.setLayer(layer.intValue());
+            }
+        }
+        saveRuleLayerInto(this.oldRuleLayer);
+    }
+
+    private void saveRuleLayerInto(Map<Rule, Integer> table) {
+        for (Iterator<Rule> e = this.listOfRules.iterator(); e.hasNext();) {
+            Rule r = e.next();
+            if (this.layered) {
+                table.put(r, Integer.valueOf(r.getLayer()));
+            } else if (this.priority) {
+                table.put(r, Integer.valueOf(r.getPriority()));
+            } else {
+                table.put(r, Integer.valueOf(r.getLayer()));
+            }
+        }
+    }
+
+    public void setGenerateRuleLayer(boolean b) {
+        this.generateRuleLayer = b;
+    }
+
+    public void showLayer() {
+        System.out.println(" RULE LAYER");
+        for (Rule r : this.ruleLayer.keySet()) {
+            Integer layer = this.ruleLayer.get(r);
+            System.out.println(layer.intValue() + " " + r.getName());
+        }
+        System.out.println(" CREATION LAYER");
+        for (Type t : this.creationLayer.keySet()) {
+            Integer layer = this.creationLayer.get(t);
+            System.out.println(layer.intValue() + " " + t.getStringRepr());
+        }
+        System.out.println(" DELETION LAYER");
+        for (Type t : this.deletionLayer.keySet()) {
+            Integer layer = this.deletionLayer.get(t);
+            System.out.println(layer.intValue() + " " + t.getStringRepr());
+        }
+    }
+
+    /**
+     * Returns the layer function in a human readable way.
+     *
+     * @return The text.
+     */
+    public String toString() {
+        String resultString = super.toString() + " LayerFunction:\n";
+        resultString += "\tRuleLayer:\n";
+        resultString += getRuleLayer().toString() + "\n";
+        resultString += "\tCreationLayer:\n";
+        resultString += getCreationLayer().toString() + "\n";
+        resultString += "\tDeletionLayer:\n";
+        resultString += getDeletionLayer().toString() + "\n";
+        return resultString;
+    }
+
+    public int getCreationLayer(GraphObject t) {
+        return 0;
+    }
+
+    public int getDeletionLayer(GraphObject t) {
+        return 0;
+    }
+
+    /* (non-Javadoc)
+	 * @see agg.termination.TerminationLGTSInterface#getDeletionTypeObject()
+     */
+    public Map<Integer, List<GraphObject>> getDeletionTypeObject() {
+        return null;
+    }
+}

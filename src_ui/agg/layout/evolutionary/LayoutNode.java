@@ -16,14 +16,12 @@ package agg.layout.evolutionary;
 
 import java.awt.Point;
 import agg.editor.impl.EdNode;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 
 /**
  * This class contains information about a node, such as actual position, age,
  * repulsive force and some more, that are used by Springembedder Layout.
  */
-public class LayoutNode implements XMLObject {
+public class LayoutNode {
 
     private EdNode enode;
     private Point akt;
@@ -233,108 +231,5 @@ public class LayoutNode implements XMLObject {
         this.overlap = false;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (h.openObject(this.enode.getBasisNode(), this)) {
-            h.openSubTag("additionalLayout");
-            if (this.frozen) {
-                h.addAttr("frozen", "true");
-            } else {
-                h.addAttr("frozen", "false");
-            }
-            h.addAttr("age", this.age);
-            h.addAttr("force", this.force);
-            h.addAttr("zone", this.zone);
-            // h.addAttr("akt_x",this.akt.x);
-            // h.addAttr("akt_y",this.akt.y);
-            // h.addAttr("opt_x",this.opt.x);
-            // h.addAttr("opt_y",this.opt.y);
-            // h.addAttr("sim_x",this.sim.x);
-            // h.addAttr("sim_y",this.sim.y);
-            // h.addAttr("kom_x",this.kom.x);
-            // h.addAttr("kom_y",this.kom.y);
-            h.close();
-            h.close();
-        }
+    
     }
-
-    public void XreadObject(XMLHelper h) {
-        String s;
-        h.peekObject(this.enode.getBasisNode(), this);
-        if (h.readSubTag("additionalLayout")) {
-            s = h.readAttr("frozen");
-            this.frozen = true;
-            if (s.equals("false")) {
-                this.frozen = false;
-            }
-            s = h.readAttr("age");
-            if (s == null || s.length() == 0) {
-                this.age = 0;
-            } else {
-                this.age = Integer.parseInt(s);
-            }
-            s = h.readAttr("force");
-            if (s == null || s.length() == 0) {
-                this.force = 0;
-            } else {
-                this.force = Integer.parseInt(s);
-            }
-            s = h.readAttr("zone");
-            if (s == null || s.length() == 0) {
-                this.zone = 50;
-            } else {
-                this.zone = Integer.parseInt(s);
-            }
-            s = h.readAttr("akt_x");
-            if (s == null || s.length() == 0) {
-                this.akt.x = this.enode.getX();
-            } else {
-                this.akt.x = Integer.parseInt(s);
-            }
-            s = h.readAttr("akt_y");
-            if (s == null || s.length() == 0) {
-                this.akt.y = this.enode.getY();
-            } else {
-                this.akt.y = Integer.parseInt(s);
-            }
-            s = h.readAttr("opt_x");
-            if (s == null || s.length() == 0) {
-                this.opt.x = 0;
-            } else {
-                this.opt.x = Integer.parseInt(s);
-            }
-            s = h.readAttr("opt_y");
-            if (s == null || s.length() == 0) {
-                this.opt.y = 0;
-            } else {
-                this.opt.y = Integer.parseInt(s);
-            }
-            s = h.readAttr("sim_x");
-            if (s == null || s.length() == 0) {
-                this.sim.x = 0;
-            } else {
-                this.sim.x = Integer.parseInt(s);
-            }
-            s = h.readAttr("sim_y");
-            if (s == null || s.length() == 0) {
-                this.sim.y = 0;
-            } else {
-                this.sim.y = Integer.parseInt(s);
-            }
-            s = h.readAttr("kom_x");
-            if (s == null || s.length() == 0) {
-                this.kom.x = 0;
-            } else {
-                this.kom.x = Integer.parseInt(s);
-            }
-            s = h.readAttr("kom_y");
-            if (s == null || s.length() == 0) {
-                this.kom.y = 0;
-            } else {
-                this.kom.y = Integer.parseInt(s);
-            }
-            this.frozen = (this.age == 0) ? true : false;
-            h.close();
-        }
-        h.close();
-    }
-}

@@ -12,7 +12,6 @@ package agg.attribute;
 
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.view.AttrViewSetting;
-import agg.util.XMLObject;
 
 /**
  * A tuple of declarations each consisting of a type and name.
@@ -20,7 +19,7 @@ import agg.util.XMLObject;
  * @version $Id: AttrType.java,v 1.3 2008/10/15 07:51:22 olga Exp $
  * @author $Author: olga $
  */
-public interface AttrType extends AttrTuple, XMLObject {
+public interface AttrType extends AttrTuple {
 
     /**
      * Adding a declaration.

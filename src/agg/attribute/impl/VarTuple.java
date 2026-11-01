@@ -20,9 +20,7 @@ import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.handler.AttrHandler;
-import agg.util.XMLHelper;
 import java.util.Iterator;
-import org.w3c.dom.Element;
 
 /**
  * Adds the possibility of being shared. Needed as the container of variable
@@ -476,108 +474,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
         }
     }
 
-    public void XwriteObject(XMLHelper h) {
-        int num = getSize();
-        for (int i = 0; i < num; i++) {
-            VarMember val = getVarMemberAt(i);
-            if (val != null
-                    && val.getDecl().getTypeName() != null
-                    && val.getName() != null
-                    && !"".equals(val.getDecl().getTypeName())
-                    && !"".equals(val.getName())) {
-                h.openSubTag("Parameter");
-                if (val.isSet()) {
-                    if (val.getExpr().isConstant()) {
-                        h.addAttr("value", val.getExpr().getValue().toString());
-                        /*
-						 * h.openSubTag("Value");
-						 * if(val.getDeclaration().getType().toString().equals("String"))
-						 * h.addAttrValue("string", v); else
-						 * h.addAttrValue(decl.getType().toString(), v);
-						 * h.close();
-                         */
-                    } else {
-                        h.addAttr("expr", val.getExpr().getString());
-                    }
-                }
-                h.addAttr("name", val.getName());
-                h.addAttr("type", val.getDecl().getTypeName());
-                boolean isin = val.isInputParameter();
-                boolean isout = val.isOutputParameter();
-                String inout = (isin && isout) ? "inout" : (isin) ? "input"
-                        : (isout) ? "output" : "";
-                if (inout != "") {
-                    h.addAttr("PTYPE", inout);
-                }
-                h.close();
-            }
-        }
-        if (this.signaturOrder != null && !this.signaturOrder.isEmpty()) {
-            h.openSubTag("Input");
-            String str = this.signaturOrder.toString().replace("[", "").replace("]", "");
-            h.addAttr("order", str);
-            h.close();
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        Iterator<Element> en = h.getEnumeration("", null, true, "Parameter");
-        while (en.hasNext()) {
-            h.peekElement(en.next());
-            String name = h.readAttr("name");
-            if (!isDeclared(name)) {
-                String typestr = h.readAttr("type");
-                if (!"".equals(typestr)) {
-                    String handlerName = agg.attribute.handler.impl.javaExpr.JexHandler
-                            .getLabelName();
-                    AttrHandler handler = getAttrManager().getHandler(handlerName);
-                    declare(handler, typestr, name);
-                    VarMember var = getVarMemberAt(name);
-                    String inout = h.readAttr("PTYPE");
-                    boolean isin = false;
-                    boolean isout = false;
-                    if (inout.equals("inout")) {
-                        isin = isout = true;
-                    } else if (inout.equals("input")) {
-                        isin = true;
-                    } else if (inout.equals("output")) {
-                        isout = true;
-                    }
-                    var.setInputParameter(isin);
-                    var.setOutputParameter(isout);
-                    String value = h.readAttr("value");
-                    if ((value != null) && !value.equals("")) {
-                        // System.out.println("VarTuple.Xread: value: "+value);
-                        if (typestr.equals("String")) {
-                            var.setExprAsText("\"" + value + "\"");
-                        } else if (typestr.equals("Character") || typestr.equals("char")) {
-                            var.setExprAsText("\'" + value.charAt(0) + "\'");
-                        } else {
-                            var.setExprAsText(value);
-                        }
-                        var.checkValidity();
-                    } else {
-                        String expr = h.readAttr("expr");
-                        // System.out.println("VarTuple.Xread: expr: "+expr);
-                        if ((expr != null) && !expr.equals("")) {
-                            var.setExprAsText(expr);
-                            var.checkValidity();
-                        }
-                    }
-                }
-            }
-            h.close();
-        }
-        if (h.readSubTag("Input")) {
-            this.signaturOrder = new ArraySeasonInt();
-            String order = h.readAttr("order");
-            String[] array = order.split(", ");
-            for (int i = 0; i < array.length; i++) {
-                this.signaturOrder.add(Integer.parseInt(array[i]));
-            }
-            h.close();
-        }
-    }
 }
 /*
  * $Log: VarTuple.java,v $

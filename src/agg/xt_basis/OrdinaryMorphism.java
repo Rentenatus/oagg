@@ -30,7 +30,6 @@ import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.ExtObservable;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;
@@ -2627,76 +2626,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         super.setChanged();
     }
 
-    public void writeMorphism(XMLHelper h) {
-        h.openSubTag("Morphism");
-        h.addAttr("name", this.itsName);
-        if (!this.comment.equals("")) {
-            h.addAttr("comment", this.comment);
-        }
-        Iterator<GraphObject> e = getDomain();
-        while (e.hasNext()) {
-            GraphObject s = e.next();
-            h.openSubTag("Mapping");
-            h.addObject("orig", s, false);
-            h.addObject("image", getImage(s), false);
-            h.close();
-        }
-        h.close();
-    }
-
-    public void readMorphism(XMLHelper h) {
-        if (h.readSubTag("Morphism")) {
-            String str = h.readAttr("name");
-            setName(str.replaceAll(" ", ""));
-            // setName(h.readAttr("name"));
-            str = h.readAttr("comment");
-            if (!str.equals("")) {
-                this.comment = str;
-            }
-            Map<GraphObject, GraphObject> map = new HashMap<>();
-            while (h.readSubTag("Mapping")) {
-                GraphObject o = (GraphObject) h.getObject("orig", null, false);
-                GraphObject i = (GraphObject) h.getObject("image", null, false);
-                if (o != null && i != null) {
-                    if (o instanceof Node) {
-                        try {
-                            addMapping(o, i);
-                        } catch (BadMappingException ex) {
-                        }
-                    } else {
-                        map.put(o, i);
-                    }
-                }
-                h.close();
-            }
-            h.close();
-            for (GraphObject graphObject : map.keySet()) {
-                GraphObject image = map.get(graphObject);
-                GraphObject source = ((Arc) graphObject).getSource();
-                GraphObject target = ((Arc) graphObject).getTarget();
-                Arc arcO = (Arc) graphObject;
-                Arc arcI = (Arc) image;
-                // For undirected graphs, arcs can match in either direction
-                if (!arcO.getContext().isDirected()) {
-                    if (((arcI.getSource() == getImage(source) && arcI.getTarget() == getImage(target)))
-                            || ((arcI.getTarget() == getImage(source) && arcI.getSource() == getImage(target)))) {
-                        try {
-                            addMapping(graphObject, image);
-                        } catch (BadMappingException ex) {
-                        }
-                    }
-                } else if ((arcI.getSource() == getImage(source))
-                        && (arcI.getTarget() == getImage(target))) {
-                    try {
-                        addMapping(graphObject, image);
-                    } catch (BadMappingException ex) {
-                    }
-                }
-            }
-        }
-    }
-
-    /**
+            /**
      * swop domain and range <--->, if possible
      *
      * @return

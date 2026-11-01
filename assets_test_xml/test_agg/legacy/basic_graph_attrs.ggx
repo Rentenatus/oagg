@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="BasicGraphTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Person%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:">
+                <AttrType ID="I3" attrname="name" typename="String" visible="true"/>
+                <AttrType ID="I4" attrname="age" typename="int" visible="true"/>
+            </NodeType>
+            <EdgeType ID="I5" abstract="false" name="knows%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:"/>
+            <Graph ID="I6" kind="TG" name="TypeGraph">
+                <Node ID="I7" type="I1"/>
+                <Node ID="I9" type="I1"/>
+                <Edge ID="I11" source="I7" target="I9" type="I5"/>
+            </Graph>
+        </Types>
+        <Graph ID="I13" kind="HOST" name="HostGraph">
+            <Node ID="I14" type="I1"/>
+            <Node ID="I16" type="I1"/>
+            <Edge ID="I18" source="I14" target="I16" type="I5"/>
+        </Graph>
+    </GraphTransformationSystem>
+</Document>

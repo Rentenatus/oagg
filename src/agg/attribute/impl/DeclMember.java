@@ -17,7 +17,6 @@ import agg.attribute.AttrTypeMember;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerType;
-import agg.util.XMLHelper;
 
 /**
  * Keeps the declaration name, type and the type's handler.
@@ -255,64 +254,6 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
         return false;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("AttrType", this);
-        h.addAttr("typename", getTypeName());
-        h.addAttr("attrname", getName());
-        if (this.visible) {
-            h.addAttr("visible", "true");
-        } else {
-            h.addAttr("visible", "false");
-        }
-        h.close();
-    }
-
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("AttrType", this)) {
-            this.typeName = h.readAttr("typename");
-            this.name = h.readAttr("attrname");
-            // this check was needed because reported garbled names of the attributes
-            this.name = XMLHelper.checkNameDueToSpecialCharacters(this.name);
-//			if (name.indexOf('Ã‚Â¬') != -1) {
-//				String test = "";
-//				for(int i=0; i<name.length(); i++) {
-//					Character ch = Character.valueOf(name.charAt(i));
-//					if (Character.getNumericValue(name.charAt(i)) == -1) {
-//						if (ch.charValue() == '('
-//							|| ch.charValue() == ')'
-//								|| ch.charValue() == '_'
-//								|| ch.charValue() == ','
-//								|| ch.charValue() == '.'
-//								|| ch.charValue() == '¬'
-//								|| ch.charValue() == '&'
-//								|| ch.charValue() == '|'
-//								|| ch.charValue() == '^') {
-//							test = test.concat(String.valueOf(ch));
-//						} 
-//					} else {
-//						test = test.concat(String.valueOf(ch));
-//					}					
-            ////					System.out.println(name.charAt(i)
-////							+"   "+Character.getNumericValue(name.charAt(i))
-////							+" type "+Character.getType(name.charAt(i))
-////							+" def "+Character.isDefined(name.charAt(i))
-////							+" ISOcont  "+Character.isISOControl(name.charAt(i)));
-//				}
-//				while (test.indexOf("¬¬") != -1) {
-//					test = test.replaceAll("¬¬", "¬");
-//				}
-//				name = test;
-//			}
-			
-			String visiblestr = h.readAttr("visible");
-            if ("true".equals(visiblestr)) {
-                this.visible = true;
-            } else if ("false".equals(visiblestr)) {
-                this.visible = false;
-            }
-            h.close();
-        }
-    }
 }
 /*
  * $Log: DeclMember.java,v $

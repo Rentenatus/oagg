@@ -1,0 +1,143 @@
+/**
+ * <copyright>
+ * Copyright (c) 2026, AGG XML Serialization Refactoring Project.
+ * All rights reserved.
+ * </copyright>
+ */
+package agg.xml;
+
+import agg.xt_basis.GraGra;
+import agg.xt_basis.Graph;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static org.testng.Assert.*;
+
+import java.io.File;
+
+/**
+ * Tests for the central {@link XMLSerialization} utility class.
+ */
+public class XMLSerializationTest {
+
+    @BeforeClass
+    public void setUp() {
+        TestDataHelper.requireAllSamples();
+    }
+
+
+    
+    
+    @Test
+    public void testSaveAndLoadWithDom() throws Exception {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+
+        GraGra original = new GraGra();
+        XMLSerialization.loadWithDom(original, file.getAbsolutePath());
+        assertNotNull(original.getName(), "Should load via DOM");
+
+        File tempFile = new File("target/xmlserialization-test-dom.ggx");
+        tempFile.getParentFile().mkdirs();
+        assertTrue(XMLSerialization.saveWithDom(original, tempFile.getAbsolutePath()),
+            "Save with DOM should succeed");
+        assertTrue(tempFile.exists(), "File should exist");
+        assertTrue(tempFile.length() > 0, "File should not be empty");
+
+        GraGra reloaded = new GraGra();
+        XMLSerialization.loadWithDom(reloaded, tempFile.getAbsolutePath());
+        assertEquals(reloaded.getName(), original.getName(),
+            "Names should match after DOM roundtrip");
+        assertEquals(reloaded.getGraphsVec().size(), original.getGraphsVec().size(),
+            "Graph counts should match after DOM roundtrip");
+
+        // Deep comparison: node/edge counts
+        for (int i = 0; i < original.getGraphsVec().size(); i++) {
+            Graph origGraph = original.getGraphsVec().get(i);
+            Graph reloadedGraph = reloaded.getGraphsVec().get(i);
+            assertEquals(reloadedGraph.getNodesCount(), origGraph.getNodesCount(),
+                "Node count should match for graph " + i);
+            assertEquals(reloadedGraph.getArcsCount(), origGraph.getArcsCount(),
+                "Edge count should match for graph " + i);
+        }
+
+        tempFile.delete();
+    }
+
+    @Test
+    public void testCanLoad() {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        assertTrue(XMLSerialization.canLoad(file.getAbsolutePath()),
+            "Should be able to load valid .ggx file");
+        assertFalse(XMLSerialization.canLoad("nonexistent.ggx"),
+            "Should not be able to load nonexistent file");
+        assertFalse(XMLSerialization.canLoad("test.txt"),
+            "Should not be able to load non-.ggx file");
+    }
+
+    @Test
+    public void testValidate() {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        assertTrue(XMLSerialization.validate(file.getAbsolutePath()),
+            "Valid .ggx file should pass validation");
+    }
+
+    @Test
+    public void testSaveToString() throws Exception {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(file.getAbsolutePath());
+
+        String xml = XMLSerialization.saveToString(graGra);
+        assertNotNull(xml, "XML string should not be null");
+        assertTrue(xml.contains("GraphTransformationSystem"),
+            "XML should contain GraphTransformationSystem");
+        assertTrue(xml.contains("Document"),
+            "XML should contain Document root");
+    }
+
+    
+    // ---- File extension helpers ----
+
+    @Test
+    public void testFileExtensionHelpers() {
+        assertTrue(XMLSerialization.isGgxFile("test.ggx"), "Should detect .ggx");
+        assertTrue(XMLSerialization.isGgxFile("test.GGX"), "Should detect .GGX (case-insensitive)");
+        assertFalse(XMLSerialization.isGgxFile("test.rsx"), "Should not detect .rsx as .ggx");
+
+        assertTrue(XMLSerialization.isCpxFile("test.cpx"), "Should detect .cpx");
+        assertTrue(XMLSerialization.isRsxFile("test.rsx"), "Should detect .rsx");
+        assertTrue(XMLSerialization.isWsdlFile("test.wsdl"), "Should detect .wsdl");
+
+        assertFalse(XMLSerialization.isGgxFile(null), "null should return false");
+        assertFalse(XMLSerialization.isCpxFile(null), "null should return false");
+    }
+
+    // ---- loadGraGra / saveGraGra ----
+
+    @Test
+    public void testLoadGraGra() {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = XMLSerialization.loadGraGra(file.getAbsolutePath());
+        assertNotNull(graGra, "Should load GraGra");
+        assertNotNull(graGra.getName(), "Name should not be null");
+    }
+
+    @Test
+    public void testSaveGraGra() throws Exception {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(file.getAbsolutePath());
+
+        File tempFile = new File("target/xmlserialization-savegragra.ggx");
+        tempFile.getParentFile().mkdirs();
+        assertTrue(XMLSerialization.saveGraGra(graGra, tempFile.getAbsolutePath()),
+            "saveGraGra should succeed");
+        assertTrue(tempFile.exists(), "File should exist");
+        tempFile.delete();
+    }
+
+    @Test
+    public void testLoadGraGraReturnsNullForNonGgx() {
+        assertNull(XMLSerialization.loadGraGra("test.txt"), "Should return null for non-.ggx");
+        assertNull(XMLSerialization.loadGraGra(null), "Should return null for null");
+    }
+}

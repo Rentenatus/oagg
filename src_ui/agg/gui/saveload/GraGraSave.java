@@ -20,7 +20,6 @@ import agg.editor.impl.EdGraGra;
 import agg.gui.ProgressBar;
 import agg.gui.event.SaveEvent;
 import agg.gui.event.SaveEventListener;
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 
 /**
@@ -104,26 +103,23 @@ public class GraGraSave {
                     this.fileName = this.fileName.concat(".ggx");
                 }
             }
-            XMLHelper xmlh = new XMLHelper();
-            // this.fileName = XMLHelper.replaceGermanSpecialCh(this.fileName);
-            xmlh.addTopObject(this.gra);
-            if (xmlh.save_to_xml(this.dirName + this.fileName)) {
+            if (XmlMigrationDispatch.dispatchSave(this.gra,
+                    this.dirName + this.fileName)) {
                 this.gra.setDirName(this.dirName);
                 this.gra.setFileName(this.fileName);
                 this.gra.getTypeSet().setResourcesPath(this.dirName);
                 this.gra.setChanged(false);
                 fireSave(new SaveEvent(this, SaveEvent.SAVED, this.dirName
                         + this.fileName));
-            } else {
-                fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
-                        this.dirName + this.fileName));
-                JOptionPane
-                        .showMessageDialog(this.applFrame,
-                                "Write file exception for the folder: " + this.dirName,
-                                "   IO File Error", JOptionPane.ERROR_MESSAGE);
-                return false;
+                return true;
             }
-            return true;
+            fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
+                    this.dirName + this.fileName));
+            JOptionPane
+                    .showMessageDialog(this.applFrame,
+                            "Write file exception for the folder: " + this.dirName,
+                            "   IO File Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
     }
 
@@ -166,22 +162,19 @@ public class GraGraSave {
             }
 //				if (this.fileName.endsWith(".ggx"))
             {
-                XMLHelper xmlh = new XMLHelper();
-                // this.fileName = XMLHelper.replaceGermanSpecialCh(this.fileName);
-                xmlh.addTopObject(this.basis);
-                if (xmlh.save_to_xml(this.dirName + this.fileName)) {
+                if (XmlMigrationDispatch.dispatchSave(this.basis,
+                        this.dirName + this.fileName)) {
                     fireSave(new SaveEvent(this, SaveEvent.SAVED, this.dirName
                             + this.fileName));
                     return true;
-                } else {
-                    fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
-                            this.dirName + this.fileName));
-                    JOptionPane
-                            .showMessageDialog(this.applFrame,
-                                    "Write file exception for the folder: " + this.dirName,
-                                    "   IO File Error", JOptionPane.ERROR_MESSAGE);
-                    return false;
                 }
+                fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
+                        this.dirName + this.fileName));
+                JOptionPane
+                        .showMessageDialog(this.applFrame,
+                                "Write file exception for the folder: " + this.dirName,
+                                "   IO File Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
 //			} // if XML
 //			else if (this.chooser.getFileFilter() == filterAGG) {

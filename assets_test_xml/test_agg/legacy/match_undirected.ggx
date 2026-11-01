@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="false" name="MatchTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Node%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:"/>
+            <Graph ID="I2" kind="TG" name="TypeGraph">
+                <Node ID="I3" type="I1"/>
+            </Graph>
+        </Types>
+        <Graph ID="I4" kind="HOST" name="Host">
+            <Node ID="I5" type="I1"/>
+            <Node ID="I6" type="I1"/>
+        </Graph>
+        <Rule ID="I7" formula="true" name="deleteNode">
+            <Graph ID="I9" kind="LHS" name="Left">
+                <Node ID="I10" type="I1"/>
+            </Graph>
+            <Graph ID="I11" kind="RHS" name="Right"/>
+            <Morphism name="deleteNode"/>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </Rule>
+        <Matches>
+            <MatchOf Rule="I7">
+                <Match ID="I12">
+                    <Morphism name="MatchOf_deleteNode">
+                        <Mapping image="I5" orig="I10"/>
+                    </Morphism>
+                </Match>
+            </MatchOf>
+        </Matches>
+    </GraphTransformationSystem>
+</Document>

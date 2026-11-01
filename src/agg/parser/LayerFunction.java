@@ -13,8 +13,6 @@
  */
 package agg.parser;
 
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
@@ -31,7 +29,7 @@ import java.util.Map;
  * @author $Author: olga $
  * @version $Id: LayerFunction.java,v 1.9 2010/09/23 08:25:00 olga Exp $
  */
-public class LayerFunction implements XMLObject {
+public class LayerFunction {
 
     /**
      * The graph grammar.
@@ -391,105 +389,6 @@ public class LayerFunction implements XMLObject {
      */
     public String getOption() {
         return this.option;
-    }
-
-    /**
-     * Writes a hash table to a xml file.
-     *
-     * @param xmlObjects <CODE>this</CODE>
-     * @param h A helper object.
-     */
-    protected void writeHashtableToXML(Map<?, ?> xmlObjects, XMLHelper h) {
-        for (Map.Entry<?, ?> entry : xmlObjects.entrySet()) {
-            XMLObject r1 = (XMLObject) entry.getKey();
-            h.openSubTag("Datum");
-            h.addObject("key", r1, false);
-            h.addAttr("value", "" + entry.getValue());
-            h.close();
-        }
-    }
-
-    /**
-     * Writes the layer function to a file in a xml format.
-     *
-     * @param h A helper object for storing.
-     */
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("LayerFunction", this);
-        // h.addAttr("valid",""+isValid());
-        /*
-		 * if(this instanceof ExtendedLayerFunction)
-		 * h.addAttr("option","RCDN_LAYER"); else if(this instanceof
-		 * WeakExtendedLayerFunction) h.addAttr("option","WEAK_RCDN_LAYER");
-		 * else if(this instanceof WeakLayerFunction)
-		 * h.addAttr("option","WEAK_RCD_LAYER"); else if(this instanceof
-		 * LayerFunction) h.addAttr("option","RCD_LAYER");
-         */
-        h.addObject("GraGra", this.grammar, false);
-        /*
-		 * if(isValid()){ h.openSubTag("ruleLayer");
-		 * writeHashtableToXML(getRuleLayer(),h); h.close();
-		 * h.openSubTag("deletionLayer");
-		 * writeHashtableToXML(getDeletionLayer(),h); h.close();
-		 * h.openSubTag("creationLayer");
-		 * writeHashtableToXML(getCreationLayer(),h); h.close(); }
-         */
-        h.close();
-    }
-
-    /**
-     * Reads the contents of a xml file.
-     *
-     * @param h A helper object.
-     */
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("LayerFunction", this)) {
-            // System.out.println("LayerFunction: wird gelesen");
-            this.grammar = (GraGra) h.getObject("GraGra", null, false);
-            // System.out.println("LayerFunction: CP this.grammar gelesen:
-            // "+this.grammar);
-            // String v = h.readAttr("valid");
-            // System.out.println("LayerFunction: valid gelesen");
-            // option = h.readAttr("option");
-            // System.out.println("LayerFunction: option gelesen: "+option);
-            this.valid = true; // false;
-            this.option = "";
-            initRuleLayer(this.grammar);
-            initCreationLayer(this.grammar);
-            initDeletionLayer(this.grammar);
-            /*
-			 * if(v.equals("true")){ this.valid = true; if
-			 * (h.readSubTag("ruleLayer")) { if(ruleLayer == null) ruleLayer =
-			 * new HashMap(); Enumeration data = h.getEnumeration("", null,
-			 * true, "Datum"); while(data.hasMoreElements()){
-			 * h.peekElement(data.nextElement()); Rule r2 =
-			 * (Rule)h.getObject("key",null,false); Integer i = new
-			 * Integer(h.readIAttr("value")); if((r2 != null) && (i != null)) {
-			 * getRuleLayer().put(r2,i); r2.setLayer(i.intValue()); } h.close(); }
-			 * h.close(); //System.out.println("LayerFunction: ruleLayer
-			 * gelesen"); } if (h.readSubTag("deletionLayer")){ if(deletionLayer ==
-			 * null) deletionLayer = new HashMap(); Enumeration data =
-			 * h.getEnumeration("", null, true, "Datum");
-			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
-			 * Type t = (Type)h.getObject("key",null,false); Integer i = new
-			 * Integer(h.readIAttr("value")); if((t != null) && (i != null))
-			 * getDeletionLayer().put(t,i); h.close(); } h.close();
-			 * //System.out.println("LayerFunction: deletionLayer gelesen"); }
-			 * if (h.readSubTag("creationLayer")){ if(creationLayer == null)
-			 * creationLayer = new HashMap(); Enumeration data =
-			 * h.getEnumeration("", null, true, "Datum");
-			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
-			 * Type t = (Type)h.getObject("key",null,false); Integer i = new
-			 * Integer(h.readIAttr("value")); if((t != null) && (i != null))
-			 * getCreationLayer().put(t,i); h.close(); } h.close();
-			 * //System.out.println("LayerFunction: creationLayer gelesen"); } }
-             */
-            h.close();
-            ;
-        } else {
-            this.option = "";
-        }
-        // System.out.println("LayerFunction: gelesen");
     }
 
     /**

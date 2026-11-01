@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!--
+        AGG .ggx file schema (hybrid: strict root structure, lax content).
+
+        This schema validates:
+        - Root element must be "Document" with required "version" attribute
+        - Document must contain at least one child element
+        - Known child elements (GraphTransformationSystem, etc.) are typed
+        - Unknown elements, attributes, and deep content are accepted via
+          xsd:any/anyAttribute with processContents="lax" (for forward compat)
+
+        This is intentionally permissive for content but strict for structure
+        to ensure malformed .ggx files are rejected while valid ones pass.
+    -->
+
+    <!-- Root element: Document -->
+    <xsd:element name="Document">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="GraphTransformationSystem" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="version" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- GraphTransformationSystem: top-level container -->
+    <xsd:element name="GraphTransformationSystem">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+            </xsd:sequence>
+            <xsd:attribute name="ID" type="xsd:string"/>
+            <xsd:attribute name="directed" type="xsd:string"/>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="parallel" type="xsd:string"/>
+            <xsd:anyAttribute namespace="##any" processContents="lax"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

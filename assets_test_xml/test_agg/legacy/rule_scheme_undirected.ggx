@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="false"
+        name="RuleSchemeTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Node%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:"/>
+            <Graph ID="I2" kind="TG" name="TypeGraph">
+                <Node ID="I3" type="I1"/>
+            </Graph>
+        </Types>
+        <Graph ID="I4" kind="HOST" name="Host">
+            <Node ID="I5" type="I1"/>
+        </Graph>
+        <RuleScheme ID="I6" atLeastOneMultiMatch="false"
+            checkConflict="true" disjointMultis="true" index="0"
+            name="RuleScheme0" parallelKernel="false">
+            <Kernel>
+                <Rule ID="I7" formula="true" name="kernelRule">
+                    <Graph ID="I9" kind="LHS" name="Left">
+                        <Node ID="I10" type="I1"/>
+                    </Graph>
+                    <Graph ID="I11" kind="RHS" name="Right">
+                        <Node ID="I12" type="I1"/>
+                    </Graph>
+                    <Morphism name="kernelRule"/>
+                    <TaggedValue Tag="layer" TagValue="0"/>
+                    <TaggedValue Tag="priority" TagValue="0"/>
+                </Rule>
+            </Kernel>
+            <Multi>
+                <Rule ID="I13" formula="true" name="multiRule1">
+                    <Graph ID="I15" kind="LHS" name="Left">
+                        <Node ID="I16" type="I1"/>
+                        <Node ID="I17" type="I1"/>
+                    </Graph>
+                    <Graph ID="I18" kind="RHS" name="Right">
+                        <Node ID="I19" type="I1"/>
+                        <Node ID="I20" type="I1"/>
+                    </Graph>
+                    <Morphism name="multiRule1"/>
+                    <TaggedValue Tag="layer" TagValue="0"/>
+                    <TaggedValue Tag="priority" TagValue="0"/>
+                </Rule>
+                <EmbeddingLeft>
+                    <Morphism name="IsoMorph">
+                        <Mapping image="I16" orig="I10"/>
+                    </Morphism>
+                </EmbeddingLeft>
+                <EmbeddingRight>
+                    <Morphism name="IsoMorph">
+                        <Mapping image="I19" orig="I12"/>
+                    </Morphism>
+                </EmbeddingRight>
+            </Multi>
+            <TaggedValue Tag="layer" TagValue="0"/>
+            <TaggedValue Tag="priority" TagValue="0"/>
+        </RuleScheme>
+    </GraphTransformationSystem>
+</Document>

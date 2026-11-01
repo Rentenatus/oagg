@@ -1,0 +1,146 @@
+/**
+ * ***************************************************************************
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright>
+ * *****************************************************************************
+ */
+package agg.xt_basis;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+//import com.objectspace.jgl.HashSet;
+
+/**
+ * Rule priority is a set of rule priority of a given graph grammar. The set is
+ * backed by a hash table.
+ *
+ * @author $Author: olga $
+ * @version $ID
+ */
+public class RulePriority {
+
+    private Map<Rule, Integer> rulePriority;
+//	private Enumeration<Rule> rules;
+    private final List<Rule> rulesVec;
+
+    /**
+     * Creates a new set of rule priorities for a given graph grammar.
+     *
+     * @param rules The rules of a graph grammar.
+     */
+    public RulePriority(Enumeration<Rule> rules) {
+//		this.rules = rules;
+        this.rulesVec = new ArrayList<>(0);
+        while (rules.hasMoreElements()) {
+            this.rulesVec.add(rules.nextElement());
+        }
+        initRulePriority();
+    }
+
+    public RulePriority(List<Rule> rules) {
+        this.rulesVec = new ArrayList<>(0);
+        for (int i = 0; i < rules.size(); i++) {
+            this.rulesVec.add(rules.get(i));
+        }
+//		this.rules = rulesVec.elements();
+        initRulePriority();
+    }
+
+    /**
+     * Sets the priority of the specified rule
+     * @param rule
+     * @param p
+     */
+    public void setPriority(Rule rule, int p) {
+        rule.setPriority(p);
+        this.rulePriority.put(rule, p);
+        // System.out.println("rule priority: "+((Integer)
+        // rulePriority.get(rule)).toString());
+    }
+
+    private void initRulePriority() {
+        this.rulePriority = new HashMap<>();
+        for (int i = 0; i < this.rulesVec.size(); i++) {
+            Rule rule = this.rulesVec.get(i);
+            this.rulePriority.put(rule, rule.getPriority());
+            // Object rule = rulesVec.get(i);
+            // if(rule instanceof Rule)
+            // rulePriority.put(rule, Integer.valueOf(((Rule) rule).getPriority()));
+            // else if(rule instanceof String)
+            // rulePriority.put(rule, Integer.valueOf(0));
+        }
+    }
+
+    /**
+     * Returns the rule Priorities. A rule is a key, a priority is a value.
+     *
+     * @return The rule priority.
+     */
+    public Map<Rule, Integer> getRulePriority() {
+        return this.rulePriority;
+    }
+
+    /**
+     * Returns the highest priority of the rule priority. The highest priority
+     * means the smallest number > 0.
+     *
+     * @return The highest priority.
+     */
+    public Integer getStartPriority() {
+        int startPriority = Integer.MAX_VALUE;
+        Integer result = null;
+        for (Rule key : this.rulePriority.keySet()) {
+            Integer p = this.rulePriority.get(key);
+            if (p < startPriority) {
+                startPriority = p;
+                result = p;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Inverts a rule priority so that the priority is the key and the value is
+     * a set.
+     *
+     * @return The inverted set.
+     */
+    public Map<Integer, HashSet<Rule>> invertPriority() {
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<>();
+        for (Rule key : this.rulePriority.keySet()) {
+            Integer value = this.rulePriority.get(key);
+            HashSet<Rule> invertedValue = inverted.get(value);
+            if (invertedValue == null) {
+                invertedValue = new HashSet<>();
+                invertedValue.add(key);
+                inverted.put(value, invertedValue);
+            } else {
+                invertedValue.add(key);
+            }
+        }
+        return inverted;
+    }
+
+    /**
+     * Returns the rule priority in a human readable way.
+     *
+     * @return The text.
+     */
+    public String toString() {
+        String resultString = "Rule:\t\tPriority:\n";
+        for (Rule key : this.rulePriority.keySet()) {
+            Integer value = this.rulePriority.get(key);
+            resultString += key.getName() + "\t\t" + value.toString()
+                    + "    " + key.getPriority() + "\n";
+        }
+        return resultString;
+    }
+}

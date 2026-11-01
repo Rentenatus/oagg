@@ -16,7 +16,6 @@ package agg.xt_basis;
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
-import agg.util.XMLHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -804,124 +803,6 @@ public class NodeTypeImpl implements Type {
             this.additionalRepr = repr;
         }
         this.resetKey();
-    }
-
-    public void XwriteObject(XMLHelper h) {
-        String n = getStringRepr();
-//		System.out.println("TypeImpl.XwriteObject: AdditionalRepr:   " +this.additionalRepr);		
-        if ((this.additionalRepr != null) && (!this.additionalRepr.equals(""))) {
-            n += ("%" + this.additionalRepr);
-        }
-        int idx = n.indexOf("[NODE]");
-        if (idx >= 0) {
-            // all parents write first
-            h.addEnumeration("", this.itsParents.iterator(), true);
-            if (this.imageFileName.length() > 0) {
-                // insert the image filename into string n to save the additional type representation
-                n = n.substring(0, idx).concat(this.imageFileName).concat(":").concat("[NODE]:");
-            }
-            h.openNewElem("NodeType", this);
-        } else {
-            h.openNewElem("Type", this);
-        }
-        h.addAttr("name", n);
-        if (!this.comment.equals("")) {
-            h.addAttr("comment", this.comment);
-        }
-        h.addAttr("abstract", String.valueOf(this.isAbstract));
-        // multiple inheritance -olga
-        if (n.indexOf("[NODE]") >= 0) {
-            for (int i = 0; i < this.itsParents.size(); i++) {
-                h.openSubTag("Parent");
-                h.addObject("pID", this.itsParents.get(i), false);
-                h.close();
-            }
-        }
-        if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() > 0) {
-            h.addObject("", this.itsAttrType, true);
-        }
-        // multiplicity will be written in the Arc / Node
-        // object in the type graph
-        h.close();
-    }
-
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("NodeType", this)
-                || h.isTag("Type", this)) {
-            String n = h.readAttr("name");
-//			n = XMLHelper.checkNameDueToSpecialCharacters(n);
-//			System.out.println("TypeImpl.XreadObject: " +n);
-            String str = h.readAttr("comment");
-            if (!str.equals("")) {
-                this.comment = str.toString();
-            }
-            this.isAbstract = false;
-            String abs = h.readAttr("abstract");
-            if (!"".equals(abs)) {
-                this.isAbstract = Boolean.valueOf(abs).booleanValue();
-            }
-//			System.out.println("TypeImpl.XreadObject:  isAbstract: " +isAbstract);
-            int i = n.indexOf('%');
-            // set type name
-            if (i != -1) {
-                String test = n.substring(0, i);
-                test = XMLHelper.checkNameDueToSpecialCharacters(test);
-                this.itsStringRepr = test;
-            } else {
-                String test = XMLHelper.checkNameDueToSpecialCharacters(n);
-                this.itsStringRepr = test;
-            }
-            AttrType tmpAttr = agg.attribute.impl.AttrTupleManager
-                    .getDefaultManager().newType();
-            h.enrichObject(tmpAttr);
-            if (tmpAttr.getNumberOfEntries() != 0) {
-                this.itsAttrType = tmpAttr;
-            } else {
-                this.itsAttrType = null;
-            }
-            if (i != -1) {
-                String a = n.substring(i + 1);
-                a = a.replaceAll("::", ":");
-                if (n.indexOf("[NODE]") != -1) {
-                    // multiple inheritance - olga
-                    Type p = (Type) h.getObjectRef("parent", null);
-                    if (p != null) {
-                        addParent(p);
-                        int pi = 1;
-                        while (true) {
-                            p = (Type) h.getObjectRef("parent" + pi, null);
-                            if (p != null) {
-                                addParent(p);
-                                pi++;
-                            } else {
-                                break;
-                            }
-                        }
-                    } else {
-                        while (h.readSubTag("Parent")) {
-                            Type pi = (Type) h.getObjectRef("pID", null);
-                            if (pi != null) {
-                                addParent(pi);
-                            }
-                            h.close();
-                        }
-                    }
-                    a = extractImageFileName(a);
-                }
-                n = n.substring(0, i);
-                setAdditionalRepr(a);
-            }
-            // NOTE:: multiplicity will be read in the TypeGraph
-            // add parents of attributes
-            if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() != 0) {
-                DeclTuple myDeclTuple = (DeclTuple) this.itsAttrType;
-                for (int p = 0; p < this.itsParents.size(); p++) {
-                    Type t = this.itsParents.get(p);
-                    myDeclTuple.addParent((DeclTuple) t.getAttrType());
-                }
-            }
-            h.close();
-        }
     }
 
     /*
