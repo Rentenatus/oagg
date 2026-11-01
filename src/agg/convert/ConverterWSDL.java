@@ -12,10 +12,10 @@
 package agg.convert;
 
 import java.io.IOException;
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.TypeException;
 import agg.convert.WSDL2ggx;
+import org.w3c.dom.Document;
 
 public class ConverterWSDL {
 
@@ -23,7 +23,7 @@ public class ConverterWSDL {
     //private static final String dataPath = "C:\\localapp\\";
 //	private static final String filePath = "C:\\Users\\olga\\Desktop\\Tamim\\Analysis\\exmpls\\BTSysService.wsdl";
 //	private static final String dataPath = "C:\\Users\\olga\\Desktop\\Tamim\\Analysis\\exmpls\\";
-    private XMLHelper xmlH;
+    private Document wsdlDoc;
     private GraGra gragra;
     private String fileName;
     private String outputFileName;
@@ -45,8 +45,19 @@ public class ConverterWSDL {
 
     boolean load(String fName) {
         if (fName.endsWith(".wsdl")) {
-            xmlH = new XMLHelper();
-            return xmlH.read_from_xml(fName);
+            try {
+                javax.xml.parsers.DocumentBuilderFactory factory =
+                        javax.xml.parsers.DocumentBuilderFactory.newInstance();
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                factory.setXIncludeAware(false);
+                factory.setExpandEntityReferences(false);
+                javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+                wsdlDoc = builder.parse(new java.io.File(fName));
+                return true;
+            } catch (Exception ex) {
+                System.out.println("Loading File: " + fName + "   ERROR: " + ex.getMessage());
+                return false;
+            }
         }
         return false;
     }
@@ -56,7 +67,7 @@ public class ConverterWSDL {
         gragra = new GraGra(true);
         gragra.getTypeSet().createTypeGraph();
         wsdl2agg = new WSDL2ggx(gragra);
-        xmlH.getTopObject(wsdl2agg);
+        wsdl2agg.read(wsdlDoc);
         return wsdl2agg.isSuccessful();
     }
 

@@ -54,12 +54,10 @@ public class XmlRegressionTest {
             outputDir.mkdirs();
         }
         // Ensure legacy path is active for XMLSerialization-internal fallbacks
-        XMLSerialization.setUseNewXml(false);
     }
 
     @AfterClass
     public void tearDown() {
-        XMLSerialization.setUseNewXml(false);
     }
 
     @DataProvider(name = "sampleFiles")

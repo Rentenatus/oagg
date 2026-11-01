@@ -8,7 +8,6 @@
  */
 package agg.xt_basis;
 
-import agg.util.XMLHelper;
 
 /**
  * GraphElement defines the common interface for all elements in a graph,
@@ -81,20 +80,6 @@ public interface GraphElement {
      * @return the reset type key
      */
     String resetTypeKey();
-
-    /**
-     * Writes this element to XML.
-     *
-     * @param xmlHelper the XML helper to write with
-     */
-    void XwriteObject(XMLHelper xmlHelper);
-
-    /**
-     * Reads this element from XML.
-     *
-     * @param xmlHelper the XML helper to read from
-     */
-    void XreadObject(XMLHelper xmlHelper);
 
     /**
      * Compares this element to another for equality.

@@ -6,7 +6,6 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLObject;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraGra;
@@ -41,14 +40,14 @@ import agg.xml.core.XMLSerializable;
 public class XMLAdapterFactory {
     
     /**
-     * Creates an appropriate adapter for the specified XMLObject.
+     * Creates an appropriate adapter for the specified domain object.
      * The factory will create a specific adapter based on the actual type
      * of the object, or a generic XMLObjectAdapter if no specific adapter exists.
      * 
-     * @param xmlObject The XMLObject to adapt
+     * @param xmlObject The domain object to adapt
      * @return An XMLSerializable adapter for the object
      */
-    public static XMLSerializable createAdapter(XMLObject xmlObject) {
+    public static XMLSerializable createAdapter(Object xmlObject) {
         if (xmlObject == null) {
             return null;
         }
@@ -150,12 +149,12 @@ public class XMLAdapterFactory {
     }
     
     /**
-     * Creates a generic XMLObjectAdapter for the specified XMLObject.
+     * Creates a generic XMLObjectAdapter for the specified object.
      * 
-     * @param xmlObject The XMLObject to adapt
+     * @param xmlObject The domain object to adapt
      * @return An XMLObjectAdapter instance
      */
-    public static XMLObjectAdapter createXMLObjectAdapter(XMLObject xmlObject) {
+    public static XMLObjectAdapter createXMLObjectAdapter(Object xmlObject) {
         return new XMLObjectAdapter(xmlObject);
     }
 }

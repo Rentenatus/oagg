@@ -6,14 +6,13 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLObject;
 
 /**
  * Base class for adapters that wrap a domain object.
  *
  * @param <T> the domain object type
  */
-public class DomainObjectAdapter<T extends XMLObject> extends XMLObjectAdapter {
+public class DomainObjectAdapter<T> extends XMLObjectAdapter {
 
     /**
      * Creates a new adapter for the specified domain object.

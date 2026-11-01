@@ -14,7 +14,6 @@
 package agg.xt_basis;
 
 import agg.attribute.AttrType;
-import agg.util.XMLObject;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,7 +25,7 @@ import java.util.List;
  * <p>This interface provides methods for managing type hierarchies, attribute types,
  * and type graph validation.
  */
-public interface Type extends XMLObject {
+public interface Type {
 
     /**
      * Constant representing an undefined type.

@@ -8,7 +8,6 @@ package agg.xml;
 
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -25,47 +24,9 @@ public class XMLSerializationTest {
         TestDataHelper.requireAllSamples();
     }
 
-    @AfterTest
-    public void tearDown() {
-        XMLSerialization.setUseNewXml(false);
-    }
 
-    @Test
-    public void testFeatureFlagToggle() {
-        XMLSerialization.setUseNewXml(false);
-        assertFalse(XMLSerialization.isUseNewXml(), "Should be false by default");
-        XMLSerialization.setUseNewXml(true);
-        assertTrue(XMLSerialization.isUseNewXml(), "Should be true after set");
-        XMLSerialization.setUseNewXml(false);
-        assertFalse(XMLSerialization.isUseNewXml(), "Should be false after reset");
-    }
-
-    @Test
-    public void testSaveAndLoadWithLegacy() throws Exception {
-        XMLSerialization.setUseNewXml(false);
-        File file = TestDataHelper.resolveSample("small_graph.ggx");
-
-        GraGra original = new GraGra();
-        XMLSerialization.load(original, file.getAbsolutePath());
-        assertNotNull(original.getName(), "Should load via legacy");
-
-        File tempFile = new File("target/xmlserialization-test-legacy.ggx");
-        tempFile.getParentFile().mkdirs();
-        assertTrue(XMLSerialization.save(original, tempFile.getAbsolutePath()),
-            "Save should succeed");
-        assertTrue(tempFile.exists(), "File should exist");
-        assertTrue(tempFile.length() > 0, "File should not be empty");
-
-        GraGra reloaded = new GraGra();
-        XMLSerialization.load(reloaded, tempFile.getAbsolutePath());
-        assertEquals(reloaded.getName(), original.getName(),
-            "Names should match after roundtrip");
-        assertEquals(reloaded.getGraphsVec().size(), original.getGraphsVec().size(),
-            "Graph counts should match");
-
-        tempFile.delete();
-    }
-
+    
+    
     @Test
     public void testSaveAndLoadWithDom() throws Exception {
         File file = TestDataHelper.resolveSample("small_graph.ggx");
@@ -133,28 +94,7 @@ public class XMLSerializationTest {
             "XML should contain Document root");
     }
 
-    @Test
-    public void testSaveAndLoadViaFeatureFlag() throws Exception {
-        XMLSerialization.setUseNewXml(true);
-        File file = TestDataHelper.resolveSample("small_graph.ggx");
-
-        GraGra original = new GraGra();
-        XMLSerialization.load(original, file.getAbsolutePath());
-        assertNotNull(original.getName(), "Should load via new XML path");
-
-        File tempFile = new File("target/xmlserialization-test-flag.ggx");
-        tempFile.getParentFile().mkdirs();
-        assertTrue(XMLSerialization.save(original, tempFile.getAbsolutePath()),
-            "Save via feature flag should succeed");
-
-        GraGra reloaded = new GraGra();
-        XMLSerialization.load(reloaded, tempFile.getAbsolutePath());
-        assertEquals(reloaded.getName(), original.getName(),
-            "Names should match after feature-flag roundtrip");
-
-        tempFile.delete();
-    }
-
+    
     // ---- File extension helpers ----
 
     @Test

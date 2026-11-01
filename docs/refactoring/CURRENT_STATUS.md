@@ -2,7 +2,7 @@
 
 **Project:** AGG XML Serialization Extraction Refactoring
 **Date:** 2026-11-01
-**Overall Status:** DOM path complete for the .ggx format and for the full `.cpx`/`.rsx` surface (core and UI layer), and every GUI save/load entry point dispatches through the migration flag (DOM first, legacy fallback). Regression suite green (540 tests). Removing the legacy XML code from `src` is the next phase; its preconditions are open (see roadmap below).
+**Overall Status:** The legacy XML serialization is removed from the core: no `XMLHelper`, no `XMLObject`, no `XwriteObject`/`XreadObject` in `src`/`src_ui` anymore. The DOM path is the only save/load implementation, every entry point dispatches to it unconditionally. Regression suite green (508 tests; branch `review/cleanup_xml`). The frozen legacy clone keeps the removed code as the test oracle.
 
 ---
 
@@ -10,11 +10,11 @@
 
 | Directory | Module (artifactId) | Role |
 |-----------|---------------------|------|
-| `src` | `agg-core` | Domain core (GraGra, Graph, Rule, Node, Arc, types, attributes) - still contains the legacy `XwriteObject`/`XreadObject` code |
-| `src_ui` | `agg-ui` | Editor/GUI layer (Ed* wrappers, layout, `GraGraSave`/`GraGraLoad`) - save/load entry points still use `XMLHelper` |
-| `src_xml` | `agg-xml` | DOM-based XML serialization of the core |
+| `src` | `agg-core` | Domain core (GraGra, Graph, Rule, Node, Arc, types, attributes) - free of XML serialization code; save/load dispatches reflectively into `agg-xml` |
+| `src_ui` | `agg-ui` | Editor/GUI layer (Ed* wrappers, layout, `GraGraSave`/`GraGraLoad`) - every save/load entry point dispatches reflectively into `agg-ui-xml` |
+| `src_xml` | `agg-xml` | DOM-based XML serialization of the core (the only serialization implementation) |
 | `src_uixml` | `agg-ui-xml` | DOM-based XML serialization of the UI layer (single `UISerialization` orchestrator; no per-class adapters) |
-| `test/test_agg/legacy_agg` | `agg-core-legacy` | Frozen legacy reference (clone of `src` + `src_ui`; visibility-only deviations, see below); runs the preparation suite and writes reference XML into `assets_test_xml/target/legacy_prep` |
+| `test/test_agg/legacy_agg` | `agg-core-legacy` | Frozen legacy reference (clone of the former `src` + `src_ui` including `XMLHelper`/`XwriteObject`/`XreadObject`; visibility-only deviations, see below); runs the preparation suite and writes reference XML into `assets_test_xml/target/legacy_prep` |
 
 Test roots: `test_xml` (DOM side, in `src_xml`), `test_xml_prep` (preparation, in `agg-core-legacy`), `test_xml_ui` (DOM side of the UI layer, in `src_uixml`), `test_xml_common` (shared helpers). Test working directory: `assets_test_xml`.
 
@@ -24,13 +24,15 @@ Test roots: `test_xml` (DOM side, in `src_xml`), `test_xml_prep` (preparation, i
 
 ## Test Coverage
 
-All suites green as of 2026-11-01 (branch `review/014-XML-ex`):
+All suites green as of 2026-11-01 (branch `review/cleanup_xml`):
 
 | Suite | Module | Tests | Purpose |
 |-------|--------|-------|---------|
 | `agg.xml.prep.LegacyPreparationTest` | `agg-core-legacy` | 25 | Writes fresh reference XML from the in-memory model using the frozen legacy save; also covers the attribute and morphism matrices, stability pairs, the UI references (`.ggx`/`.rsx`/`.cpx`) and the computed-pair `.cpx` fixtures |
-| DOM suite (`test_xml`) | `agg-xml` | 491 | DOM load/save roundtrips, cross-system compatibility, path stability, stress and performance |
-| UI DOM suite (`test_xml_ui`) | `agg-ui-xml` | 24 | `UiDomRegressionTest` (7 UI layer scenarios), `UIMigrationTest` (facade: `.ggx`, core `.cpx`, `.rsx`, UI `.rsx`, UI `.cpx`, standalone pair container), `XmlMigrationDispatchTest` (real reflection wiring of the GUI dispatch) |
+| DOM suite (`test_xml`) | `agg-xml` | 464 | DOM load/save roundtrips, cross-system compatibility against the frozen fixtures, path stability, stress |
+| UI DOM suite (`test_xml_ui`) | `agg-ui-xml` | 19 | `UiDomRegressionTest` (7 UI layer scenarios), `UIMigrationTest` (facade: `.ggx`, core `.cpx`, `.rsx`, UI `.rsx`, UI `.cpx`, standalone pair container), `XmlMigrationDispatchTest` (real reflection wiring of the GUI dispatch) |
+
+The count dropped from 540 (GUI-wiring state, branch `review/014-XML-ex`) to 508: the removed tests were exclusively in-classpath legacy comparisons (feature flag toggles, legacy-vs-DOM benchmarks, legacy branch tests of the facade). The legacy behaviour itself stays verified by the frozen clone and the canonical fixture comparisons.
 
 ### Generated scenario matrix (28/28 complete)
 
@@ -58,9 +60,9 @@ All scenarios pass a canonical comparison against the fresh legacy reference, in
 - Attribute matrix: 6 attribute types with boundary values (0, -42, MAX_INT, empty string, special characters, ...) plus mapping forms (constant, expression, variable, condition, edge).
 - Morphism matrix: 56 fixtures over LHS/RHS/mapping structures x orientation x type graph.
 
-### GUI wiring (roadmap step 1, complete)
+### GUI wiring (roadmap step 1, complete; legacy fallback removed)
 
-Every GUI save/load entry point dispatches through the migration flag: DOM path first, legacy `XMLHelper` code as fallback (stays in place until roadmap step 4).
+Every GUI save/load entry point dispatches unconditionally through the reflective `XmlMigrationDispatch` into the DOM facade (`UIMigration`). The migration feature flag and the local `XMLHelper` fallback code are removed with the legacy XML cleanup; a dispatch failure now fails the save/load instead of silently falling back.
 
 | Entry point (`src_ui`) | Formats | Dispatch |
 |---|---|---|
@@ -68,17 +70,18 @@ Every GUI save/load entry point dispatches through the migration flag: DOM path 
 | `GraGraTreeView.loadGraGra` | `.ggx` | `XmlMigrationDispatch.dispatchLoad` |
 | `ApplRuleSequenceSaveLoad` | `.rsx` with the editor layer | `XmlMigrationDispatch` -> `UIMigration.saveRuleSequence`/`loadRuleSequence` -> `UISerialization` |
 | `PairIOGUI` | UI `.cpx` (SaveLoad wrapper), core `.cpx` (`cdContainer`), standalone pair container (`pc`) | `XmlMigrationDispatch` -> `UIMigration.saveCdContainerSaveLoad`/`loadCdContainerSaveLoad`, `UIMigration.save`/`load(ConflictsDependenciesContainer)` and `UIMigration.saveStandalonePairContainer`/`loadStandalonePairContainer` |
+| `EdGraGra.save` | `.ggx` (editor layer, e.g. the rule sequence dialog) | `XmlMigrationDispatch.dispatchSave` |
 
-`agg-ui` does not compile-depend on `agg-ui-xml`: the dispatch is reflective (`agg.gui.saveload.XmlMigrationDispatch`), the flag is not cached (runtime toggling), and every dispatch failure falls back to the local legacy code, so a deployment without the `agg-ui-xml` jar stays on the legacy path.
+`agg-ui` does not compile-depend on `agg-ui-xml`: the dispatch is reflective (`agg.gui.saveload.XmlMigrationDispatch`), so the layered build keeps a clean classpath.
 
 **Oracle decisions of the GUI formats** (same principle as the core: the DOM path preserves the file values, it does not replicate the legacy reader's model mutations):
-- UI `.ggx`/`.rsx`/`.cpx`: the DOM save of a DOM-loaded raw reference is canonically equal to the raw reference. The legacy re-saved references differ (LeftOf_ rule graph renames, `LayoutNode.frozen` derivation from the age, formula regeneration via `prepareRuleInfo`); the legacy branches of the facade reproduce them exactly.
+- UI `.ggx`/`.rsx`/`.cpx`: the DOM save of a DOM-loaded raw reference is canonically equal to the raw reference. The legacy re-saved references differ (LeftOf_ rule graph renames, `LayoutNode.frozen` derivation from the age, formula regeneration via `prepareRuleInfo`); the frozen clone reproduces them exactly.
 - UI `.rsx` only: the raw GUI reference has an empty `RuleSequences` section (the reader binds the sequences into the container), so the DOM path is verified through state assertions and stability there.
 - Dangling `I<n>` references written by the legacy `XMLHelper.addObject(..., false)` template mechanism (`GraphTransformationSystem` on the host graph, `Graph` on the CPA graph) are write artifacts without a target element; the canonical comparator ignores them.
 
 ### Regression oracle
 
-Four paths are compared against each other: legacy load, legacy save (fresh reference from the in-memory model), DOM load, DOM save. The deliberate oracle decision (DOM preserves the file, not the legacy reader's model side effects) is documented in the root README.
+The frozen clone writes the legacy reference files (raw and re-saved) in the preparation phase; the DOM suite loads them, saves its own output and compares canonically. The deliberate oracle decision (DOM preserves the file, not the legacy reader's model side effects) is documented in the root README.
 
 ---
 
@@ -92,10 +95,10 @@ Four paths are compared against each other: legacy load, legacy save (fresh refe
    - The PAC overlap is lossy in the reader: the `pacname` mapping of a pure PAC arc is not reconstructed (the `orig2copy` map only knows LHS nodes). The legacy reader has the same loss, so no canonical comparison is possible against a raw reference; the DOM output is stable across roundtrips.
    - The overlap morphism source variants `NAC+RHS`, `PAC+RHS_R1`, `LHS_R2`/`RHS_R2`/`LHS_R2_1` and the layered/priority container fields (`lepc`/`pepc`, `ldpc`/`pdpc`) are mirrored after the legacy reader but have no fixtures yet; they are only reachable through engine-produced overlap name patterns. The loaded layered containers are installed as the plain fields (documented deviation).
    - The computed-pair fixtures are built synthetically (TestDataGenerator mirrors the reader's reconstruction) because the CPA engine itself currently finds no inclusions: upstream, `ExcludePairHelper.putGraphInclusionSet` has the `inclusions.add(goSet)` call commented out, so delete-use/produce-forbid never matches. Fixing the engine is out of scope for the serialization refactoring; the frozen legacy clone shows the same behaviour.
-2. **GUI save/load entry points (wired, legacy code remains as fallback)**: `GraGraSave`/`GraGraLoad`, `GraGraTreeView`, `PairIOGUI`, `ApplRuleSequenceSaveLoad` and the `ConflictsDependenciesContainerSaveLoad` hooks all dispatch through the migration flag (DOM first, legacy fallback, see the GUI wiring section above). `GraphBrowserImpl` and `ParserDialog` no longer reference `XMLHelper` at all. The remaining direct `XMLHelper` users in `src_ui` are the `Ed*` editor classes and `LayoutNode`/`LayoutArc`/`LayoutPattern` (the legacy UI serialization code mirrored by `UISerialization`) plus the dispatch classes' legacy fallbacks; they fall away with roadmap step 4.
-3. **convert tools**: `AGG2ColorGraph`, `ConverterWSDL`, `WSDL2ggx` use `XMLHelper` directly.
-4. **Scale**: 61 files in `src`/`src_ui` reference `XMLHelper`, 51 implement `XwriteObject`/`XreadObject` (xt_basis core, `attribute.impl`, `parser`, `ruleappl`).
-5. **DOM path fallback**: `XMLAdapterFactory` dispatches every domain type of the tested formats to a native adapter. Unknown `XMLObject` types get the generic `XMLObjectAdapter`, which now throws an explicit `XMLSerializationException` (the former silent delegation to `XwriteObject`/`XreadObject` via `XMLHelper` was removed together with the unused `XMLHelperWrapper` and the XMLHelper serializer/deserializer contexts). The remaining legacy bridge for the feature flag (`agg.xml.legacy.LegacyCompatibility`/`XMLSaveLoad`) is intentional and falls away with roadmap step 4.
+2. **GUI save/load entry points (wired without fallback)**: `GraGraSave`/`GraGraLoad`, `GraGraTreeView`, `PairIOGUI`, `ApplRuleSequenceSaveLoad`, `EdGraGra.save` and the `ConflictsDependenciesContainerSaveLoad` wrapper all dispatch reflectively into the DOM facade (see the GUI wiring section above). The former legacy `XMLHelper` fallback code and the `Ed*`/`Layout*` `XwriteObject`/`XreadObject` hooks are deleted; a dispatch failure fails the operation.
+3. **convert tools**: the WSDL converter is ported to a plain DOM walker (`WSDL2ggx.read(Document)`, hardened `DocumentBuilderFactory` in `ConverterWSDL`), `AGG2ColorGraph` carries no XML anymore (the commented legacy loader is removed). `ConverterXML` remains as an XSLT-based format converter (ggx/gxl/gtxl) for the GXL/GTXL/OMONDO import of `AGGBasicAppl` - it transforms XML documents but is no part of the AGG serialization.
+4. **Scale**: zero files in `src`/`src_ui` reference `XMLHelper` or implement `XwriteObject`/`XreadObject`. The remaining XML touchpoints of `agg-core` are the reflective dispatch strings into `agg-xml` (`GraGra.save/load`, `ComputeCriticalPairs`, `ApplRuleSequence`) and the two format converters above.
+5. **DOM path fallback**: `XMLAdapterFactory` dispatches every domain type of the tested formats to a native adapter. Unknown types get the generic `XMLObjectAdapter`, which throws an explicit `XMLSerializationException` (the adapter API is decoupled from the former `agg.util.XMLObject` interface; it holds a plain `Object`).
 
 ---
 
@@ -105,10 +108,10 @@ The .ggx roundtrip is complete and fully regression-tested, and the frozen clone
 
 | Step | Content | Status |
 |------|---------|--------|
-| 1 | Wire GUI save/load through the migration flag and smoke-test the application | done (all entry points dispatch DOM first with legacy fallback: `.ggx`, UI `.rsx`, UI `.cpx`, core `.cpx`, standalone pair container; reflective `XmlMigrationDispatch` keeps agg-ui free of a compile dependency on agg-ui-xml) |
+| 1 | Wire GUI save/load through the migration flag and smoke-test the application | done (all entry points dispatch into the DOM facade; on this branch unconditionally, without the flag and without legacy fallback) |
 | 2 | Native DOM adapter for RuleScheme (remove the legacy delegation) | done (`RuleSchemeAdapter`, canonical verification) |
 | 3 | DOM coverage for `.rsx`/`.cpx` including canonical comparison | done (`.rsx` complete; `.cpx` structural, standalone pair container and computed pair entries, including NAC/PAC overlaps and the UI variants with layout) |
-| 4 | Slice-wise removal of the legacy XML code from `src` (xt_basis -> attribute -> parser -> ruleappl -> convert) | open |
+| 4 | Slice-wise removal of the legacy XML code from `src` (xt_basis -> attribute -> parser -> ruleappl -> convert) | done (on this branch `review/cleanup_xml`: flag/bridges/fallbacks, all `XwriteObject`/`XreadObject` implementations, `XMLHelper`/`XMLObject` deleted; WSDL converter ported; ~12k lines removed; the frozen clone keeps the oracle) |
 
 ---
 
@@ -117,6 +120,7 @@ The .ggx roundtrip is complete and fully regression-tested, and the frozen clone
 - Phase 1 (inventory, analysis, planning): [PHASE1_FINAL_STATUS.md](PHASE1_FINAL_STATUS.md)
 - Phase 2 (module skeleton, first adapters): [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md)
 - Adapter and coverage work, UI serialization, scenario matrix completion: see the git history of branch `review/014-XML-ex`
+- Legacy removal (flag, bridges, `XwriteObject`/`XreadObject`, `XMLHelper`/`XMLObject`): branch `review/cleanup_xml` (this branch)
 
 Unrelated pending cleanups in the core (string concatenation, iterator typing, JavaDoc) are tracked in [OPTIMIZATIONS_xt_basis.md](../../OPTIMIZATIONS_xt_basis.md).
 

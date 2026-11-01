@@ -14,7 +14,6 @@
 package agg.xt_basis;
 
 import java.io.File;
-import agg.util.XMLHelper;
 import agg.convert.ConverterXML;
 
 public class AGGBasicAppl implements GraTraEventListener {
@@ -251,29 +250,16 @@ public class AGGBasicAppl implements GraTraEventListener {
                 .println("  import	\tfull file name of an OMONDO XMI file '.ecore' in XML format \n\t\tthat contains the graph to import.");
         System.out.println("");
     }
-    static XMLHelper h;
-
     public static GraGra load(String fName) {
-        // System.out.println(fileName.endsWith(".ggx"));
         if (fName.endsWith(".ggx")) {
-            h = new XMLHelper();
-            /*
-			 * if(XMLHelper.hasGermanSpecialCh(fileName)){
-			 * System.out.println("\nRead file name exception occurred! "
-			 * +"\nMaybe the German umlaut like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼ or ÃƒÅ¸ were used. "
-			 * +"\nPlease replace it by ae, oe, ue or ss " +"\nand try again.");
-			 * return null; }
-             */
-            if (h.read_from_xml(fName)) {
-                // create a gragra
-                GraGra gra = BaseFactory.theFactory().createGraGra(false);
-                h.getTopObject(gra);
-                gra.setFileName(fName);
-                // System.out.println("BF.getGraGras():: count:
-                // "+BaseFactory.theFactory().getGraGras());
-                return gra;
+            GraGra gra = BaseFactory.theFactory().createGraGra(false);
+            try {
+                gra.load(fName);
+            } catch (Exception ex) {
+                return null;
             }
-            return null;
+            gra.setFileName(fName);
+            return gra;
         }
         return null;
     }
@@ -362,11 +348,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         GraGra impGra = null;
         if (converter.gxl2ggx(in, out, fd + "gxl2ggx.xsl")) {
             if (out.endsWith(".ggx")) {
-                h = new XMLHelper();
-                if (h.read_from_xml(out)) {
-                    impGra = (GraGra) h.getTopObject(
-                            BaseFactory.theFactory().createGraGra());
-                }
+                impGra = loadGraGra(out);
                 if (impGra != null) {
                     return impGra.getGraph();
                 }
@@ -428,11 +410,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         if (converter.omondoxmi2ggx(in, out, fd + "omondoxmi2gxl.xsl", fd
                 + "gxl2ggx.xsl")) {
             if (out.endsWith(".ggx")) {
-                h = new XMLHelper();
-                if (h.read_from_xml(out)) {
-                    impGra = (GraGra) h.getTopObject(
-                            BaseFactory.theFactory().createGraGra());
-                }
+                impGra = loadGraGra(out);
                 if (impGra != null) {
                     return impGra.getGraph();
                 }
@@ -441,6 +419,17 @@ public class AGGBasicAppl implements GraTraEventListener {
         error = "Import failed! Please check format of the  GXL  file.";
         return null;
     }
+
+    private static GraGra loadGraGra(String fName) {
+        GraGra gra = BaseFactory.theFactory().createGraGra();
+        try {
+            gra.load(fName);
+            return gra;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
 
     public static void transform(GraGra grammar, GraTraEventListener l) {
         if (grammar == null) {
@@ -518,9 +507,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         }
         // System.out.println("save :: Output into: "+outputFileName);
         if (outputFileName.endsWith(".ggx")) {
-            XMLHelper xmlh = new XMLHelper();
-            xmlh.addTopObject(gra);
-            xmlh.save_to_xml(outputFileName);
+            gra.save(outputFileName);
         }
     }
 

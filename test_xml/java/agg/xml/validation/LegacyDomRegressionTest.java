@@ -61,12 +61,10 @@ public class LegacyDomRegressionTest {
         if (!outputDir.exists()) {
             outputDir.mkdirs();
         }
-        XMLSerialization.setUseNewXml(false);
     }
 
     @AfterClass
     public void tearDown() {
-        XMLSerialization.setUseNewXml(false);
     }
 
     @DataProvider(name = "legacyGgxFiles")

@@ -28,8 +28,6 @@ import agg.util.Change;
 import agg.util.ExtObservable;
 import agg.util.LinkedGOHashSet;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;
@@ -54,7 +52,7 @@ import java.util.Observer;
  * @author $Author: olga $
  * @author Janusch Rentenatus
  */
-public class Graph extends ExtObservable implements Observer, XMLObject {
+public class Graph extends ExtObservable implements Observer {
 
     // test: node XY-position as attribute
     public boolean xyAttr = false;
@@ -1011,7 +1009,6 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
         }
     }
 
-    @Override
     /**
      * Updates this graph when the observed object changes.
      *
@@ -3530,89 +3527,11 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      *
      * @param h the XML helper to use for writing
      */
-    @Override
-    public void XwriteObject(XMLHelper h) {
-        this.refreshAttributed();
-        this.changed = false;
-        h.openNewElem("Graph", this);
-        if (!this.kind.equals("")) {
-            h.addAttr("kind", this.kind);
-        }
-        h.addAttr("name", getName());
-        if (!this.comment.equals("")) {
-            h.addAttr("comment", this.comment);
-        }
-        if (!this.info.equals("")) {
-            h.addAttr("info", this.info);
-        }
-        h.addIteration("", this.itsNodes.iterator(), true);
-        h.addIteration("", this.itsArcs.iterator(), true);
-        h.close();
-//		updateTypeObjectsMap();
-    }
-
     /**
      * Reads this graph from XML format using the specified helper.
      *
      * @param helper the XML helper to use for reading
      */
-    @Override
-    public void XreadObject(XMLHelper helper) {
-        if (helper.isTag("Graph", this)) {
-            String str = helper.readAttr("name");
-            setName(str.replaceAll(" ", ""));
-            str = helper.readAttr("comment");
-            if (!str.equals("")) {
-                this.comment = str;
-            }
-            str = helper.readAttr("info");
-            if (!str.equals("")) {
-                this.info = str;
-            }
-            Iterator<?> en = helper.getEnumeration("", null, true, "Node");
-            while (en.hasNext()) {
-                helper.peekElement(en.next());
-                Type t = (Type) helper.getObject("type", null, false);
-                if (t != null) {
-                    Node n = null;
-                    try {
-                        n = newNode(t);
-                        n = (Node) helper.loadObject(n);
-                    } catch (TypeException e) {
-                        // while loading the type check should be disabled,
-                        // so this Exception should never be thrown
-                        System.out.println("Graph.XreadObject: cannot load a Node :  <"
-                                + t.getName() + ">  into graph  <" + this.getName() + ">   "
-                                + e.getMessage());
-                    }
-                }
-                helper.close();
-            }
-            en = helper.getEnumeration("", null, true, "Edge");
-            while (en.hasNext()) {
-                helper.peekElement(en.next());
-                Type t = (Type) helper.getObject("type", null, false);
-                Node n1 = (Node) helper.getObject("source", null, false);
-                Node n2 = (Node) helper.getObject("target", null, false);
-                if (t != null && n1 != null && n2 != null) {
-                    try {
-                        Arc a = newArc(t, n1, n2);
-                        a = (Arc) helper.loadObject(a);
-                    } catch (TypeException e) {
-                        // while loading the type check should be disabled,
-                        // so this Exception should never be thrown
-                        System.out.println("Graph.XreadObject: cannot load an Arc :  <"
-                                + t.getName() + ">  into graph <" + this.getName() + ">   "
-                                + e.getMessage());
-                    }
-                }
-                helper.close();
-            }
-            helper.close();
-        }
-//		this.showTypeMap(this.getTypeObjectsMap());	
-    }
-
     @Override
     public String toString() {
         return showGraph();

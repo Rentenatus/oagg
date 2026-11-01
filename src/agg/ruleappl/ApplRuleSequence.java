@@ -12,8 +12,6 @@ package agg.ruleappl;
 
 import agg.parser.CriticalPairOption;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -29,7 +27,7 @@ import java.util.Vector;
  * @author olga
  *
  */
-public class ApplRuleSequence implements XMLObject {
+public class ApplRuleSequence {
 
     private String dirName;
     private GraGra gragra;
@@ -254,9 +252,22 @@ public class ApplRuleSequence implements XMLObject {
                 outfileName = outfileName.concat(rsx);
             }
         }
-        XMLHelper xmlh = new XMLHelper();
-        xmlh.addTopObject(this);
-        xmlh.save_to_xml(outfileName);
+        dispatchSave(this, outfileName);
+    }
+
+    /**
+     * Saves this rule sequence through the DOM path of the agg-xml module
+     * (reflective: agg-core must not compile-depend on agg-xml).
+     */
+    private static void dispatchSave(ApplRuleSequence applSeq, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.XMLSerialization");
+            java.lang.reflect.Method m = cls.getMethod("saveWithDom",
+                ApplRuleSequence.class, String.class);
+            m.invoke(null, applSeq, filename);
+        } catch (Exception e) {
+            System.out.println("Save of rule sequence failed: " + e.getMessage());
+        }
     }
 
     public GraGra load(final String filename) throws Exception {
@@ -264,17 +275,14 @@ public class ApplRuleSequence implements XMLObject {
         if (f.exists()) {
             if (filename.endsWith(".rsx")) {
                 this.gragra = BaseFactory.theFactory().createGraGra(false);
-                XMLHelper h = new XMLHelper();
-                if (h.read_from_xml(filename)) {
-                    h.getTopObject(this);
-                    if (f.getParent() == null) {
-                        this.dirName = "." + File.separator;
-                    } else {
-                        this.dirName = f.getParent() + File.separator;
-                    }
-                } else {
+                if (!dispatchLoad(this, filename)) {
                     throw new Exception("File  \"" + filename
                             + "\"  is not a  \".rsx\"  file!");
+                }
+                if (f.getParent() == null) {
+                    this.dirName = "." + File.separator;
+                } else {
+                    this.dirName = f.getParent() + File.separator;
                 }
             } else {
                 throw new Exception("File  \"" + filename
@@ -285,109 +293,6 @@ public class ApplRuleSequence implements XMLObject {
                     + "\"  doesn't exist!");
         }
         return this.gragra;
-    }
-
-    public GraGra load(final String filename, XMLHelper h) throws Exception {
-        File f = new File(filename);
-        if (f.exists()) {
-            if (filename.endsWith(".rsx")) {
-                this.gragra = BaseFactory.theFactory().createGraGra(false);
-                if (h.read_from_xml(filename)) {
-                    h.getTopObject(this);
-                    String fileName = f.getName();
-                    if (f.getParent() == null) {
-                        this.dirName = "." + File.separator;
-                    } else {
-                        this.dirName = f.getParent() + File.separator;
-                    }
-                    this.gragra.setDirName(this.dirName);
-                    this.gragra.setFileName(fileName);
-                } else {
-                    throw new Exception("File  \"" + filename
-                            + "\"  is not a  \".rsx\"  file!");
-                }
-            } else {
-                throw new Exception("File  \"" + filename
-                        + "\"  is not a  \".rsx\"  file!");
-            }
-        } else {
-            throw new Exception("File  \"" + filename
-                    + "\"  doesn't exist!");
-        }
-        return this.gragra;
-    }
-
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("RuleSequenceApplicability", this);
-        h.addObject("GraGra", this.gragra, true);
-        h.openSubTag("RuleSequences");
-        for (int i = 0; i < this.ruleSequences.size(); i++) {
-            RuleSequence seq = this.ruleSequences.get(i);
-            boolean result = seq.getApplicabilityResult().first.booleanValue();
-            String text = seq.getApplicabilityResult().second;
-            boolean result2 = seq.getNonApplicabilityResult().first.booleanValue();
-            String text2 = seq.getNonApplicabilityResult().second;
-            h.openSubTag("Sequence");
-            h.addAttr("name", seq.getName());
-            // save options
-            h.openSubTag("ConcurrentRule");
-            if (seq.getDepthOfConcurrentRule() == -1) {
-                h.addAttr("depth", "undefined");
-            } else {
-                h.addAttr("depth", String.valueOf(seq.getDepthOfConcurrentRule()));
-            }
-            h.addAttr("complete", String.valueOf(seq.getCompleteConcurrency()));
-            h.addAttr("completecpa", String.valueOf(seq.getCompleteCPAOfConcurrency()));
-            h.addAttr("ignoredanglingedge", String.valueOf(seq.getIgnoreDanglingEdgeOfDelNode()));
-            h.close();
-            // save main result
-            h.openSubTag("Item");
-            h.addAttr("kind", "applicable");
-            h.addAttr("result", String.valueOf(result));
-            h.addAttr("criterion", text);
-            h.close();
-            h.openSubTag("Item");
-            h.addAttr("kind", "nonapplicable");
-            h.addAttr("result", String.valueOf(result2));
-            h.addAttr("criterion", text2);
-            h.close();
-            // save graph reference
-            if (seq.getGraph() != null) {
-                h.openSubTag("Graph");
-                h.addObject("id", seq.getGraph(), false);
-                h.close();
-            }
-            // save each rule result
-            Map<String, Pair<Boolean, List<String>>> ruleRes = seq.getRuleResults();
-            for (int j = 0; j < seq.getRules().size(); j++) {
-                Rule rule = seq.getRules().get(j);
-                String ruleName = rule.getName();
-                h.openSubTag("Rule");
-                h.addObject("id", rule, false);
-                if (ruleRes != null) {
-                    for (String key : ruleRes.keySet()) {
-                        if (key.indexOf(String.valueOf(j).concat(ruleName)) == 0) {
-                            Pair<Boolean, List<String>> resultpair = ruleRes.get(key);
-                            if (resultpair != null) {
-                                h.openSubTag("Item");
-                                h.addAttr("result", String.valueOf(resultpair.first));
-                                h.addAttr("criterion", resultpair.second.get(0));
-                                h.addAttr("text", resultpair.second.get(1));
-                                h.close();
-                            }
-                        }
-                    }
-                } else {
-                    h.addAttr("result", "true");
-                    h.addAttr("criterion", "undefined");
-                    h.addAttr("text", "undefined");
-                }
-                h.close();
-            }
-            h.close();
-        }
-        h.close();
-        h.close();
     }
 
     private RuleSequence getSequence(String name) {
@@ -399,99 +304,19 @@ public class ApplRuleSequence implements XMLObject {
         return null;
     }
 
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("RuleSequenceApplicability", this)) {
-            h.getObject("", this.gragra, true);
-            this.ruleSequences.clear();
-            if (!this.gragra.getRuleSequences().isEmpty()) {
-                this.setRuleSequences(this.gragra.getRuleSequences());
-            }
-//			int i = -1;
-            if (h.readSubTag("RuleSequences")) {
-                while (h.readSubTag("Sequence")) {
-                    String strName = h.readAttr("name");
-//					i++;
-                    boolean newSequence = false;
-                    RuleSequence seq = this.getSequence(strName);
-                    if (seq == null) {
-                        seq = new RuleSequence(
-                                this.gragra,
-                                "RuleSequence",
-                                this.cpOption);
-                        if (!strName.equals("")) {
-                            seq.setName(strName);
-                        }
-                        this.ruleSequences.add(seq);
-                        newSequence = true;
-                    }
-                    if (h.readSubTag("ConcurrentRule")) {
-                        String depthstr = h.readAttr("depth");
-                        if ("undefined".equals(depthstr)) {
-                            seq.setDepthOfConcurrentRule(-1);
-                        } else {
-                            seq.setDepthOfConcurrentRule(Integer.valueOf(depthstr).intValue());
-                        }
-                        String completestr = h.readAttr("complete");
-                        seq.setCompleteConcurrency(Boolean.valueOf(completestr).booleanValue());
-                        String completecpastr = h.readAttr("completecpa");
-                        seq.setCompleteCPAOfConcurrency(Boolean.valueOf(completecpastr).booleanValue());
-                        String danglingedgestr = h.readAttr("ignoredanglingedge");
-                        seq.setIgnoreDanglingEdgeOfDelNode(Boolean.valueOf(danglingedgestr).booleanValue());
-                        h.close();
-                    }
-                    Pair<Boolean, Boolean> result = new Pair<Boolean, Boolean>(null, null);
-                    Pair<String, String> criterion = new Pair<String, String>(null, null);
-                    while (h.readSubTag("Item")) {
-                        String kind = h.readAttr("kind");
-                        String res = h.readAttr("result");
-                        String str = h.readAttr("criterion");
-                        if ("applicable".equals(kind)) {
-                            result.first = Boolean.valueOf(res);
-                            criterion.first = str;
-                        } else if ("nonapplicable".equals(kind)) {
-                            result.second = Boolean.valueOf(res);
-                            criterion.second = str;
-                        }
-                        h.close();
-                    }
-                    if (newSequence) {
-                        if (h.readSubTag("Graph")) {
-                            Graph g = (Graph) h.getObject("id", null, false);
-                            if (g != null) {
-                                seq.setGraph(g);
-                            }
-                            h.close();
-                        }
-                    }
-                    int indx = -1;
-                    while (h.readSubTag("Rule")) {
-                        final Rule r = (Rule) h.getObject("id", null, false);
-//						System.out.println(r);
-                        if (newSequence) {
-                            seq.addRule(r);
-                        }
-                        indx++;
-                        while (h.readSubTag("Item")) {
-                            String criterionStr = h.readAttr("criterion");
-                            String res = h.readAttr("result");
-                            String text = h.readAttr("text");
-                            h.close();
-//							System.out.println(indx+"  "+r.getName()+"  "+criterionStr+"   "+res+"  ((  "+text);
-                            seq.setRuleResult(indx, r.getName(), Boolean.parseBoolean(res), criterionStr, text);
-                        }
-                        h.close();
-                    }
-//					System.out.println(seq.getRuleNames()+"\n");
-                    seq.setApplicabilityResult(result.first.booleanValue(), criterion.first);
-                    seq.setNonApplicabilityResult(result.second.booleanValue(), criterion.second);
-                    seq.checked = !"undefined".equals(criterion.first) && !"undefined".equals(criterion.second);
-//					System.out.println(result.first.booleanValue()+"   "+ criterion.first);
-//					System.out.println(result.second.booleanValue() +"   "+ criterion.second+"\n");
-                    h.close();
-                }
-                h.close();
-            }
-            h.close();
+    /**
+     * Loads this rule sequence through the DOM path of the agg-xml module
+     * (reflective: agg-core must not compile-depend on agg-xml).
+     */
+    private static boolean dispatchLoad(ApplRuleSequence applSeq, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.XMLSerialization");
+            java.lang.reflect.Method m = cls.getMethod("loadWithDom",
+                ApplRuleSequence.class, String.class);
+            Object result = m.invoke(null, applSeq, filename);
+            return result instanceof Boolean && ((Boolean) result).booleanValue();
+        } catch (Exception e) {
+            return false;
         }
     }
 }

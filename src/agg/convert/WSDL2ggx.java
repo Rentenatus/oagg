@@ -7,7 +7,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- * *****************************************************************************
+ * ****************************************************************************
  */
 package agg.convert;
 
@@ -16,16 +16,24 @@ import agg.attribute.handler.impl.javaExpr.JexHandler;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Node;
 import agg.xt_basis.NodeTypeImpl;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
-public class WSDL2ggx implements XMLObject {
+/**
+ * Converts the schema part of a WSDL document into an AGG grammar
+ * (node types with attributes and one rule per non-response element).
+ * The navigation mirrors the former XMLHelper-based reader: the first
+ * child element must be {@code wsdl:types}, its {@code s:schema}
+ * children are converted in document order.
+ */
+public class WSDL2ggx {
 
     private GraGra gragra;
     private boolean done;
@@ -69,83 +77,98 @@ public class WSDL2ggx implements XMLObject {
         return "";
     }
 
-    @Override
-    public void XreadObject(XMLHelper h) {
-        h.push(h.top());
-        String tag = h.readSubTag();
-        System.out.println(tag);
-        if (tag.equals("wsdl:types")) {
-            this.done = true;
-            AttrHandler attrHandler = AttrTupleManager.getDefaultManager().getHandler(JexHandler.getLabelName());
-//			Node ws = 
-            createNodeType("WebService");
-            if (h.readSubTag("s:schema")) {
-                System.out.println("s:schema");
-                tag = h.readSubTag();
-                while (tag != null && !tag.isEmpty()) {
-                    if (tag.equals("s:element")) {
-                        String eName = h.readAttr("name");
-                        System.out.println(tag + "     " + eName);
-                        if (!eName.endsWith("Response")) {
-                            Rule r = gragra.createRule();
-                            r.setName(eName);
-                            VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
-                            tag = h.readSubTag();
-                            if (tag != null && tag.equals("s:complexType")) {
-                                tag = h.readSubTag();
-                                if (tag != null && tag.equals("s:sequence")) {
-                                    tag = h.readSubTag();
-                                    while (tag != null && tag.equals("s:element")) {
-                                        String aName = h.readAttr("name");
-                                        String sType = h.readAttr("type");
-                                        String aType = getJavaType(sType);
-                                        if (!aName.equals("") && !aType.equals("")) {
-                                            addVar(attrHandler, vars, getJavaType(sType), aName, true);
-                                        }
-                                        h.close();
-                                        tag = h.readSubTag();
-                                    }
-                                    h.close();
-                                }
-                                h.close();
-                            }
-                            r.initSignatur();
-                        }
-                        h.close();
-                    } else if (tag.equals("s:complexType")) {
-                        String eName = h.readAttr("name");
-                        System.out.println(tag + "     " + eName);
-                        if (!eName.startsWith("Array")) {
-                            Node n = createNodeType(eName);
-                            tag = h.readSubTag();
-                            if (tag != null && tag.equals("s:sequence")) {
-                                tag = h.readSubTag();
-                                while (tag != null && tag.equals("s:element")) {
-                                    String aName = h.readAttr("name");
-                                    String sType = h.readAttr("type");
-                                    String aType = getJavaType(sType);
-                                    if (!aName.equals("") && !aType.equals("")) {
-                                        addAttr(attrHandler, n.getType(), getJavaType(sType), aName);
-                                    }
-                                    h.close();
-                                    tag = h.readSubTag();
-                                }
-                                h.close();
-                            }
-                        }
-                        h.close();
-                    }
-                    tag = h.readSubTag();
-                }
-                h.close();
-            }
-            h.close();
+    private static Element firstChildElement(Element parent) {
+        org.w3c.dom.Node n = parent.getFirstChild();
+        while (n != null && n.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+            n = n.getNextSibling();
         }
-        h.close();
+        return (Element) n;
     }
 
-    @Override
-    public void XwriteObject(XMLHelper h) {
-        // TODO Auto-generated method stub		
+    private static Element findChild(Element parent, String name) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node n = children.item(i);
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && name.equals(n.getNodeName())) {
+                return (Element) n;
+            }
+        }
+        return null;
+    }
+
+    private static java.util.List<Element> childElements(Element parent) {
+        java.util.List<Element> result = new java.util.ArrayList<Element>();
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node n = children.item(i);
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                result.add((Element) n);
+            }
+        }
+        return result;
+    }
+
+    public void read(Document doc) {
+        Element root = doc.getDocumentElement();
+        if (root == null) {
+            return;
+        }
+        Element types = firstChildElement(root);
+        if (types == null || !"wsdl:types".equals(types.getNodeName())) {
+            return;
+        }
+        this.done = true;
+        AttrHandler attrHandler = AttrTupleManager.getDefaultManager()
+                .getHandler(JexHandler.getLabelName());
+        createNodeType("WebService");
+        Element schema = findChild(types, "s:schema");
+        if (schema == null) {
+            return;
+        }
+        for (Element el : childElements(schema)) {
+            String tag = el.getNodeName();
+            if ("s:element".equals(tag)) {
+                String eName = el.getAttribute("name");
+                System.out.println(tag + "     " + eName);
+                if (!eName.endsWith("Response")) {
+                    Rule r = gragra.createRule();
+                    r.setName(eName);
+                    VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
+                    Element complexType = findChild(el, "s:complexType");
+                    if (complexType != null) {
+                        Element sequence = findChild(complexType, "s:sequence");
+                        if (sequence != null) {
+                            for (Element attr : childElements(sequence)) {
+                                String aName = attr.getAttribute("name");
+                                String sType = attr.getAttribute("type");
+                                String aType = getJavaType(sType);
+                                if (!aName.equals("") && !aType.equals("")) {
+                                    addVar(attrHandler, vars, aType, aName, true);
+                                }
+                            }
+                        }
+                    }
+                    r.initSignatur();
+                }
+            } else if ("s:complexType".equals(tag)) {
+                String eName = el.getAttribute("name");
+                System.out.println(tag + "     " + eName);
+                if (!eName.startsWith("Array")) {
+                    Node n = createNodeType(eName);
+                    Element sequence = findChild(el, "s:sequence");
+                    if (sequence != null) {
+                        for (Element attr : childElements(sequence)) {
+                            String aName = attr.getAttribute("name");
+                            String sType = attr.getAttribute("type");
+                            String aType = getJavaType(sType);
+                            if (n != null && !aName.equals("") && !aType.equals("")) {
+                                addAttr(attrHandler, n.getType(), aType, aName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

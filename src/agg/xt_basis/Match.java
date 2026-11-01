@@ -20,8 +20,6 @@ import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.HashMap;
@@ -39,7 +37,7 @@ import java.util.Map;
  * @see OrdinaryMorphism#isTotal()
  * @see #isValid()
  */
-public class Match extends OrdinaryMorphism implements XMLObject {
+public class Match extends OrdinaryMorphism {
 
     private Rule itsRule;
     private boolean matchValid;
@@ -1099,16 +1097,4 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         return (this.errorMsg == null || this.errorMsg.equals(""));
     }
 
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Match", this);
-        writeMorphism(h);
-        h.close();
-    }
-
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Match", this)) {
-            readMorphism(h);
-            h.close();
-        }
-    }
 }

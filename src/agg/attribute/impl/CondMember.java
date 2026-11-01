@@ -16,7 +16,6 @@ import agg.attribute.AttrConditionMember;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.AttrEvent;
-import agg.util.XMLHelper;
 
 /**
  * Class for members of condition tuples that are used as application conditions
@@ -294,15 +293,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         return this.shifted;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        throw new RuntimeException(
-                "CondMember.XwriteObject called, but it shouldn't");
-    }
-
-    public void XreadObject(XMLHelper h) {
-        throw new RuntimeException(
-                "CondMember.XreadObject called, but it shouldn't");
-    }
 }
 /*
  * $Log: CondMember.java,v $

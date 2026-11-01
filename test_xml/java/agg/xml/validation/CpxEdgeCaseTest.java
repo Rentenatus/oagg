@@ -8,7 +8,6 @@ package agg.xml.validation;
 
 import agg.parser.ConflictsDependenciesContainer;
 import agg.util.Pair;
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xml.XMLSerialization;
@@ -167,20 +166,6 @@ public class CpxEdgeCaseTest {
         assertEquals(pair.first, Boolean.FALSE,
             "The Regel entry should restore the non-critical flag");
 
-        // Legacy load of the same file agrees
-        XMLHelper helper = new XMLHelper();
-        assertTrue(helper.read_from_xml(file.getAbsolutePath()),
-            "Legacy load of the Regel mini file should succeed");
-        ConflictsDependenciesContainer legacy = new ConflictsDependenciesContainer();
-        helper.getTopObject(legacy);
-        assertFalse(legacy.getExcludePairContainer().getExcludeContainer().isEmpty(),
-            "The legacy reader should also restore the Regel entry");
-        Rule legacyRule = findRule(legacy.getGrammar(), "r1");
-        Map legacySecondPart = legacy.getExcludePairContainer()
-            .getExcludeContainer().get(legacyRule);
-        Pair legacyPair = (Pair) legacySecondPart.get(legacyRule);
-        assertEquals(legacyPair.first, Boolean.FALSE,
-            "The legacy reader should restore the same flag");
     }
 
     private Rule findRule(GraGra gra, String name) {

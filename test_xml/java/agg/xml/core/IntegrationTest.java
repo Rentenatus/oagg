@@ -6,8 +6,6 @@
  */
 package agg.xml.core;
 
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xml.TestDataHelper;
 import agg.xt_basis.Graph;
 import org.testng.annotations.Test;
@@ -153,33 +151,4 @@ public class IntegrationTest {
                     "Node count should match");
     }
     
-    /**
-     * Test comparison between legacy XMLHelper and new DOM context
-     * This verifies that both produce compatible XML structures
-     */
-    @Test
-    public void testLegacyVsNewDOMStructure() throws Exception {
-        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
-
-        // Load with legacy XMLHelper
-        XMLHelper legacyHelper = new XMLHelper();
-        boolean legacyLoaded = legacyHelper.read_from_xml(ggxFile.getAbsolutePath());
-        assertTrue(legacyLoaded, "Legacy XMLHelper should load the file");
-        
-        // Load with new DOMXMLDeserializerContext
-        DOMXMLDeserializerContext newContext = new DOMXMLDeserializerContext(ggxFile);
-        assertNotNull(newContext, "New context should load the file");
-        
-        // Both should have a Document root element
-        assertEquals(legacyHelper.getDoc().getDocumentElement().getNodeName(), "Document",
-                    "Legacy document root should be Document");
-        assertEquals(newContext.getCurrentElement().getNodeName(), "Document",
-                    "New context root should be Document");
-        
-        // Both should have the same version attribute
-        String legacyVersion = legacyHelper.getDoc().getDocumentElement().getAttribute("version");
-        String newVersion = newContext.getCurrentElement().getAttribute("version");
-        assertNotNull(legacyVersion, "Legacy version should exist");
-        assertNotNull(newVersion, "New version should exist");
     }
-}

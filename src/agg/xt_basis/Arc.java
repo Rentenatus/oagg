@@ -23,8 +23,6 @@ import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.Pair;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,7 @@ import java.util.List;
  * nodes in a graph.
  */
 @SuppressWarnings("serial")
-public class Arc extends GraphObject implements XMLObject {
+public class Arc extends GraphObject {
 
     protected boolean inheritance = false;
     protected GraphObject itsSource;
@@ -474,92 +472,11 @@ public class Arc extends GraphObject implements XMLObject {
      *
      * @param xmlHelper the XML helper to write with
      */
-    @Override
-    public void XwriteObject(XMLHelper xmlHelper) {
-        xmlHelper.openNewElem("Edge", this);
-        if (!this.visible) {
-            xmlHelper.addAttr("visible", "false");
-        }
-        if (!this.getObjectName().equals("")) {
-            xmlHelper.addAttr("name", this.getObjectName());
-        }
-        xmlHelper.addObject("type", this.itsType, false);
-        xmlHelper.addObject("source", getSource(), false);
-        xmlHelper.addObject("target", getTarget(), false);
-        if (this.itsContext != null && this.itsContext.isTypeGraph()) {
-            Type sourceType = getSource().getType();
-            Type targetType = getTarget().getType();
-            int minmax = this.itsType.getSourceMin(sourceType, targetType);
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("sourcemin", Integer.toString(minmax));
-            }
-            minmax = this.itsType.getTargetMin(sourceType, targetType);
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("targetmin", Integer.toString(minmax));
-            }
-            minmax = this.itsType.getSourceMax(sourceType, targetType);
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("sourcemax", Integer.toString(minmax));
-            }
-            minmax = this.itsType.getTargetMax(sourceType, targetType);
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("targetmax", Integer.toString(minmax));
-            }
-        }
-        xmlHelper.addObject("", this.itsAttr, true);
-        xmlHelper.close();
-    }
-
     /**
      * Reads this arc from XML.
      *
      * @param xmlHelper the XML helper to read from
      */
-    @Override
-    public void XreadObject(XMLHelper xmlHelper) {
-        if (xmlHelper.isTag("Edge", this)) {
-            String str = xmlHelper.readAttr("visible");
-            this.visible = !str.equals("false");
-            str = xmlHelper.readAttr("name");
-            this.setObjectName(str);
-            if (this.itsType.getAttrType() != null
-                    || this.itsType.hasInheritedAttribute()) {
-                this.createAttributeInstance();
-            }
-            AttrInstance attri = this.itsAttr;
-            if (attri != null) {
-                xmlHelper.enrichObject(attri);
-            }
-            xmlHelper.close();
-            // If this arc uses variables in its attribute, mark the variable
-            if (this.itsContext != null
-                    && this.itsContext.getAttrContext() != null
-                    && this.itsAttr != null) {
-                ValueTuple value = (ValueTuple) this.itsAttr;
-                for (int i = 0; i < value.getSize(); i++) {
-                    ValueMember val = value.getValueMemberAt(i);
-                    if (val.isSet() && val.getExpr().isVariable()) {
-                        ContextView viewContext = (ContextView) ((ValueTuple) val
-                                .getHoldingTuple()).getContext();
-                        VarTuple variable = (VarTuple) viewContext
-                                .getVariables();
-                        VarMember var = variable.getVarMemberAt(val
-                                .getExprAsText());
-                        if (getContext().isNacGraph()) {
-                            var.setMark(VarMember.NAC);
-                        } else if (getContext().isPacGraph()) {
-                            var.setMark(VarMember.PAC);
-                        } else if (viewContext.doesAllowComplexExpressions()) {
-                            var.setMark(VarMember.RHS);
-                        } else {
-                            var.setMark(VarMember.LHS);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Returns a string representation of this arc.
      *

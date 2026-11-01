@@ -28,7 +28,6 @@ import agg.gui.AGGAppl;
 import agg.gui.ProgressBar;
 import agg.gui.event.LoadEvent;
 import agg.gui.event.LoadEventListener;
-import agg.util.XMLHelper;
 //import agg.xt_basis.BaseFactory;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
@@ -119,7 +118,7 @@ public class GraGraLoad {
             File f = new File(this.dirName + this.fileName);
             if (f.exists()) {
                 fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
-                if (XmlMigrationDispatch.isUseNewXml()) {
+                {
                     long time0 = System.currentTimeMillis();
                     EdGraGra ed = XmlMigrationDispatch.dispatchLoad(
                             this.dirName + this.fileName);
@@ -136,32 +135,13 @@ public class GraGraLoad {
                         fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
                         return;
                     }
-                }
-                XMLHelper h = new XMLHelper();
-                /*
-				 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
-				 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read
-				 * file name exception occurred! " +"\n Maybe the German
-				 * characters like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. " +"\n Please
-				 * rename the file " +"\nand try again.", "Cannot load file",
-				 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
-                 */
-                if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
-                        || h.read_from_xml(this.dirName + this.fileName)) {
-                    long time0 = System.currentTimeMillis();
-                    GraGra bgra = BaseFactory.theFactory().createGraGra(false);
-                    h.getTopObject(bgra);
-                    this.gra = new EdGraGra(bgra);
-                    this.gra.setDirName(this.dirName);
-                    this.gra.setFileName(this.fileName);
-                    this.gra.getTypeSet().setResourcesPath(this.dirName);
-                    h.enrichObject(this.gra);
-                    System.out.println("(Base) Grammar  <" + this.gra.getName()
-                            + ">  loaded in  "
-                            + (System.currentTimeMillis() - time0) + "ms");
-                    fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
+                    JOptionPane.showMessageDialog(null, "File  \"" + this.dirName
+                            + this.fileName + "\"  cannot be loaded!",
+                            "Cannot load file", JOptionPane.WARNING_MESSAGE);
+                    fireLoad(new LoadEvent(this, LoadEvent.IO_ERROR, this.dirName
                             + this.fileName));
                     fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
+                    return;
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "File  \"" + this.dirName
@@ -277,7 +257,7 @@ public class GraGraLoad {
         if (this.fileName.endsWith(".ggx")
                 && this.chooser.getFileFilter() == this.filterXML) {
             fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
-            if (XmlMigrationDispatch.isUseNewXml()) {
+            {
                 GraGra basis = new GraGra(false);
                 if (XmlMigrationDispatch.dispatchLoad(basis,
                         this.dirName + this.fileName)) {
@@ -286,23 +266,9 @@ public class GraGraLoad {
                             + this.fileName));
                     return;
                 }
-            }
-            XMLHelper h = new XMLHelper();
-            /*
-			 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
-			 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read file
-			 * name exception occurred! " +"\n Maybe the German characters like
-			 * ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. " +"\n Please rename the file "
-			 * +"\nand try again.", "Cannot load file",
-			 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
-             */
-            if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
-                    || h.read_from_xml(this.dirName + this.fileName)) {
-                //			this.basis = BaseFactory.theFactory().createGraGra();
-                this.basis = new GraGra(false);
-                h.getTopObject(this.basis);
-                fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName + this.fileName));
-                // fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
+                fireLoad(new LoadEvent(this, LoadEvent.IO_ERROR, this.dirName
+                        + this.fileName));
+                return;
             }
         } // if XML
         else {
