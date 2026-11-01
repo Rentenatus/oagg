@@ -346,6 +346,40 @@ public class LegacyPreparationTest {
         saveLegacyCpx(cdc, "gen_conflicts_computed_freestates.cpx");
     }
 
+    /**
+     * Produces the reference .cpx files of the standalone pair container
+     * format (a single container as the top object, like the CPA GUI uses
+     * it through PairIOGUI).
+     */
+    @Test
+    public void prepareStandalonePairContainers() throws Exception {
+        GraGra conflictGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.ExcludePairContainer conflictPC =
+            TestDataGenerator.createStandaloneConflictContainer(conflictGra);
+        assertTrue(!conflictPC.getExcludeContainer().isEmpty(),
+            "The standalone conflict container should carry entries");
+        XMLHelper conflictHelper = new XMLHelper();
+        conflictHelper.addTopObject(conflictPC);
+        File conflictFile = new File(prepDir, "gen_standalone_conflicts.cpx");
+        assertTrue(conflictHelper.save_to_xml(conflictFile.getAbsolutePath()),
+            "Frozen legacy standalone conflict save should succeed");
+        assertTrue(conflictFile.exists() && conflictFile.length() > 0,
+            "Standalone conflict reference should be non-empty");
+
+        GraGra depGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.DependencyPairContainer depPC =
+            TestDataGenerator.createStandaloneDependencyContainer(depGra);
+        assertTrue(!depPC.getExcludeContainer().isEmpty(),
+            "The standalone dependency container should carry entries");
+        XMLHelper depHelper = new XMLHelper();
+        depHelper.addTopObject(depPC);
+        File depFile = new File(prepDir, "gen_standalone_dependencies.cpx");
+        assertTrue(depHelper.save_to_xml(depFile.getAbsolutePath()),
+            "Frozen legacy standalone dependency save should succeed");
+        assertTrue(depFile.exists() && depFile.length() > 0,
+            "Standalone dependency reference should be non-empty");
+    }
+
     private void saveLegacyCpx(agg.parser.ConflictsDependenciesContainer cdc,
             String fileName) throws Exception {
         XMLHelper helper = new XMLHelper();

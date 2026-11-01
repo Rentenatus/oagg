@@ -175,12 +175,12 @@ public class ConflictsDependenciesContainerAdapter
             conflictElem.setAttribute("kind", "exclude");
             appendRuleSet(conflictElem, "RuleSet", epc.getRules(), registry);
             appendRuleSet(conflictElem, "RuleSet2", epc.getRules2(), registry);
-            appendExcludeEntries(conflictElem, epc, registry);
+            appendExcludeEntries(conflictElem, epc, registry, true);
             cpElem.appendChild(conflictElem);
 
             if (epc.getConflictFreeContainer() != null) {
                 Element conflictFreeElem = doc.createElement("conflictFreeContainer");
-                appendFreeEntries(conflictFreeElem, epc, registry);
+                appendFreeEntries(conflictFreeElem, epc, registry, true);
                 cpElem.appendChild(conflictFreeElem);
             }
         }
@@ -193,12 +193,12 @@ public class ConflictsDependenciesContainerAdapter
                     ? "trigger_switch_dependency" : "trigger_dependency");
             appendRuleSet(dependencyElem, "RuleSet", dpc.getRules(), registry);
             appendRuleSet(dependencyElem, "RuleSet2", dpc.getRules2(), registry);
-            appendExcludeEntries(dependencyElem, dpc, registry);
+            appendExcludeEntries(dependencyElem, dpc, registry, true);
             cpElem.appendChild(dependencyElem);
 
             if (dpc.getConflictFreeContainer() != null) {
                 Element dependencyFreeElem = doc.createElement("dependencyFreeContainer");
-                appendFreeEntries(dependencyFreeElem, dpc, registry);
+                appendFreeEntries(dependencyFreeElem, dpc, registry, true);
                 cpElem.appendChild(dependencyFreeElem);
             }
         }
@@ -213,8 +213,9 @@ public class ConflictsDependenciesContainerAdapter
      * Appends the computed rule pair entries of the exclude container,
      * mirroring the Rule R1 / Rule R2 loops of writeCriticalPairs.
      */
-    private void appendExcludeEntries(Element containerElem, ExcludePairContainer pc,
-            DOMSerializationRegistry registry) throws XMLSerializationException {
+    static void appendExcludeEntries(Element containerElem, ExcludePairContainer pc,
+            DOMSerializationRegistry registry, boolean writeProgress)
+            throws XMLSerializationException {
         Document doc = containerElem.getOwnerDocument();
         Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer =
             pc.getExcludeContainer();
@@ -233,7 +234,7 @@ public class ConflictsDependenciesContainerAdapter
                 Element r2Elem = doc.createElement("Rule");
                 r2Elem.setAttribute("R2", requireId(r2, registry));
                 r2Elem.setAttribute("bool", String.valueOf(p.first));
-                if (entry != null) {
+                if (writeProgress && entry != null) {
                     r2Elem.setAttribute("duIndx", entry.getIndexOfDelUseProgress());
                     r2Elem.setAttribute("pfIndx", entry.getIndexOfProdForbidProgress());
                     r2Elem.setAttribute("caIndx", entry.getIndexOfChangeAttrProgress());
@@ -253,7 +254,7 @@ public class ConflictsDependenciesContainerAdapter
      * Creates an Overlapping_Pair element with the overlap graph, its
      * critical objects and the two overlap morphisms.
      */
-    private Element createOverlappingPair(Document doc, Rule r1, Rule r2,
+    static Element createOverlappingPair(Document doc, Rule r1, Rule r2,
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapping,
             DOMSerializationRegistry registry) throws XMLSerializationException {
         Element overlapElem = doc.createElement("Overlapping_Pair");
@@ -281,7 +282,7 @@ public class ConflictsDependenciesContainerAdapter
         return overlapElem;
     }
 
-    private void appendCriticalObject(Element parent, GraphObject o,
+    static void appendCriticalObject(Element parent, GraphObject o,
             DOMSerializationRegistry registry) {
         Element criticalElem = parent.getOwnerDocument().createElement("Critical");
         criticalElem.setAttribute("object", requireId(o, registry));
@@ -292,7 +293,7 @@ public class ConflictsDependenciesContainerAdapter
      * Appends a Mapping element with ID references (and an optional
      * pacname attribute for PAC entries).
      */
-    private void appendMapping(Element morphismElem, GraphObject orig, GraphObject image,
+    static void appendMapping(Element morphismElem, GraphObject orig, GraphObject image,
             String pacname, DOMSerializationRegistry registry) {
         Element mappingElem = morphismElem.getOwnerDocument().createElement("Mapping");
         if (pacname != null) {
@@ -307,7 +308,7 @@ public class ConflictsDependenciesContainerAdapter
      * Writes the two overlap morphisms of one overlapping pair, mirroring
      * writeOverlapMorphisms (including the NAC and PAC branches).
      */
-    private void writeOverlapMorphisms(Element overlapElem, Rule r1, Rule r2,
+    static void writeOverlapMorphisms(Element overlapElem, Rule r1, Rule r2,
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapping,
             DOMSerializationRegistry registry) {
         Document doc = overlapElem.getOwnerDocument();
@@ -418,7 +419,7 @@ public class ConflictsDependenciesContainerAdapter
      * mirroring the name-pattern dispatch of writeOverlapMorphisms. Returns
      * null when the legacy writer omits the attribute.
      */
-    private String firstMorphismSource(OrdinaryMorphism first, Rule r1, Rule r2) {
+    static String firstMorphismSource(OrdinaryMorphism first, Rule r1, Rule r2) {
         String targetName = first.getTarget().getName();
         if (targetName == null) {
             targetName = "";
@@ -455,7 +456,7 @@ public class ConflictsDependenciesContainerAdapter
         }
     }
 
-    private OrdinaryMorphism getPAC(final Rule r, final Graph pacGraph) {
+    static OrdinaryMorphism getPAC(final Rule r, final Graph pacGraph) {
         final List<OrdinaryMorphism> pacs = r.getPACsList();
         for (int l = 0; l < pacs.size(); l++) {
             final OrdinaryMorphism pac = pacs.get(l);
@@ -471,8 +472,8 @@ public class ConflictsDependenciesContainerAdapter
      * conflictFreeContainer / dependencyFreeContainer loops of
      * writeCriticalPairs.
      */
-    private void appendFreeEntries(Element freeElem, ExcludePairContainer pc,
-            DOMSerializationRegistry registry) {
+    static void appendFreeEntries(Element freeElem, ExcludePairContainer pc,
+            DOMSerializationRegistry registry, boolean writeStatus) {
         Document doc = freeElem.getOwnerDocument();
         Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer =
             pc.getConflictFreeContainer();
@@ -489,7 +490,7 @@ public class ConflictsDependenciesContainerAdapter
                 Element r2Elem = doc.createElement("Rule");
                 r2Elem.setAttribute("R2", requireId(r2, registry));
                 r2Elem.setAttribute("bool", String.valueOf(secondPart.get(r2).first));
-                if (entry != null
+                if (writeStatus && entry != null
                         && entry.getStatus() == ExcludePairContainer.Entry.NOT_COMPUTABLE) {
                     r2Elem.setAttribute("status", "not_computable");
                 }
@@ -529,7 +530,7 @@ public class ConflictsDependenciesContainerAdapter
         cpElem.appendChild(cpaGraphElem);
     }
 
-    private Element serializeTypeElement(Document doc, Type type,
+    static Element serializeTypeElement(Document doc, Type type,
             DOMSerializationRegistry registry) throws XMLSerializationException {
         if (type instanceof agg.xt_basis.TypeImpl) {
             return new TypeImplAdapter((agg.xt_basis.TypeImpl) type)
@@ -544,7 +545,7 @@ public class ConflictsDependenciesContainerAdapter
         return null;
     }
 
-    private String requireId(Object obj, DOMSerializationRegistry registry) {
+    static String requireId(Object obj, DOMSerializationRegistry registry) {
         String id = registry.getId(obj);
         if (id == null || id.isEmpty()) {
             id = registry.register(obj);
@@ -766,7 +767,7 @@ public class ConflictsDependenciesContainerAdapter
      * index attributes are restored for the first container section only,
      * like the legacy reader.
      */
-    private void readExcludeEntries(Element containerElem, ExcludePairContainer pc,
+    static void readExcludeEntries(Element containerElem, ExcludePairContainer pc,
             GraGra grammar, DOMSerializationRegistry registry, boolean readProgress)
             throws XMLSerializationException {
         List<Element> r1Elems = childElements(containerElem, "Rule");
@@ -843,7 +844,7 @@ public class ConflictsDependenciesContainerAdapter
      * the conflictFreeContainer / dependencyFreeContainer loops of
      * XreadObject, including the DISABLED and NOT_RELATED entry states.
      */
-    private void readFreeEntries(Element freeElem, ExcludePairContainer pc,
+    static void readFreeEntries(Element freeElem, ExcludePairContainer pc,
             DOMSerializationRegistry registry, boolean dependencyFree,
             boolean layered, boolean priority) {
         List<Element> r1Elems = childElements(freeElem, "Rule");
@@ -896,7 +897,7 @@ public class ConflictsDependenciesContainerAdapter
      * mirroring readOverlappingMorphisms (including the NAC and PAC
      * branches).
      */
-    private Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    static Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             readOverlappingMorphisms(Element overlapElem, Rule r1, Rule r2,
                     Graph overlapGraph, DOMSerializationRegistry registry)
             throws XMLSerializationException {
@@ -1115,7 +1116,7 @@ public class ConflictsDependenciesContainerAdapter
             new Pair<OrdinaryMorphism, OrdinaryMorphism>(first, second), p2);
     }
 
-    private void addOverlapMapping(OrdinaryMorphism morph, GraphObject o, GraphObject i,
+    static void addOverlapMapping(OrdinaryMorphism morph, GraphObject o, GraphObject i,
             String role) {
         try {
             morph.addMapping(o, i);
@@ -1131,7 +1132,7 @@ public class ConflictsDependenciesContainerAdapter
      * Unlike the legacy reader, no empty CPA basis graph is created when
      * the section is absent.
      */
-    private void readCPAGraph(Element cpElem, ConflictsDependenciesContainer container,
+    static void readCPAGraph(Element cpElem, ConflictsDependenciesContainer container,
             DOMSerializationRegistry registry) throws XMLSerializationException {
         Element cpaGraphElem = findChildElement(cpElem, "ConflictDependencyGraph");
         if (cpaGraphElem == null) {
@@ -1167,7 +1168,7 @@ public class ConflictsDependenciesContainerAdapter
         container.setCPABasisGraph(cpaBasisGraph);
     }
 
-    private void deserializeType(Element typeElem, Type type,
+    static void deserializeType(Element typeElem, Type type,
             DOMSerializationRegistry registry) {
         GraGraAdapter.loadTypeDetails(type, typeElem, registry);
     }

@@ -15,6 +15,7 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.agt.MultiRule;
 import agg.parser.ExcludePairContainer;
+import agg.xml.adapter.PairContainerAdapter;
 import agg.parser.DependencyPairContainer;
 import agg.parser.LayeredExcludePairContainer;
 import agg.parser.LayeredDependencyPairContainer;
@@ -128,8 +129,8 @@ public class AdapterFactoryTest {
         ExcludePairContainer container = new ExcludePairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.ExcludePairContainerAdapter,
-            "ExcludePairContainer should get ExcludePairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "ExcludePairContainer should get the native PairContainerAdapter");
     }
 
     @Test
@@ -138,10 +139,8 @@ public class AdapterFactoryTest {
         DependencyPairContainer container = new DependencyPairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.DependencyPairContainerAdapter,
-            "DependencyPairContainer should get DependencyPairContainerAdapter, not ExcludePairContainerAdapter");
-        assertFalse(adapter instanceof ParserAdapters.ExcludePairContainerAdapter,
-            "DependencyPairContainer should NOT get the generic ExcludePairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "DependencyPairContainer should get the native PairContainerAdapter");
     }
 
     @Test
@@ -150,8 +149,8 @@ public class AdapterFactoryTest {
         LayeredExcludePairContainer container = new LayeredExcludePairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.LayeredExcludePairContainerAdapter,
-            "LayeredExcludePairContainer should get LayeredExcludePairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "LayeredExcludePairContainer should get the native PairContainerAdapter");
     }
 
     @Test
@@ -160,8 +159,8 @@ public class AdapterFactoryTest {
         LayeredDependencyPairContainer container = new LayeredDependencyPairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.LayeredDependencyPairContainerAdapter,
-            "LayeredDependencyPairContainer should get LayeredDependencyPairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "LayeredDependencyPairContainer should get the native PairContainerAdapter");
     }
 
     @Test
@@ -170,8 +169,8 @@ public class AdapterFactoryTest {
         PriorityExcludePairContainer container = new PriorityExcludePairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.PriorityExcludePairContainerAdapter,
-            "PriorityExcludePairContainer should get PriorityExcludePairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "PriorityExcludePairContainer should get the native PairContainerAdapter");
     }
 
     @Test
@@ -180,8 +179,8 @@ public class AdapterFactoryTest {
         PriorityDependencyPairContainer container = new PriorityDependencyPairContainer(graGra);
         XMLSerializable adapter = XMLAdapterFactory.createAdapter(container);
         assertNotNull(adapter, "Adapter should not be null");
-        assertTrue(adapter instanceof ParserAdapters.PriorityDependencyPairContainerAdapter,
-            "PriorityDependencyPairContainer should get PriorityDependencyPairContainerAdapter");
+        assertTrue(adapter instanceof PairContainerAdapter,
+            "PriorityDependencyPairContainer should get the native PairContainerAdapter");
     }
 
     @Test

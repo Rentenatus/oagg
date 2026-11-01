@@ -29,13 +29,7 @@ import agg.attribute.impl.DeclMember;
 import agg.cons.Formula;
 import agg.cons.AtomConstraint;
 import agg.parser.ConflictsDependenciesContainer;
-import agg.parser.DependencyPairContainer;
-import agg.parser.ExcludePairContainer;
-import agg.parser.LayerFunction;
-import agg.parser.LayeredDependencyPairContainer;
-import agg.parser.LayeredExcludePairContainer;
-import agg.parser.PriorityDependencyPairContainer;
-import agg.parser.PriorityExcludePairContainer;
+import agg.parser.PairContainer;
 import agg.ruleappl.ApplRuleSequence;
 import agg.xml.core.XMLSerializable;
 
@@ -107,20 +101,8 @@ public class XMLAdapterFactory {
             return new ApplRuleSequenceAdapter((ApplRuleSequence) xmlObject);
         } else if (xmlObject instanceof ConflictsDependenciesContainer) {
             return new ConflictsDependenciesContainerAdapter((ConflictsDependenciesContainer) xmlObject);
-        } else if (xmlObject instanceof LayeredDependencyPairContainer) {
-            return new ParserAdapters.LayeredDependencyPairContainerAdapter((LayeredDependencyPairContainer) xmlObject);
-        } else if (xmlObject instanceof LayeredExcludePairContainer) {
-            return new ParserAdapters.LayeredExcludePairContainerAdapter((LayeredExcludePairContainer) xmlObject);
-        } else if (xmlObject instanceof PriorityDependencyPairContainer) {
-            return new ParserAdapters.PriorityDependencyPairContainerAdapter((PriorityDependencyPairContainer) xmlObject);
-        } else if (xmlObject instanceof PriorityExcludePairContainer) {
-            return new ParserAdapters.PriorityExcludePairContainerAdapter((PriorityExcludePairContainer) xmlObject);
-        } else if (xmlObject instanceof DependencyPairContainer) {
-            return new ParserAdapters.DependencyPairContainerAdapter((DependencyPairContainer) xmlObject);
-        } else if (xmlObject instanceof ExcludePairContainer) {
-            return new ParserAdapters.ExcludePairContainerAdapter((ExcludePairContainer) xmlObject);
-        } else if (xmlObject instanceof LayerFunction) {
-            return new ParserAdapters.LayerFunctionAdapter((LayerFunction) xmlObject);
+        } else if (xmlObject instanceof PairContainer) {
+            return new PairContainerAdapter((PairContainer) xmlObject);
         }
         
         // Fall back to generic adapter

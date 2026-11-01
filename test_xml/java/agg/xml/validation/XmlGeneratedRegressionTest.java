@@ -833,4 +833,120 @@ public class XmlGeneratedRegressionTest {
         assertTrue(stableResult.isEqual(),
             "DOM path should be stable for the free states .cpx: "
                 + stableResult.getMessage());
+    }
+
+    /**
+     * Standalone pair container format (.cpx with a single
+     * ExcludePairContainer as the top object, like the CPA GUI uses it
+     * through PairIOGUI): no rule sets, no cpaOptions, no CPA graph
+     * section, no free entry status. Verifies the fresh in-memory
+     * DOM save, the DOM load/save roundtrip canonically against the
+     * raw legacy reference, the DOM stability and the structural
+     * survival of the computed conflict entries.
+     */
+    @Test
+    public void testStandaloneConflictContainer() throws Exception {
+        File refFile = prepCpxFile("gen_standalone_conflicts.cpx");
+
+        // Step 1: fresh in-memory container, DOM save, canonical vs RAW
+        GraGra freshGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.ExcludePairContainer fresh =
+            TestDataGenerator.createStandaloneConflictContainer(freshGra);
+        File memFile = new File(outputDir, "standalone_conflicts_mem.cpx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the standalone conflict container");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_standalone_conflicts.cpx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference
+        agg.parser.ExcludePairContainer pc = new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(XMLSerialization.loadWithDom(pc, refFile.getPath()),
+            "DOM load should succeed for the standalone conflict container");
+        assertEquals(pc.getGrammar().getName(), "CpaComputedTest",
+            "The embedded grammar should keep its name");
+        assertTrue(!pc.getExcludeContainer().isEmpty(),
+            "The computed conflict entries should be restored");
+        assertTrue(!pc.getConflictFreeContainer().isEmpty(),
+            "The free entries should be restored");
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "standalone_conflicts_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(pc, outFile.getAbsolutePath()),
+            "DOM save should succeed for the standalone conflict container");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_standalone_conflicts.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.ExcludePairContainer reloaded = new agg.parser.ExcludePairContainer(new GraGra());
+        assertTrue(XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath()),
+            "DOM stability load should succeed for the standalone conflict container");
+        File stableFile = new File(outputDir, "standalone_conflicts_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the standalone conflict container");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the standalone conflict container: "
+                + stableResult.getMessage());
+    }
+
+    /**
+     * Standalone pair container format with a DependencyPairContainer
+     * as the top object (dependenciesContainer section): same
+     * verification scheme as the conflict variant.
+     */
+    @Test
+    public void testStandaloneDependencyContainer() throws Exception {
+        File refFile = prepCpxFile("gen_standalone_dependencies.cpx");
+
+        // Step 1: fresh in-memory container, DOM save, canonical vs RAW
+        GraGra freshGra = TestDataGenerator.createCpaGraGra();
+        agg.parser.DependencyPairContainer fresh =
+            TestDataGenerator.createStandaloneDependencyContainer(freshGra);
+        File memFile = new File(outputDir, "standalone_dependencies_mem.cpx");
+        assertTrue(XMLSerialization.saveWithDom(fresh, memFile.getAbsolutePath()),
+            "In-memory DOM save should succeed for the standalone dependency container");
+        XmlCanonicalComparator.ComparisonResult memResult =
+            XmlCanonicalComparator.compareFiles(refFile, memFile);
+        assertTrue(memResult.isEqual(),
+            "In-memory DOM save mismatch for gen_standalone_dependencies.cpx: "
+                + memResult.getMessage());
+
+        // Step 2: DOM load of the RAW reference
+        agg.parser.DependencyPairContainer pc = new agg.parser.DependencyPairContainer(new GraGra());
+        assertTrue(XMLSerialization.loadWithDom(pc, refFile.getPath()),
+            "DOM load should succeed for the standalone dependency container");
+        assertEquals(pc.getGrammar().getName(), "CpaComputedTest",
+            "The embedded grammar should keep its name");
+        assertTrue(!pc.getExcludeContainer().isEmpty(),
+            "The computed dependency entries should be restored");
+
+        // Step 3: DOM save, canonical comparison against the RAW reference
+        File outFile = new File(outputDir, "standalone_dependencies_new.cpx");
+        assertTrue(XMLSerialization.saveWithDom(pc, outFile.getAbsolutePath()),
+            "DOM save should succeed for the standalone dependency container");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for gen_standalone_dependencies.cpx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
+        agg.parser.DependencyPairContainer reloaded = new agg.parser.DependencyPairContainer(new GraGra());
+        assertTrue(XMLSerialization.loadWithDom(reloaded, outFile.getAbsolutePath()),
+            "DOM stability load should succeed for the standalone dependency container");
+        File stableFile = new File(outputDir, "standalone_dependencies_stable.cpx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM stability save should succeed for the standalone dependency container");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for the standalone dependency container: "
+                + stableResult.getMessage());
     }}

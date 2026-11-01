@@ -1487,6 +1487,30 @@ public final class TestDataGenerator {
         return cdc;
     }
 
+    // ---- Group 8e: standalone pair containers (.cpx single-container format) ----
+
+    /**
+     * Creates a standalone ExcludePairContainer over the plain CPA
+     * grammar with the computed conflict entries of the plain fixture,
+     * like the CPA GUI uses it through PairIOGUI.
+     */
+    public static ExcludePairContainer createStandaloneConflictContainer(GraGra gra) throws Exception {
+        ExcludePairContainer pc = new ExcludePairContainer(gra);
+        addPlainConflictEntries(pc, gra);
+        return pc;
+    }
+
+    /**
+     * Creates a standalone DependencyPairContainer over the plain CPA
+     * grammar with the computed dependency entries of the plain fixture,
+     * like the CPA GUI uses it through PairIOGUI.
+     */
+    public static DependencyPairContainer createStandaloneDependencyContainer(GraGra gra) throws Exception {
+        DependencyPairContainer pc = new DependencyPairContainer(gra);
+        addPlainDependencyEntries(pc, gra);
+        return pc;
+    }
+
     // ---- Helpers ----
 
     /**

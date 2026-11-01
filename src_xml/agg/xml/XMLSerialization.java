@@ -11,6 +11,7 @@ import agg.xt_basis.GraGra;
 import agg.xml.adapter.ApplRuleSequenceAdapter;
 import agg.xml.adapter.ConflictsDependenciesContainerAdapter;
 import agg.xml.adapter.GraGraAdapter;
+import agg.xml.adapter.PairContainerAdapter;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializer;
 import agg.xml.core.XMLSerializationException;
@@ -423,6 +424,61 @@ public final class XMLSerialization {
         DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(f);
         ConflictsDependenciesContainerAdapter adapter =
             new ConflictsDependenciesContainerAdapter(container);
+        adapter.deserialize(context);
+        return true;
+    }
+
+    // ---- standalone PairContainer DOM save/load (.cpx files) ----
+
+    /**
+     * Saves a standalone pair container (ExcludePairContainer or
+     * DependencyPairContainer, including the layered/priority
+     * variants) directly using the new DOM-based serialization,
+     * bypassing the feature flag.
+     *
+     * @param container The PairContainer to save
+     * @param filename  The output filename (.cpx)
+     * @return true if saving succeeded
+     */
+    public static boolean saveWithDom(agg.parser.PairContainer container,
+            String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        try {
+            String outfileName = filename;
+            if (!outfileName.toLowerCase().endsWith(".cpx")) {
+                outfileName = outfileName + ".cpx";
+            }
+            PairContainerAdapter adapter = new PairContainerAdapter(container);
+            DOMXMLSerializer serializer = new DOMXMLSerializer();
+            serializer.serializeToFile(adapter, new File(outfileName));
+            return true;
+        } catch (XMLSerializationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads a standalone pair container directly using the new
+     * DOM-based deserialization, bypassing the feature flag.
+     *
+     * @param container The PairContainer instance to populate
+     * @param filename  The input filename (.cpx)
+     * @return true if loading succeeded
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public static boolean loadWithDom(agg.parser.PairContainer container,
+            String filename) throws XMLSerializationException {
+        if (container == null || filename == null) {
+            return false;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            throw new XMLSerializationException("File not found: " + filename);
+        }
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(f);
+        PairContainerAdapter adapter = new PairContainerAdapter(container);
         adapter.deserialize(context);
         return true;
     }
