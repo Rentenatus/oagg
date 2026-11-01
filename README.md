@@ -46,7 +46,8 @@ Layering rules:
   serialization goes into `src_uixml` (packages `agg.xml.ui.*`) — mirroring
   how `src_ui` extends `src`.
 * The frozen legacy reference of the old XML path lives in
-  `test/test_agg/legacy_agg` (verbatim clone of `src` + `src_ui`, module
+  `test/test_agg/legacy_agg` (verbatim clone of the former `src` + `src_ui`
+  including `XMLHelper`/`XwriteObject`/`XreadObject`, module
   `agg-core-legacy`). The preparation suite in `test_xml_prep` runs against
   this clone and writes reference XML into `assets_test_xml/target/legacy_prep`;
   the DOM-side regression tests in `test_xml` run against the current code
@@ -79,15 +80,17 @@ of a pure PAC arc is dropped, same as in the legacy reader). Computed-pair
 `.cpx` fixtures are therefore compared against the raw reference (plain and
 NAC) or verified for stability and structure (PAC).
 
-**Test coverage:** 540 tests green (preparation 25, core DOM 491, UI 24).
+**Test coverage:** 508 tests green (preparation 25, core DOM 464, UI 19).
 The generated scenario matrix is complete: 7 features (basic graph with attributes,
 rule with NAC/PAC/nested AC, constraints, match, rule scheme, rule sequence,
 composite of all) crossed with directed/undirected and with/without type
 graph (28 combinations). 39 legacy .ggx fixtures plus attribute and morphism
 matrices exercise the remaining dimensions. Every GUI save/load entry point
-dispatches through the migration flag (DOM first, legacy fallback): `.ggx`,
-UI `.rsx`, UI `.cpx`, core `.cpx` and the standalone pair container format.
-Current status, known delegations
+dispatches into the DOM path (reflectively, without a legacy fallback):
+`.ggx`, UI `.rsx`, UI `.cpx`, core `.cpx` and the standalone pair container
+format. The legacy XML serialization (`XMLHelper`, `XwriteObject`/
+`XreadObject`) is removed from the core on this branch; the frozen legacy
+clone keeps it as the regression oracle. Current status, known delegations
 and the legacy removal roadmap: [docs/refactoring/CURRENT_STATUS.md](docs/refactoring/CURRENT_STATUS.md).
 
 ---
