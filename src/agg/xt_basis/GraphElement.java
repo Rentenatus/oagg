@@ -83,20 +83,6 @@ public interface GraphElement {
     String resetTypeKey();
 
     /**
-     * Writes this element to XML.
-     *
-     * @param xmlHelper the XML helper to write with
-     */
-    void XwriteObject(XMLHelper xmlHelper);
-
-    /**
-     * Reads this element from XML.
-     *
-     * @param xmlHelper the XML helper to read from
-     */
-    void XreadObject(XMLHelper xmlHelper);
-
-    /**
      * Compares this element to another for equality.
      *
      * @param otherObject the graph object to compare with

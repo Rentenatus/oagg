@@ -21,7 +21,6 @@ import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
 import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
  * that are shared across all graph elements.
  */
 @SuppressWarnings("serial")
-public abstract class GraphObject implements GraphElement, XMLObject, AttrObserver {
+public abstract class GraphObject implements GraphElement, AttrObserver {
 
     protected String name = "";
     protected Graph itsContext = null;
@@ -470,22 +469,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     @Override
     public abstract boolean compareTo(GraphObject otherObject);
 
-    /**
-     * Writes this graph object to XML.
-     *
-     * @param xmlHelper the XML helper to write with
-     */
-    @Override
-    public abstract void XwriteObject(XMLHelper xmlHelper);
-
-    /**
-     * Reads this graph object from XML.
-     *
-     * @param xmlHelper the XML helper to read from
-     */
-    @Override
-    public abstract void XreadObject(XMLHelper xmlHelper);
-
+    
+    
     /**
      * Checks whether the attribute observer wants a persistent connection to
      * the given attribute tuple.

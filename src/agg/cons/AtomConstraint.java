@@ -47,7 +47,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 public class AtomConstraint extends OrdinaryMorphism
-        implements Evaluable, XMLObject {
+        implements Evaluable {
 
     private boolean valid;
     private int old_tick;
@@ -702,68 +702,6 @@ public class AtomConstraint extends OrdinaryMorphism
         }
         this.conclusions.trimToSize();
         this.failedObjs.trimToSize();
-    }
-
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Graphconstraint_Atomic", this);
-        h.addAttr("name", getAtomicName());
-        if (this.conclusions.size() > 0) {
-            h.openSubTag("Premise");
-            AtomConstraint atom = this.conclusions.elementAt(0);
-            h.addObjectSub(atom.getOriginal());
-            h.close();
-            for (int i = 0; i < this.conclusions.size(); i++) {
-                h.openSubTag("Conclusion");
-                atom = this.conclusions.elementAt(i);
-                h.addObjectSub(atom.getImage());
-                atom.writeMorphism(h);
-                AttrConditionTuple condt = atom.getAttrContext().getConditions();
-                int num = condt.getNumberOfEntries();
-                if (num > 0) {
-                    h.openSubTag("AttrCondition");
-                    h.addObject("", condt, true);
-                    h.close();
-                }
-                h.close();
-            }
-        }
-        h.close();
-    }
-
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Graphconstraint_Atomic", this)) {
-            setAtomicName(h.readAttr("name"));
-            if (h.readSubTag("Premise")) {
-                Graph orig = (Graph) h.getObject("", this.itsOrig, true);
-                orig.setName("Premise of " + this.atomicName);
-                h.close();
-                this.parent = this;
-                // clear this.conclusions because one empty conclusion is created by default!
-                this.conclusions.clear();
-                Iterator<Element> en = h.getEnumeration("", null, true, "Conclusion");
-                while (en.hasNext()) {
-                    h.peekElement(en.next());
-                    Graph target = BaseFactory.theFactory().createGraph(getSource().getTypeSet());
-                    AtomConstraint concl = createNextConclusion(target);
-                    h.getObject("", target, true);
-                    concl.readMorphism(h);
-                    target.setName("Conclusion of " + this.atomicName);
-                    if (h.readSubTag("AttrCondition")) {
-                        AttrConditionTuple condt = concl.getAttrContext().getConditions();
-                        if (condt != null) {
-                            h.enrichObject(condt);
-                        }
-                        h.close();
-                    }
-                    h.close();
-                }
-            } else {
-                h.getObject("", getSource(), true);
-                h.getObject("", getTarget(), true);
-                readMorphism(h);
-            }
-            h.close();
-        }
     }
 
     private void markAttrConditions() {

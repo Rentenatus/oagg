@@ -31,7 +31,7 @@ import agg.util.XMLObject;
  * edge is equal to source, The <code>edge_length</code> layout patterns is
  * specified by length size.
  */
-public class LayoutPattern implements XMLObject {
+public class LayoutPattern {
 
     String name;
     String patternType; // "edge" or "node"
@@ -207,41 +207,5 @@ public class LayoutPattern implements XMLObject {
         return false;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("LayoutPattern", this);
-        h.addAttr("name", this.name); // pattern name
-        h.addAttr("patterntype", this.patternType); // pattern type
-        h.addAttr("kind", String.valueOf(this.offsetType)); // offsetType
-        if (this.offsetType == 'x') {
-            h.addAttr("value", String.valueOf(this.xOffset));
-        } else if (this.offsetType == 'y') {
-            h.addAttr("value", String.valueOf(this.yOffset));
-        } else if (this.offsetType == 'l') {
-            h.addAttr("value", String.valueOf(this.edgeLength));
-        } else if (this.offsetType == 'f') {
-            h.addAttr("value", String.valueOf("true"));
-        }
-        h.close();
+    
     }
-
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("LayoutPattern", this)) {
-            this.name = h.readAttr("name");
-            this.patternType = h.readAttr("patterntype");
-            this.offsetType = h.readAttr("kind").charAt(0);
-            if (this.offsetType == 'x') {
-                this.xOffset = Integer.parseInt(h.readAttr("value"));
-            } else if (this.offsetType == 'y') {
-                this.yOffset = Integer.parseInt(h.readAttr("value"));
-            } else if (this.offsetType == 'l') {
-                this.edgeLength = Integer.parseInt(h.readAttr("value"));
-            } else if (this.offsetType == 'f') {
-                this.freezing = Boolean.parseBoolean(h.readAttr("value"));
-            }
-            h.close();
-            // System.out.println(this.name+" "+this.patternType+"
-            // "+this.offsetType+" "+this.xOffset+" "+this.yOffset+"
-            // "+this.edgeLength);
-        }
-    }
-}

@@ -61,7 +61,7 @@ import agg.layout.evolutionary.LayoutNode;
  * @version $Id: EdNode.java,v 1.61 2010/11/14 12:59:11 olga Exp $
  */
 public class EdNode extends EdGraphObject implements AttrViewObserver,
-        XMLObject, StateEditable {
+        StateEditable {
 
     private Node bNode;
     private LayoutNode lNode;
@@ -1130,61 +1130,8 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         }
     }
 
-    public void XwriteObject(XMLHelper xmlh) {
-        if (xmlh.openObject(this.bNode, this)) {
-            xmlh.openSubTag("NodeLayout");
-            int outX = (int) (this.x / this.itsScale);
-            int outY = (int) (this.y / this.itsScale);
-            xmlh.addAttr("X", outX);
-            xmlh.addAttr("Y", outY);
-//			System.out.println("EdNode.XwriteObject:: X,Y: "+outX+" , "+outY);
-            xmlh.close();
-            // LayoutNode speichern:
-            if (this.lNode != null) {
-                xmlh.addObject("", this.lNode, true);
-            }
-            xmlh.close();
-        }
-    }
-
-    public void XreadObject(XMLHelper xmlh) {
-        xmlh.peekObject(this.bNode, this);
-        if (xmlh.readSubTag("NodeLayout")) {
-            this.hasDefaultLayout = true;
-            String s = xmlh.readAttr("X");
-            if (s.length() == 0) {
-                this.x = 20;
-            } else {
-                this.x = Integer.parseInt(s);
-            }
-            s = xmlh.readAttr("Y");
-            if (s.length() == 0) {
-                this.y = 20;
-            } else {
-                this.y = Integer.parseInt(s);
-            }
-            xmlh.close();
-        } else {
-            this.x = 20;
-            this.y = 20;
-        }
-        // layoutNode einlesen:
-        xmlh.enrichObject(this.lNode);
-        xmlh.close();
-        if (this.bNode.xyAttr && this.getContext().getBasisGraph().isCompleteGraph()) {
-            ValueMember xattr = ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisX");
-            if (!xattr.isSet()) {
-                ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisX").setExprAsObject(this.x);
-            }
-            ValueMember yattr = ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisY");
-            if (!yattr.isSet()) {
-                ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisY").setExprAsObject(this.y);
-            }
-        }
-        this.attrVisible = true;
-        this.attrChanged = false;
-    }
-
+    
+    
     /**
      * Checks whether the basis Nodes of this EdNode and the specified EdNode
      * <code>enode</code> are equal.

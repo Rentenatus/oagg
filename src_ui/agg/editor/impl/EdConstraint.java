@@ -18,7 +18,7 @@ import agg.cons.Formula;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
-public class EdConstraint implements XMLObject {
+public class EdConstraint {
 
     private Formula formula;
     private String fstrByIndx, fstrByNames;
@@ -86,16 +86,5 @@ public class EdConstraint implements XMLObject {
         return this.fstrByIndx;
     }
 
-    public void XreadObject(XMLHelper h) {
-        if (h.peekObject(this.formula, this)) {
-            String n = h.readAttr("name");
-            this.formula.setName(n);
-            h.close();
-        }
+    
     }
-
-    public void XwriteObject(XMLHelper h) {
-        h.openObject(this.formula, this);
-        h.close();
-    }
-}

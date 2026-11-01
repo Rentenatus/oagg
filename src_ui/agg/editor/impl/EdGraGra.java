@@ -73,7 +73,7 @@ import org.w3c.dom.Element;
  * @author $Author: olga $
  * @version $Id: EdGraGra.java,v 1.114 2010/11/04 10:57:05 olga Exp $
  */
-public class EdGraGra implements XMLObject {
+public class EdGraGra {
 //	public final List<String> attrUsedClasses = new ArrayList<String>();
 
     /**
@@ -3140,169 +3140,17 @@ public class EdGraGra implements XMLObject {
 
     private boolean saveToXML(String fname) {
         this.trimToSize();
-        XMLHelper xmlh = new XMLHelper();
-        xmlh.addTopObject(this);
-        // System.out.println(fname);
-        if (xmlh.save_to_xml(this.dirName + File.separator + fname)) {
+        if (agg.gui.saveload.XmlMigrationDispatch.dispatchSave(this,
+                this.dirName + File.separator + fname)) {
             this.isChanged = false;
             return true;
         }
         return false;
     }
 
-    /**
-     * save the properties and values of all elements of this gragra in the
-     * elements of the base objects in the XML file opened by the given
-     * XMLHelper.
-     *
-     * @param h an XMLHelper, without an open element for this gragra.
-     */
-    public void XwriteObject(XMLHelper h) {
-        // save the basic gragra
-        // this will also save all the subobjects
-        // of the basic gragra, which will be enhanced
-        // with the layout informations in the next steps
-        // add imageFileName of a node type to its additional representation
-        this.typeSet.enrichAdditionalReprOfNodeType();
-        h.addTopObject(this.bGraGra);
-        h.openObject(this.bGraGra, this);
-        for (int i = 0; i < this.typeSet.getNodeTypes().size(); i++) {
-            h.addObject("", this.typeSet.getNodeTypes().get(i), true);
-        }
-        for (Type t : this.layoutPatterns.keySet()) {
-            // System.out.println("type name: "+t.getName());
-            List<LayoutPattern> lpatternsVec = this.layoutPatterns.get(t);
-            if (lpatternsVec != null && !lpatternsVec.isEmpty()) {
-                h.openSubTag("Layout");
-                // System.out.println("type: "+t.toString());
-                h.addObject("type", t, false);
-                h.addEnumeration("", lpatternsVec.iterator(), true);
-                h.close();
-            }
-        }
-        h.close();
-        /*
-		 * add layout info for the type attributes: show/hide
-		 * if(typeSet.getTypeGraph() != null){ for (Enumeration
-		 * e=typeSet.getTypeGraph().getNodes().elements();
-		 * e.hasMoreElements();){ EdGraphObject go = (EdGraphObject)
-		 * e.nextElement(); ValueTuple attributes = (ValueTuple)
-		 * go.getBasisObject().getAttribute(); if (go.getView() != null) {
-		 * AttrViewSetting mvs = go.getView().getMaskedView(); int number =
-		 * attributes.getSize(); for(int i=0; i<number; i++){ ValueMember vm =
-		 * attributes.getValueMemberAt(i); DeclMember dm = (DeclMember)
-		 * attributes.getTupleType().getMemberAt(i); boolean vis =
-		 * mvs.isVisible(attributes, i); if(vis){ h.addAttrToObject(dm,
-		 * "visible", "true");
-		 * //System.out.println(attributes.getValueMemberAt(i).getName()+"
-		 * visible: true"); } else{ h.addAttrToObject(dm, "visible", "false");
-		 * //System.out.println(attributes.getValueMemberAt(i).getName()+"
-		 * visible: false"); } } } } }
-         */
-        // add layout info for the host graph
-        // h.addObject("", eGraph, true);
-        int j;
-        // add layout info for the graphs
-        for (j = 0; j < this.eGraphs.size(); j++) {
-            h.addObject("", this.eGraphs.elementAt(j), true);
-        }
-        // add layout info for the rules
-        for (j = 0; j < this.eRules.size(); j++) {
-            h.addObject("", this.eRules.elementAt(j), true);
-        }// for j
-        // add layout info for the atomic constraints
-        for (j = 0; j < getAtomics().size(); j++) {
-            h.addObject("", getAtomic(j), true);
-        }// for j
-        // add layout information for the constraints
-        for (j = 0; j < getConstraints().size(); j++) {
-            h.addObject("", getConstraint(j), true);
-        }// for j
-        // add layout info for the type graph
-        if (this.typeSet.getTypeGraph() != null) {
-            h.addObject("", this.typeSet.getTypeGraph(), true);
-        }
-    }// XwriteObject
+    // XwriteObject
 
-    public void XreadObject(XMLHelper h) {
-        // read the values for the basic gragra
-        // and all its subobjects		
-        h.peekObject(this.bGraGra, this);
-//		long time0 = System.currentTimeMillis();
-        for (int i = 0; i < this.typeSet.getNodeTypes().size(); i++) {
-            EdType et = this.typeSet.getNodeTypes().get(i);
-            h.enrichObject(et);
-        }
-        if (h.readSubTag("Layout")) {
-            boolean firstsubtag = true;
-            while (firstsubtag || h.readSubTag("Layout")) {
-                firstsubtag = false;
-                Type t = (Type) h.getObject("type", null, false);
-                if (t != null) {
-//					EdType et = typeSet.getTypeForName(t);
-                    Iterator<Element> en = h.getEnumeration("", null, true, "LayoutPattern");
-                    while (en.hasNext()) {
-                        h.peekElement(en.next());
-                        LayoutPattern lp = new LayoutPattern(t);
-                        h.loadObject(lp);
-                        addLayoutPattern(t, lp);
-                        h.close();
-                    }
-                }
-                h.close();
-            }
-            // create inheritance pattern
-            ArrayMovie<Arc> inheritArcs = this.typeSet.getBasisTypeSet()
-                    .getInheritanceArcs();
-            createInheritancePattern(inheritArcs);
-            h.close();
-        }
-        // read layout information of type graph
-        if (this.typeSet.getTypeGraph() != null) {
-            h.enrichObject(this.typeSet.getTypeGraph());
-            this.typeSet.getTypeGraph().setGraGra(this);
-        }
-//		System.out.println("(Layouted) Grammar  Types: "
-//				+ (System.currentTimeMillis() - time0) + "ms");
-        // read layout information of graphs
-//		time0 = System.currentTimeMillis();
-        for (int j = 0; j < this.eGraphs.size(); j++) {
-            EdGraph g = this.eGraphs.elementAt(j);
-            h.enrichObject(g);
-        }
-//		System.out.println("(Layouted) Grammar  Graphs: "
-//				+ (System.currentTimeMillis() - time0) + "ms");
-        // read layout information of atomic constraints
-        for (int j = 0; j < this.eAtomics.size(); j++) {
-            EdAtomic a = this.eAtomics.get(j);
-            h.enrichObject(a);
-        }
-        // read layout information of constraints
-        for (int j = 0; j < getConstraints().size(); j++) {
-            EdConstraint c = getConstraint(j);
-            h.enrichObject(c);
-            Vector<Evaluable> atomics = new Vector<Evaluable>();
-            atomics.addAll(this.bGraGra.getListOfAtomics());
-            c.setVarSet(atomics, this.getAtomicNames());
-        }
-//		long time0 = System.currentTimeMillis();
-        // read layout information of rules
-        for (int j = 0; j < this.eRules.size(); j++) {
-            EdRule r = this.eRules.elementAt(j);
-            h.enrichObject(r);
-        }
-//		System.out.println("(Layouted) Grammar  enrich Rules: "
-//				+ (System.currentTimeMillis() - time0) + "ms");
-        // do copy of the host graph ( the first loaded graph)
-        if (this.eGraph != null) {
-            this.startGraph = makeStartGraphFrom(this.eGraph);
-        } else {
-            this.startGraph = new EdGraph(this.getTypeSet());
-        }
-        this.isChanged = false;
-        this.trimToSize();
-    }
-
+    
     private EdGraph makeStartGraphFrom(EdGraph g) {
         EdGraph sg = g.copy();
         sg.setCurrentLayoutToDefault(true);

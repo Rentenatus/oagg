@@ -399,67 +399,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
         System.out.println("================================");
     }
 
-    public void XwriteObject(XMLHelper h) {
-        int num = getSize();
-        for (int i = 0; i < num; i++) {
-            CondMember cm = getCondMemberAt(i);
-            h.openSubTag("Condition");
-            if (!cm.isEnabled()) {
-                h.addAttr("enabled", "false");
-            }
-            h.openSubTag("Value");
-            h.addAttrValue("string", cm.getExprAsText()); //h.addAttrValue("String", cm.getExprAsText());
-            h.close();
-            h.close();
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        Iterator<Element> en = h.getEnumeration("", null, true, "Condition");
-        while (en.hasNext()) {
-            h.peekElement(en.next());
-            if (h.getDocumentVersion().equals("1.0")) {
-                boolean enabled = true;
-                Object attr_enabled = h.readAttr("enabled");
-                if ((attr_enabled != null)
-                        && ((String) attr_enabled).equals("false")) {
-                    enabled = false;
-                }
-                if (h.readSubTag("Value")) {
-                    Object obj = null;
-                    String javaTag = h.readSubTag();
-                    if (javaTag.equals("java")) {
-                        obj = h.getAttrValue("String");
-                        if (obj == null) {
-                            obj = h.getAttrValue("string");
-                        }
-                    }
-                    if (javaTag.equals("string") || javaTag.equals("String")) {
-                        obj = h.getElementData(h.top());
-                    }
-                    h.close();
-//					obj = h.getAttrValue("String"); // old code
-                    if (obj instanceof String) {
-                        // loesche '\n' und mehrere Leerzeichen aus dem String
-                        String objStr = (String) obj;
-                        String test = objStr.replaceAll("\n", "");
-                        while (test.indexOf("  ") != -1) {
-                            objStr = test.replaceAll("  ", " ");
-                            test = objStr.toString();
-                        }
-                        CondMember cond = (CondMember) addCondition(objStr);
-                        if (cond != null) {
-                            cond.setEnabled(enabled);
-                        }
-                    }
-                    h.close();
-                }
-            } else {
-                addCondition(h.readAttr("value"));
-            }
-            h.close();
-        }
-    }
 }
 /*
  * $Log: CondTuple.java,v $

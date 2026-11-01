@@ -24,7 +24,7 @@ import agg.xt_basis.Type;
 /**
  * An EdType specifies the layout type of an agg.xt_basis.Type object
  */
-public class EdType implements XMLObject //, StateEditable
+public class EdType
 {
 
     public String name = "";
@@ -607,56 +607,5 @@ public class EdType implements XMLObject //, StateEditable
         return false;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (h.openObject(this.bType, this)) {
-            if (this.animated) {
-//				System.out.println(this.getName()+"::  "
-//						+animationParameter.getKind()+"   "
-//						+animationParameter.getStep()+"   "
-//						+animationParameter.getDelay()+"   "
-//						+animationParameter.getEndPlus()+"   "
-//						+animationParameter.getTargetEdgeTypeName()
-//				);
-                h.addAttr("animated", "true");
-                h.openSubTag("Animation");
-                h.addAttr("kind", this.animationParameter.getKind());
-                h.addAttr("step", this.animationParameter.getStep());
-                h.addAttr("delay", this.animationParameter.getDelay());
-                h.addAttr("plus", this.animationParameter.getEndPlus());
-                h.addAttr("edge", this.animationParameter.getTargetEdgeTypeName());
-                h.close();
-            }
-        }
+    
     }
-
-    public void XreadObject(XMLHelper h) {
-        h.peekObject(this.bType, this);
-        String animatedAttr = h.readAttr("animated");
-        if ("true".equals(animatedAttr)) {
-            this.setAnimated(true);
-            if (h.readSubTag("Animation")) {
-                String par1 = h.readAttr("delay");
-                if (!"".equals(par1)) {
-                    this.animationParameter.setDelay(par1);
-                }
-                String par2 = h.readAttr("kind");
-                if (!"".equals(par2)) {
-                    this.animationParameter.setKind(par2);
-                }
-                String par3 = h.readAttr("step");
-                if (!"".equals(par3)) {
-                    this.animationParameter.setStep(par3);
-                }
-                String par4 = h.readAttr("plus");
-                if (!"".equals(par4)) {
-                    this.animationParameter.setEndPlus(par4);
-                }
-                String par5 = h.readAttr("edge");
-                if (!"".equals(par5)) {
-                    this.animationParameter.setTargetEdgeTypeName(par5);
-                }
-//				System.out.println(this.getName()+"::  "+animationParameter.kind+"   "+animationParameter.step+"   "+animationParameter.delay+"   "+this.animationParameter.targetEdgeTypeName);
-            }
-        }
-    }
-}

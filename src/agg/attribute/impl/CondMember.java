@@ -294,15 +294,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         return this.shifted;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        throw new RuntimeException(
-                "CondMember.XwriteObject called, but it shouldn't");
-    }
-
-    public void XreadObject(XMLHelper h) {
-        throw new RuntimeException(
-                "CondMember.XreadObject called, but it shouldn't");
-    }
 }
 /*
  * $Log: CondMember.java,v $

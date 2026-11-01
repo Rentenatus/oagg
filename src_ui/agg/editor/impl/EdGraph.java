@@ -65,7 +65,7 @@ import java.util.Map;
  * @author $Author: olga $
  * @version $Id: EdGraph.java,v 1.134 2010/12/17 15:43:25 olga Exp $
  */
-public class EdGraph implements XMLObject, Observer, StateEditable {
+public class EdGraph implements Observer, StateEditable {
 
     protected Graph bGraph; // basis Graph
     protected EdGraGra eGra;
@@ -5601,119 +5601,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
         return v;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (h.openObject(this.bGraph, this)) {
-            if (this.bGraph.isCompleteGraph()) {
-                if (this.ggen > 0) {
-                    h.addAttr("age", this.ggen);
-                }
-                if (this.straightenArcs) {
-                    h.addAttr("straightenArcs", "true");
-                }
-                if (this.staticNodeXY) {
-                    h.addAttr("staticNodePosition", "true");
-                }
-                if (this.undoManager != null
-                        && !this.undoManager.isEnabled()) {
-                    h.addAttr("undoEnabled", "false");
-                }
-            }
-            int j;
-            for (j = 0; j < this.nodes.size(); j++) {
-                EdNode n = this.nodes.get(j);
-                n.getLNode().setFrozenByDefault(true);
-                h.addObject("", n, true);
-            }
-            for (j = 0; j < this.arcs.size(); j++) {
-                EdArc a = this.arcs.get(j);
-                a.getLArc().setFrozenByDefault(true);
-                h.addObject("", a, true);
-            }
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        boolean hasLoadedLayout = false;
-        h.peekObject(this.bGraph, this);
-        if (this.bGraph.isCompleteGraph()) {
-            String age = h.readAttr("age");
-            if (age != null && !age.equals("")) {
-                try {
-                    this.ggen = (Integer.valueOf(age)).intValue();
-                } catch (Exception ex) {
-                }
-            }
-            String straightenArcsStr = h.readAttr("straightenArcs");
-            if (!straightenArcsStr.equals("")) {
-                this.straightenArcs = Boolean.valueOf(straightenArcsStr).booleanValue();
-            }
-            String staticNodePositionStr = h.readAttr("staticNodePosition");
-            if (!staticNodePositionStr.equals("")) {
-                this.staticNodeXY = Boolean.valueOf(staticNodePositionStr).booleanValue();
-            }
-            String undoEnabledStr = h.readAttr("undoEnabled");
-            if (!undoEnabledStr.equals("")) {
-                this.eGra.enableUndoManager(Boolean.valueOf(undoEnabledStr).booleanValue());
-            }
-        }
-        for (int j = 0; j < this.nodes.size(); j++) {
-            EdNode n = this.nodes.get(j);
-            h.enrichObject(n);
-            if (n.hasDefaultLayout) {
-                hasLoadedLayout = true;
-                n.getLNode().setFrozenByDefault(true);
-            }
-            /*
-			ValueTuple value = (ValueTuple) n.getBasisNode().getAttribute();
-			if (value != null) {
-				for (int i = 0; i < value.getSize(); i++) {
-					ValueMember val = value.getValueMemberAt(i);
-					if (val.isSet() && val.getExpr().isComplex()) {
-						String aValue = val.getExprAsText();
-						try {
-							if (aValue.indexOf(".") >= 0) {
-								String clstr = aValue.substring(0, aValue.indexOf("."));
-								Class.forName(clstr);
-								System.out.println("User defined class: "+clstr);
-								if (!n.getContext().getGraGra().attrUsedClasses.contains(clstr))
-									n.getContext().getGraGra().attrUsedClasses.add(clstr);
-							}								
-						} catch (ClassNotFoundException cex) {}
-					}
-				}
-			}
-             */
-        }
-        for (int j = 0; j < this.arcs.size(); j++) {
-            EdArc a = this.arcs.get(j);
-            h.enrichObject(a);
-            a.getLArc().setFrozenByDefault(true);
-        }
-        if (hasLoadedLayout) {
-            this.hasDefaultLayout = true;
-        } else if (this.nodes.size() > 1) {
-            if (this.isTG || this.bGraph.isCompleteGraph()) {
-                if (this.nodes.size() <= 100) {
-                    layoutBasisGraph(new Dimension(800, 600));
-                } else {
-                    layoutBasisGraph(new Dimension(1000, 800));
-                }
-            } else if (!this.isCPA) {
-                if (this.nodes.size() <= 50) {
-                    layoutBasisGraph(new Dimension(400, 300));
-                } else if (this.nodes.size() <= 100) {
-                    layoutBasisGraph(new Dimension(600, 400));
-                } else {
-                    layoutBasisGraph(new Dimension(800, 600));
-                }
-            }
-            if (!this.bGraph.isCompleteGraph()) {
-                this.staticNodeXY = true;
-            }
-            // in case of CPAGraph do nothing here
-        }
-    }
-
+    
+    
     public void layoutBasisGraph(final Dimension maxdim) {
         if (this.hasDefaultLayout) {
             return;

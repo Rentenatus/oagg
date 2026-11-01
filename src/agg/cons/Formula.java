@@ -20,11 +20,10 @@ import java.io.Serializable;
 import de.jare.ndimcol.primint.ArrayMovieInt;
 import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xt_basis.NestedApplCond;
 
 @SuppressWarnings("serial")
-public class Formula implements Evaluable, XMLObject, Serializable {
+public class Formula implements Evaluable, Serializable {
 
     public static final int NOP = 0;
     public static final int TRUE = 1;
@@ -889,110 +888,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     }
 
     @SuppressWarnings("unused")
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Formula", this)) {
-            this.name = h.readAttr("name");
-            String str = h.readAttr("comment");
-            if (!str.equals("")) {
-                this.comment = str;
-            }
-            Object attr_enabled = h.readAttr("enabled");
-            if ((attr_enabled != null)
-                    && ((String) attr_enabled).equals("false")) {
-                this.enabled = false;
-            } else {
-                this.enabled = true;
-            }
-            if (this.layer == null) {
-                this.layer = new ArraySeasonInt();
-            } else {
-                this.layer.clear();
-            }
-            // read layer
-            if (h.readSubTag("Layer")) {
-                String l = h.readAttr("Layer");
-                String size = h.readAttr("Size");
-                if (!"".equals(l)) {
-                    l = l.replaceAll(" ", "");
-                    if (l.indexOf("[") >= 0) {
-                        l = l.substring(1);
-                    }
-                    if (l.indexOf("]") >= 0) {
-                        l = l.substring(0, l.length() - 1);
-                    }
-                    String[] array = l.split(",");
-                    for (int i = 0; i < array.length; i++) {
-                        try {
-                            this.layer.add(Integer.parseInt(array[i]));
-                        } catch (java.lang.NumberFormatException ex) {
-                        }
-                    }
-                }
-                h.close();
-            }
-            if (this.priority == null) {
-                this.priority = new ArraySeasonInt();
-            } else {
-                this.priority.clear();
-            }
-            // read priority
-            if (h.readSubTag("Priority")) {
-                String p = h.readAttr("Priority");
-                String size = h.readAttr("Size");
-                if (!"".equals(p)) {
-                    p = p.replaceAll(" ", "");
-                    if (p.indexOf("[") >= 0) {
-                        p = p.substring(1);
-                    }
-                    if (p.indexOf("]") >= 0) {
-                        p = p.substring(0, p.length() - 1);
-                    }
-                    String[] array = p.split(",");
-                    for (int i = 0; i < array.length; i++) {
-                        try {
-                            this.priority.add(Integer.parseInt(array[i]));
-                        } catch (java.lang.NumberFormatException ex) {
-                        }
-                    }
-                }
-                h.close();
-            }
-            h.close();
-        }
-    }
-
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Formula", this);
-        h.addAttr("name", getName());
-        h.addAttr("comment", this.comment);
-        h.addAttr("enabled", String.valueOf(this.enabled));
-        // write layer
-        h.openSubTag("Layer");
-        if (this.layer.size() == 0) {
-            h.addAttr("Layer", "");
-        } else if (this.layer.size() == 1) {
-            String l = String.valueOf(this.layer.get(0));
-            h.addAttr("Layer", l);
-        } else {
-            h.addAttr("Layer", getLayerAsString());
-        }
-        h.addAttr("Size", String.valueOf(this.layer.size()));
-        h.close();
-        // write priority
-        h.openSubTag("Priority");
-        if (this.priority.size() == 0) {
-            h.addAttr("Priority", "");
-        } else if (this.priority.size() == 1) {
-            String p = String.valueOf(this.priority.get(0));
-            h.addAttr("Priority", p);
-        } else {
-            h.addAttr("Priority", getPriorityAsString());
-        }
-        h.addAttr("Size", String.valueOf(this.priority.size()));
-        h.close();
-        h.close();
-    }
-
     /* (non-Javadoc)
 	 * @see agg.cons.Evaluable#evalForall(java.lang.Object, int, boolean)
      */

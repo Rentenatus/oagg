@@ -574,36 +574,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         return nFree;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (isEmpty()) {
-            return;
-        }
-        int num = getSize();
-        for (int i = 0; i < num; i++) {
-            ValueMember val = getValueMemberAt(i);
-            if (val != null && val.isSet()) {
-                h.addObject("", val, true);
-            }
-        }
-    }
-
-    public void XreadObject(XMLHelper h) {
-        Iterator<Element> en = h.getEnumeration("", null, true, "Attribute");
-        while (en.hasNext()) {
-            h.peekElement(en.next());
-            AttrTypeMember typeMem = (AttrTypeMember) h.getObject("type", null,
-                    false);
-            if (typeMem != null) {
-                String name = typeMem.getName();
-                ValueMember mem = getValueMemberAt(name);
-                if (mem != null) {
-                    h.enrichObject(mem);
-                }
-            }
-            h.close();
-        }
-    }
-
     // End of AttrInstance interface implementation.
     public boolean canMatchTo(ValueTuple target, ContextView attrcontext) {
         ValueMember src, tar;

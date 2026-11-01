@@ -38,7 +38,7 @@ import java.util.List;
  * optionally attributes.
  */
 @SuppressWarnings("serial")
-public class Node extends GraphObject implements XMLObject {
+public class Node extends GraphObject {
 
     // Test: node XY-position as attribute
     public boolean xyAttr = false;
@@ -598,96 +598,11 @@ public class Node extends GraphObject implements XMLObject {
      *
      * @param xmlHelper the XML helper to write with
      */
-    @Override
-    public void XwriteObject(XMLHelper xmlHelper) {
-        xmlHelper.openNewElem("Node", this);
-        if (!this.visible) {
-            xmlHelper.addAttr("visible", "false");
-        }
-        if (!this.getObjectName().equals("")) {
-            xmlHelper.addAttr("name", this.getObjectName());
-        }
-        xmlHelper.addObject("type", this.itsType, false);
-        if (this.itsContext != null && this.itsContext.isTypeGraph()) {
-            int minmax = this.itsType.getSourceMin();
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("sourcemin", Integer.toString(minmax));
-            }
-            minmax = this.itsType.getSourceMax();
-            if (minmax != Type.UNDEFINED) {
-                xmlHelper.addAttr("sourcemax", Integer.toString(minmax));
-            }
-        }
-        xmlHelper.addObject("", this.itsAttr, true);
-        xmlHelper.close();
-    }
-
     /**
      * Reads this node from XML.
      *
      * @param xmlHelper the XML helper to read from
      */
-    @Override
-    public void XreadObject(XMLHelper xmlHelper) {
-        if (xmlHelper.isTag("Node", this)) {
-            String str = xmlHelper.readAttr("visible");
-            this.visible = !str.equals("false");
-            str = xmlHelper.readAttr("name");
-            this.setObjectName(str);
-            if (this.itsType.getAttrType() != null
-                    || this.itsType.hasInheritedAttribute()
-                    || (this.itsContext != null && this.itsContext.xyAttr)) {
-                this.createAttributeInstance();
-            }
-            AttrInstance attri = this.itsAttr;
-            if (attri != null) {
-                if (this.itsContext != null && this.itsContext.xyAttr) {
-                    xyAttr = true;
-                    agg.attribute.AttrType attrType = itsType.getAttrType();
-                    if (!((agg.attribute.impl.DeclTuple) attrType).containsName("thisX")) {
-                        attrType.addMember(
-                                agg.attribute.facade.impl.DefaultInformationFacade.self().getJavaHandler(),
-                                "int", "thisX");
-                    }
-                    if (!((agg.attribute.impl.DeclTuple) attrType).containsName("thisY")) {
-                        attrType.addMember(
-                                agg.attribute.facade.impl.DefaultInformationFacade.self().getJavaHandler(),
-                                "int", "thisY");
-                    }
-                }
-                xmlHelper.enrichObject(attri);
-            }
-            xmlHelper.close();
-            // If this node uses variables in its attribute, mark the variable
-            if (this.itsContext != null && this.itsContext.getAttrContext() != null
-                    && this.itsAttr != null) {
-                ValueTuple value = (ValueTuple) this.itsAttr;
-                for (int i = 0; i < value.getSize(); i++) {
-                    ValueMember val = value.getValueMemberAt(i);
-                    if (val.isSet()) {
-                        if (val.getExpr().isVariable()) {
-                            ContextView viewContext = (ContextView) ((ValueTuple) val
-                                    .getHoldingTuple()).getContext();
-                            VarTuple variable = (VarTuple) viewContext
-                                    .getVariables();
-                            VarMember var = variable.getVarMemberAt(val
-                                    .getExprAsText());
-                            if (getContext().isNacGraph()) {
-                                var.setMark(VarMember.NAC);
-                            } else if (getContext().isPacGraph()) {
-                                var.setMark(VarMember.PAC);
-                            } else if (viewContext.doesAllowComplexExpressions()) {
-                                var.setMark(VarMember.RHS);
-                            } else {
-                                var.setMark(VarMember.LHS);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Always returns false since this is a node, not an arc.
      *

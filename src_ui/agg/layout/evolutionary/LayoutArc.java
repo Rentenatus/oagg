@@ -25,7 +25,7 @@ import agg.util.XMLObject;
  * and preferred length, atractive force and some more, that are used by
  * Springembedder Layout.
  */
-public class LayoutArc implements XMLObject {
+public class LayoutArc {
 
     private EdArc eArc;
     private int prefLngth;
@@ -175,41 +175,5 @@ public class LayoutArc implements XMLObject {
         return this.frozenAsDefault;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        if (h.openObject(this.eArc.getBasisArc(), this)) {
-            h.openSubTag("additionalLayout");
-            h.addAttr("preflength", this.prefLngth);
-            h.addAttr("aktlength", this.aktLngth);
-            h.addAttr("force", this.force);
-            h.close();
-            h.close();
-        }
+    
     }
-
-    public void XreadObject(XMLHelper h) {
-        String s;
-        h.peekObject(this.eArc.getBasisArc(), this);
-        if (h.readSubTag("additionalLayout")) {
-            s = h.readAttr("preflength");
-            if (s.length() == 0) {
-                this.prefLngth = 200;
-            } else {
-                this.prefLngth = Integer.parseInt(s);
-            }
-            s = h.readAttr("aktlength");
-            if (s.length() == 0) {
-                this.aktLngth = 200;
-            } else {
-                this.aktLngth = Integer.parseInt(s);
-            }
-            s = h.readAttr("force");
-            if (s.length() == 0) {
-                this.force = 10;
-            } else {
-                this.force = Integer.parseInt(s);
-            }
-            h.close();
-        }
-        h.close();
-    }
-}

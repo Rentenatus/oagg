@@ -15,7 +15,6 @@
 package agg.parser;
 
 import agg.util.Pair;
-import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.MorphCompletionStrategy;
@@ -34,7 +33,7 @@ import java.util.List;
  * @author $Author: olga $
  * @version $Id: PairContainer.java,v 1.15 2010/12/16 17:32:14 olga Exp $
  */
-public interface PairContainer extends XMLObject {
+public interface PairContainer {
 
     // ****************************************************************************+
     /**

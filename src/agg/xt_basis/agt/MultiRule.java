@@ -719,22 +719,4 @@ public class MultiRule extends Rule implements Observer {
             }
         }
     }
-
-    /**
-     * Save the multi rule.
-     *
-     * @param h AGG XML helper
-     */
-    public void XwriteObject(XMLHelper h) {
-        super.XwriteObject(h);
-    }
-
-    /**
-     * Load the multi rule.
-     *
-     * @param h AGG XML helper
-     */
-    public void XreadObject(XMLHelper h) {
-        super.XreadObject(h);
-    }
 }

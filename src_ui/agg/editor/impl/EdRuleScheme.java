@@ -1078,25 +1078,6 @@ public class EdRuleScheme extends EdRule {
         }
         return allDone;
     }
-
-    /* (non-Javadoc)
-	 * @see agg.util.XMLObject#XreadObject(agg.util.XMLHelper)
-     */
-    public void XreadObject(XMLHelper h) {
-        h.enrichObject(this.itsKernelRule);
-        this.itsKernelRule.setGraGra(this.eGra);
-        for (int j = 0; j < this.itsMultiRules.size(); j++) {
-            EdRule r = this.itsMultiRules.get(j);
-            h.enrichObject(r);
-            r.setGraGra(this.eGra);
-            enrichContextUsageOfEmbedTarget(r);
-        }
-        if (this.itsAmalgamatedRule != null) {
-            h.enrichObject(this.itsAmalgamatedRule);
-            this.itsAmalgamatedRule.setGraGra(this.eGra);
-        }
-    }
-
     private void enrichContextUsageOfEmbedTarget(EdRule mr) {
         List<EdNode> nodes = mr.getLeft().getNodes();
         for (int i = 0; i < nodes.size(); i++) {
@@ -1125,20 +1106,6 @@ public class EdRuleScheme extends EdRule {
             }
         }
     }
-
-    /* (non-Javadoc)
-	 * @see agg.util.XMLObject#XwriteObject(agg.util.XMLHelper)
-     */
-    public void XwriteObject(XMLHelper h) {
-        h.addObject("", this.itsKernelRule, true);
-        for (int j = 0; j < this.itsMultiRules.size(); j++) {
-            h.addObject("", this.itsMultiRules.get(j), true);
-        }
-        if (this.itsAmalgamatedRule != null) {
-            h.addObject("", this.itsAmalgamatedRule, true);
-        }
-    }
-
     /* (non-Javadoc)
 	 * @see javax.swing.undo.StateEditable#restoreState(java.util.Hashtable)
      */
