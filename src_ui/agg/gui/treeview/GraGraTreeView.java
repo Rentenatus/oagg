@@ -66,6 +66,7 @@ import agg.gui.AGGToolBar;
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.LoadEventListener;
 import agg.gui.event.SaveEventListener;
+import agg.gui.saveload.XmlMigrationDispatch;
 import agg.gui.event.TreeViewEvent;
 import agg.gui.event.TreeViewEventListener;
 import agg.gui.event.TransformEventListener;
@@ -4816,6 +4817,26 @@ public class GraGraTreeView extends JPanel implements
                 File f = new File(fullFileName);
                 if (f.exists()) {
                     long time0 = System.currentTimeMillis();
+                    if (XmlMigrationDispatch.isUseNewXml()) {
+                        EdGraGra ed = XmlMigrationDispatch.dispatchLoad(fullFileName);
+                        if (ed != null) {
+                            loadedGraGra = ed;
+                            if (f.getParent() != null) {
+                                loadedGraGra.setDirName(f.getParent());
+                            } else {
+                                loadedGraGra.setDirName(System.getProperty("user.dir")
+                                        + File.separator);
+                            }
+                            loadedGraGra.setFileName(f.getName());
+                            loadedGraGra.getTypeSet().setResourcesPath(
+                                    loadedGraGra.getDirName());
+                            System.out.println("(NewXML Layouted) Grammar  <"
+                                    + loadedGraGra.getBasisGraGra().getName()
+                                    + ">  loaded in  "
+                                    + (System.currentTimeMillis() - time0) + "ms");
+                        }
+                    }
+                    if (loadedGraGra == null) {
                     XMLHelper h = new XMLHelper();
                     if (h.read_from_xml(fullFileName)) {
                         GraGra bgra = BaseFactory.theFactory().createGraGra();
@@ -4839,6 +4860,7 @@ public class GraGraTreeView extends JPanel implements
                         if (bgra.getRulesVec().size() > 20) {
                             System.out.println("Grammar contains Rules: " + bgra.getRulesVec().size());
                         }
+                    }
                     }
                 }
             } else {
