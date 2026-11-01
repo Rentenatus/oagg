@@ -1,8 +1,8 @@
 # Current Status - AGG XML Serialization Refactoring
 
 **Project:** AGG XML Serialization Extraction Refactoring
-**Date:** 2026-10-05
-**Overall Status:** DOM path complete for the .ggx format and for the full `.cpx`/`.rsx` surface (core and UI layer), regression suite green (518 tests). Removing the legacy XML code from `src` is the next phase; its preconditions are open (see roadmap below).
+**Date:** 2026-11-01
+**Overall Status:** DOM path complete for the .ggx format and for the full `.cpx`/`.rsx` surface (core and UI layer), and every GUI save/load entry point dispatches through the migration flag (DOM first, legacy fallback). Regression suite green (540 tests). Removing the legacy XML code from `src` is the next phase; its preconditions are open (see roadmap below).
 
 ---
 
@@ -24,13 +24,13 @@ Test roots: `test_xml` (DOM side, in `src_xml`), `test_xml_prep` (preparation, i
 
 ## Test Coverage
 
-All suites green as of 2026-10-05 (branch `review/014-XML-ex`):
+All suites green as of 2026-11-01 (branch `review/014-XML-ex`):
 
 | Suite | Module | Tests | Purpose |
 |-------|--------|-------|---------|
-| `agg.xml.prep.LegacyPreparationTest` | `agg-core-legacy` | 22 | Writes fresh reference XML from the in-memory model using the frozen legacy save; also covers the attribute and morphism matrices, stability pairs, UI references and the computed-pair `.cpx` fixtures |
-| DOM suite (`test_xml`) | `agg-xml` | 489 | DOM load/save roundtrips, cross-system compatibility, path stability, stress and performance |
-| `agg.xml.ui.UiDomRegressionTest` | `agg-ui-xml` | 7 | UI layer serialization scenarios (basic, rule, constraint, no type graph, undirected, composite, rule scheme) |
+| `agg.xml.prep.LegacyPreparationTest` | `agg-core-legacy` | 25 | Writes fresh reference XML from the in-memory model using the frozen legacy save; also covers the attribute and morphism matrices, stability pairs, the UI references (`.ggx`/`.rsx`/`.cpx`) and the computed-pair `.cpx` fixtures |
+| DOM suite (`test_xml`) | `agg-xml` | 491 | DOM load/save roundtrips, cross-system compatibility, path stability, stress and performance |
+| UI DOM suite (`test_xml_ui`) | `agg-ui-xml` | 24 | `UiDomRegressionTest` (7 UI layer scenarios), `UIMigrationTest` (facade: `.ggx`, core `.cpx`, `.rsx`, UI `.rsx`, UI `.cpx`, standalone pair container), `XmlMigrationDispatchTest` (real reflection wiring of the GUI dispatch) |
 
 ### Generated scenario matrix (28/28 complete)
 
@@ -58,6 +58,24 @@ All scenarios pass a canonical comparison against the fresh legacy reference, in
 - Attribute matrix: 6 attribute types with boundary values (0, -42, MAX_INT, empty string, special characters, ...) plus mapping forms (constant, expression, variable, condition, edge).
 - Morphism matrix: 56 fixtures over LHS/RHS/mapping structures x orientation x type graph.
 
+### GUI wiring (roadmap step 1, complete)
+
+Every GUI save/load entry point dispatches through the migration flag: DOM path first, legacy `XMLHelper` code as fallback (stays in place until roadmap step 4).
+
+| Entry point (`src_ui`) | Formats | Dispatch |
+|---|---|---|
+| `GraGraSave`/`GraGraLoad` | `.ggx` (EdGraGra and core GraGra) | `XmlMigrationDispatch` -> `UIMigration.save`/`load` |
+| `GraGraTreeView.loadGraGra` | `.ggx` | `XmlMigrationDispatch.dispatchLoad` |
+| `ApplRuleSequenceSaveLoad` | `.rsx` with the editor layer | `XmlMigrationDispatch` -> `UIMigration.saveRuleSequence`/`loadRuleSequence` -> `UISerialization` |
+| `PairIOGUI` | UI `.cpx` (SaveLoad wrapper), core `.cpx` (`cdContainer`), standalone pair container (`pc`) | `XmlMigrationDispatch` -> `UIMigration.saveCdContainerSaveLoad`/`loadCdContainerSaveLoad`, `UIMigration.save`/`load(ConflictsDependenciesContainer)` and `UIMigration.saveStandalonePairContainer`/`loadStandalonePairContainer` |
+
+`agg-ui` does not compile-depend on `agg-ui-xml`: the dispatch is reflective (`agg.gui.saveload.XmlMigrationDispatch`), the flag is not cached (runtime toggling), and every dispatch failure falls back to the local legacy code, so a deployment without the `agg-ui-xml` jar stays on the legacy path.
+
+**Oracle decisions of the GUI formats** (same principle as the core: the DOM path preserves the file values, it does not replicate the legacy reader's model mutations):
+- UI `.ggx`/`.rsx`/`.cpx`: the DOM save of a DOM-loaded raw reference is canonically equal to the raw reference. The legacy re-saved references differ (LeftOf_ rule graph renames, `LayoutNode.frozen` derivation from the age, formula regeneration via `prepareRuleInfo`); the legacy branches of the facade reproduce them exactly.
+- UI `.rsx` only: the raw GUI reference has an empty `RuleSequences` section (the reader binds the sequences into the container), so the DOM path is verified through state assertions and stability there.
+- Dangling `I<n>` references written by the legacy `XMLHelper.addObject(..., false)` template mechanism (`GraphTransformationSystem` on the host graph, `Graph` on the CPA graph) are write artifacts without a target element; the canonical comparator ignores them.
+
 ### Regression oracle
 
 Four paths are compared against each other: legacy load, legacy save (fresh reference from the in-memory model), DOM load, DOM save. The deliberate oracle decision (DOM preserves the file, not the legacy reader's model side effects) is documented in the root README.
@@ -74,7 +92,7 @@ Four paths are compared against each other: legacy load, legacy save (fresh refe
    - The PAC overlap is lossy in the reader: the `pacname` mapping of a pure PAC arc is not reconstructed (the `orig2copy` map only knows LHS nodes). The legacy reader has the same loss, so no canonical comparison is possible against a raw reference; the DOM output is stable across roundtrips.
    - The overlap morphism source variants `NAC+RHS`, `PAC+RHS_R1`, `LHS_R2`/`RHS_R2`/`LHS_R2_1` and the layered/priority container fields (`lepc`/`pepc`, `ldpc`/`pdpc`) are mirrored after the legacy reader but have no fixtures yet; they are only reachable through engine-produced overlap name patterns. The loaded layered containers are installed as the plain fields (documented deviation).
    - The computed-pair fixtures are built synthetically (TestDataGenerator mirrors the reader's reconstruction) because the CPA engine itself currently finds no inclusions: upstream, `ExcludePairHelper.putGraphInclusionSet` has the `inclusions.add(goSet)` call commented out, so delete-use/produce-forbid never matches. Fixing the engine is out of scope for the serialization refactoring; the frozen legacy clone shows the same behaviour.
-2. **GUI save/load entry points**: `src_ui/agg/gui/saveload/GraGraSave`/`GraGraLoad` plus `GraphBrowserImpl`, `GraGraTreeView`, `ParserDialog`, `PairIOGUI`, `parser/ConflictsDependenciesContainerSaveLoad` (`.cpx` GUI save/load) and `ruleappl/ApplRuleSequenceSaveLoad` (`.rsx` GUI save/load) call `XMLHelper` directly. No file in `src_ui` references `XMLSerialization`; the migration flag (`XMLSerialization.setUseNewXml` -> `GraGraMigration`) exists but is only used by tests. Wiring the GUI therefore covers all three formats, not just `.ggx`.
+2. **GUI save/load entry points (wired, legacy code remains as fallback)**: `GraGraSave`/`GraGraLoad`, `GraGraTreeView`, `PairIOGUI`, `ApplRuleSequenceSaveLoad` and the `ConflictsDependenciesContainerSaveLoad` hooks all dispatch through the migration flag (DOM first, legacy fallback, see the GUI wiring section above). `GraphBrowserImpl` and `ParserDialog` no longer reference `XMLHelper` at all. The remaining direct `XMLHelper` users in `src_ui` are the `Ed*` editor classes and `LayoutNode`/`LayoutArc`/`LayoutPattern` (the legacy UI serialization code mirrored by `UISerialization`) plus the dispatch classes' legacy fallbacks; they fall away with roadmap step 4.
 3. **convert tools**: `AGG2ColorGraph`, `ConverterWSDL`, `WSDL2ggx` use `XMLHelper` directly.
 4. **Scale**: 61 files in `src`/`src_ui` reference `XMLHelper`, 51 implement `XwriteObject`/`XreadObject` (xt_basis core, `attribute.impl`, `parser`, `ruleappl`).
 5. **DOM path fallback**: `XMLAdapterFactory` dispatches every domain type of the tested formats to a native adapter. Unknown `XMLObject` types get the generic `XMLObjectAdapter`, which now throws an explicit `XMLSerializationException` (the former silent delegation to `XwriteObject`/`XreadObject` via `XMLHelper` was removed together with the unused `XMLHelperWrapper` and the XMLHelper serializer/deserializer contexts). The remaining legacy bridge for the feature flag (`agg.xml.legacy.LegacyCompatibility`/`XMLSaveLoad`) is intentional and falls away with roadmap step 4.
@@ -87,9 +105,9 @@ The .ggx roundtrip is complete and fully regression-tested, and the frozen clone
 
 | Step | Content | Status |
 |------|---------|--------|
-| 1 | Wire GUI save/load through the migration flag and smoke-test the application | open |
+| 1 | Wire GUI save/load through the migration flag and smoke-test the application | done (all entry points dispatch DOM first with legacy fallback: `.ggx`, UI `.rsx`, UI `.cpx`, core `.cpx`, standalone pair container; reflective `XmlMigrationDispatch` keeps agg-ui free of a compile dependency on agg-ui-xml) |
 | 2 | Native DOM adapter for RuleScheme (remove the legacy delegation) | done (`RuleSchemeAdapter`, canonical verification) |
-| 3 | DOM coverage for `.rsx`/`.cpx` including canonical comparison | done (`.rsx` complete; `.cpx` structural and computed pair entries, including NAC/PAC overlaps) |
+| 3 | DOM coverage for `.rsx`/`.cpx` including canonical comparison | done (`.rsx` complete; `.cpx` structural, standalone pair container and computed pair entries, including NAC/PAC overlaps and the UI variants with layout) |
 | 4 | Slice-wise removal of the legacy XML code from `src` (xt_basis -> attribute -> parser -> ruleappl -> convert) | open |
 
 ---
@@ -104,4 +122,4 @@ Unrelated pending cleanups in the core (string concatenation, iterator typing, J
 
 ---
 
-*Last updated: 2026-10-05*
+*Last updated: 2026-11-01*

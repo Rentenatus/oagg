@@ -79,12 +79,15 @@ of a pure PAC arc is dropped, same as in the legacy reader). Computed-pair
 `.cpx` fixtures are therefore compared against the raw reference (plain and
 NAC) or verified for stability and structure (PAC).
 
-**Test coverage:** 518 tests green (preparation 22, core DOM 489, UI 7). The
-generated scenario matrix is complete: 7 features (basic graph with attributes,
+**Test coverage:** 540 tests green (preparation 25, core DOM 491, UI 24).
+The generated scenario matrix is complete: 7 features (basic graph with attributes,
 rule with NAC/PAC/nested AC, constraints, match, rule scheme, rule sequence,
 composite of all) crossed with directed/undirected and with/without type
 graph (28 combinations). 39 legacy .ggx fixtures plus attribute and morphism
-matrices exercise the remaining dimensions. Current status, known delegations
+matrices exercise the remaining dimensions. Every GUI save/load entry point
+dispatches through the migration flag (DOM first, legacy fallback): `.ggx`,
+UI `.rsx`, UI `.cpx`, core `.cpx` and the standalone pair container format.
+Current status, known delegations
 and the legacy removal roadmap: [docs/refactoring/CURRENT_STATUS.md](docs/refactoring/CURRENT_STATUS.md).
 
 ---
