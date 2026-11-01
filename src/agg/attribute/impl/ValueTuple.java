@@ -23,7 +23,6 @@ import agg.attribute.AttrEvent;
 //import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
 import java.util.Iterator;
-import org.w3c.dom.Element;
 
 /**
  * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a

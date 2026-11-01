@@ -42,7 +42,6 @@ import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
 import java.util.List;
-import org.w3c.dom.Element;
 
 public class AtomConstraint extends OrdinaryMorphism
         implements Evaluable {

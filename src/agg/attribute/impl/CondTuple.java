@@ -23,7 +23,6 @@ import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.impl.javaExpr.JexHandler;
 import java.util.Iterator;
-import org.w3c.dom.Element;
 //import agg.util.Debug;
 
 /**

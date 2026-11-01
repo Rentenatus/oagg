@@ -6,8 +6,6 @@
  */
 package agg.xml.core;
 
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
 import agg.xml.TestDataHelper;
 import agg.xt_basis.Graph;
 import org.testng.annotations.Test;

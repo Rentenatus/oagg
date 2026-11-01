@@ -28,12 +28,8 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Type;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
-//import agg.util.XMLHelper;
 
 public class AGG2ColorGraph {
-//	private static XMLHelper h;
-//	private static GraGra gragra;
-//	private static String fileName;
 
     /**
      * Save an AGG graph in GraphColor format.
@@ -325,44 +321,6 @@ public class AGG2ColorGraph {
         return false;
     }
 
-    /*
-	private static void mainTEST(String[] args) {
-		String vers = System.getProperty("java.version");
-		if (vers.compareTo("1.5") < 0) {
-			System.out.println("WARNING : Swing must be run with the "
-					+ "1.5 version of the JVM.");
-		}
-		if (args.length == 1) {	
-			fileName = args[0];
-			if (fileName.indexOf(".ggx") > 0) {
-				gragra = load(fileName);
-				
-				final AGG2ColorGraph test = new AGG2ColorGraph();
-				
-				exportAGG2ColorGraph(gragra, fileName.concat(".col"), null, null);
-			}			
-		}
-		else if (args.length == 2) {
-			fileName = args[0];
-			String fileName2 = args[1];
-			if (fileName.indexOf(".ggx") > 0) {
-				gragra = load(fileName);
-				
-				if (fileName2.indexOf(".res") > 0) {
-					final AGG2ColorGraph test = new AGG2ColorGraph();
-				
-					importColorGraph2AGG(gragra, gragra.getGraph(), fileName2, null, null);
-					
-					gragra.save(fileName);
-				}
-			}			
-		}
-		else {
-			warning();
-			return;
-		}
-	}
-     */
     static void warning() {
         System.out
                 .println("Usage unaliased: java -oss3m -Xmx1000m agg.convert.AGG2ColorGraph grammar.ggx ");
@@ -374,20 +332,4 @@ public class AGG2ColorGraph {
                 .println("agg2color grammar.ggx colorResultImport.res ");
         System.out.println("Overwritten file: grammar.ggx");
     }
-    /*
-	private static GraGra load(String fName) {
-		if (fName.endsWith(".ggx")) {
-			h = new XMLHelper();
-			if (h.read_from_xml(fName)) {
-				// create a gragra
-				GraGra gra =  new GraGra(false);
-				h.getTopObject(gra);
-				gra.setFileName(fName);
-				return gra;
-			} else 
-				return null;
-		} else
-			return null;
-	}
-     */
 }

@@ -21,7 +21,6 @@ import agg.attribute.AttrInstance;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.handler.AttrHandler;
 import java.util.Iterator;
-import org.w3c.dom.Element;
 
 /**
  * Adds the possibility of being shared. Needed as the container of variable

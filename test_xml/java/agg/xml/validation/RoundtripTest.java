@@ -6,7 +6,6 @@
  */
 package agg.xml.validation;
 
-import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xml.TestDataHelper;

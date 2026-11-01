@@ -27,7 +27,6 @@ import agg.attribute.view.impl.OpenViewSetting;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-import org.w3c.dom.Element;
 //import agg.util.Debug;
 
 /**

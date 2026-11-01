@@ -6,7 +6,6 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLObject;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Node;
